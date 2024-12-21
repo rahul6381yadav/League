@@ -1,6 +1,10 @@
-const router = require("express").Router();
+const express = require("express");
+const router=express.Router()
 const usersController = require("../controller/UserController");
 
-router.post("/api/v1/users/add-user", usersController.UserSignup);
+router.post("/signup", usersController.UserSignup);
+router.post("/login", usersController.login);
+router.post('/forgot-password', usersController.forgotPassword);
+router.post('/reset-password', usersController.resetPassword);
 
 module.exports = router;
