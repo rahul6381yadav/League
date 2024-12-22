@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [activeTab, setActiveTab] = useState("Student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const navigate = useNavigate();
+
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
 
     const handleGoogleSignIn = () => {
-        // Add Google Sign-In logic here
         console.log("Sign in with Google");
-    };
-
-    const handleForgotPassword = () => {
-        // Add forgot password logic here
-        console.log("Forgot Password");
     };
 
     const handleSubmit = async (e) => {
@@ -26,11 +23,10 @@ function Login() {
         const loginData = {
             email,
             password,
-            loginType: activeTab,
         };
 
         try {
-            const response = await fetch("https://...../api/login", {
+            const response = await fetch("http://localhost:3000/user/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -42,10 +38,10 @@ function Login() {
 
             if (response.ok) {
                 console.log("Login successful:", result);
-                // Handle successful login (e.g., redirect or display a success message)
+                
             } else {
                 console.error("Login failed:", result.message);
-                // Handle failed login (e.g., display an error message)
+                
             }
             setEmail("");
             setPassword("");
@@ -55,6 +51,20 @@ function Login() {
     };
 
     return (
+        <>
+            <iframe
+                src="./background.html"  // Path to the HTML file in the public folder
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100vh",
+                    border: "none",
+                    zIndex: -1,  // Ensures the background stays behind the content
+                }}
+                title="Background Design"
+            />
         <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="w-full max-w-md rounded-lg shadow-lg">
                 <div className="flex border-b">
@@ -68,7 +78,7 @@ function Login() {
                         className={`flex-1 p-3 text-center ${activeTab === "COSA" ? "bg-blue-500 text-white" : ""}`}
                         onClick={() => handleTabChange("COSA")}
                     >
-                        COSA Member
+                        COSA
                     </button>
                     <button
                         className={`flex-1 p-3 text-center ${activeTab === "Coordinator" ? "bg-blue-500 text-white" : ""}`}
@@ -131,7 +141,7 @@ function Login() {
                     <div className="flex justify-between items-center mt-4">
                         <button
                             type="button"
-                            onClick={handleForgotPassword}
+                                onClick={() => navigate('/forget')}
                             className="text-sm text-blue-500 hover:underline"
                         >
                             Forgot Password?
@@ -152,7 +162,8 @@ function Login() {
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }
 
