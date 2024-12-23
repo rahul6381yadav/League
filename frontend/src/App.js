@@ -1,24 +1,20 @@
 import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/auth/Login';
+import Forget from './components/auth/Forget';
+import VerifyOTP from './components/auth/otp';
+import NewPassword from './components/auth/newPassword';
 
 function App() {
   return (
-    <>
-      <iframe
-        src="/background.html"  // Path to the HTML file in the public folder
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100vh",
-          border: "none",
-          zIndex: -1,  // Ensures the background stays behind the content
-        }}
-        title="Background Design"
-      />
-      <Login></Login>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login/>} />
+        <Route path="/forget" element={<Forget />} />
+        <Route path="/VerifyOTP" element={<VerifyOTP />} />
+        <Route path="/newPassword" element={<NewPassword/>}/>
+      </Routes>
+    </Router>
   );
 }
 
