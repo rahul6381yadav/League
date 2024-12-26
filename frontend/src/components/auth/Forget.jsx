@@ -12,7 +12,7 @@ function Forget() {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:3000/user/forgot-password", {
+            const response = await fetch("http://localhost:4000/user/forgot-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -91,7 +91,7 @@ function Forget() {
                                 type="submit"
                                 className="w-full py-2 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                Send Reset Link
+                                Send OTP
                             </button>
                         </form>
 

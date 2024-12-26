@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 const  User  = require("../model/UserModel");
+const crypto = require('crypto');
 
 exports.UserSignup = async (req, res) => {
     try {
@@ -64,21 +65,52 @@ exports.forgotPassword = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        
-        const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: '1h',  
-        });
+        // Generate a 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-       
-        const resetUrl = `http://localhost:4000/user/reset-password/${resetToken}`;
+        // Store OTP and expiry in the user's record
+        user.resetOtp = `${otp}`;
+        console.log("Your sent otp is ", otp)
+        user.resetOtpExpiry = Date.now() + 15 * 60 * 1000; // OTP valid for 10 minutes
+        await user.save();
 
-        
-        const subject = 'Password Reset Request';
-        const text = `You requested a password reset. Click on the following link to reset your password: ${resetUrl}`;
-
+        // Send OTP via email
+        const subject = 'Password Reset OTP';
+        const text = `Your OTP for password reset is: ${otp}. This OTP is valid for 10 minutes.`;
         await sendEmail(user.email, subject, text);
 
-        res.status(200).json({ message: "Password reset link sent to your email" });
+        res.status(200).json({ message: "OTP sent to your email" });
+    } catch (error) {
+        console.error("Error:", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+exports.verifyOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        console.log("Request received:", req.body);
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        console.log("User found:", user);
+        console.log("Current Time:", Date.now(), "Expiry Time:", user.resetOtpExpiry);
+        if (!user.resetOtp || user.resetOtpExpiry < Date.now()) {
+            return res.status(400).json({ message: "OTP has expired. Request a new one." });
+        }
+        console.log("Stored OTP:", user.resetOtp, "Provided OTP:", otp);
+        if (user.resetOtp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+
+        // OTP is valid, clear it and allow password reset
+        user.resetOtp = null;
+        user.resetOtpExpiry = null;
+        await user.save();
+
+        res.status(200).json({ message: "OTP verified. You can now reset your password." });
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).json({ message: "Internal Server Error" });
@@ -87,32 +119,19 @@ exports.forgotPassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
     try {
-        const { token, newPassword } = req.body;
-        if (!token) {
-            return res.status(400).json({ message: "Token is missing" });
-        }
+        const { email, newPassword } = req.body;
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        const user = await User.findById(decoded.userId);
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-        
-        user.password = hashedPassword;
+        user.password = newPassword;
         await user.save();
 
         res.status(200).json({ message: "Password reset successfully" });
     } catch (error) {
         console.error("Error:", error.message);
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(400).json({ message: "Invalid or malformed token" });
-        }
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
