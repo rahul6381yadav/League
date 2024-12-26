@@ -11,30 +11,34 @@ function Forget() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const forgotData = {
+            email,
+        };
+
         try {
-            const response = await fetch("http://localhost:3000/user/forgot-password", {
+            const response = await fetch("http://localhost:4000/user/forgot-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify(forgotData),
             });
 
+            // Parse the response as JSON
             const result = await response.json();
 
             if (response.ok) {
-                setMessage("Password reset email sent successfully. Check your inbox.");
-                setError(null);
-                navigate('/VerifyOTP');
+                setMessage(result.message); // Use `result.message`, not `response.data.message`
+                // setEmail(""); // Reset the email input field
+                console.log("Request successful:", result);
+                navigate('/VerifyOTP',{state:{email}}); // Navigate to the VerifyOTP page
             } else {
-                setError(result.message || "Something went wrong. Try again.");
-                setMessage(null);
+                console.error("Request failed:", result.message);
+                setError(result.message || "Something went wrong.");
             }
-            setEmail("");
-
-        } catch (err) {
-            setError("Failed to send password reset email. Try again later.");
-            setMessage(null);
+        } catch (error) {
+            console.error("Error:", error); // Log the full error for debugging
+            setError("Something went wrong. Please try again.");
         }
     };
 
@@ -60,7 +64,7 @@ function Forget() {
                         <h2 className="text-2xl font-bold text-center">Forgot Password</h2>
 
                         <p className="text-sm text-gray-600 text-center">
-                            Enter your email address to receive a password reset link.
+                            Enter your email address to receive a OTP
                         </p>
 
                         {message && (
@@ -83,6 +87,7 @@ function Forget() {
                                     placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    autoComplete="email"
                                     required
                                 />
                             </div>
@@ -91,7 +96,7 @@ function Forget() {
                                 type="submit"
                                 className="w-full py-2 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                Send Reset Link
+                                Send OTP
                             </button>
                         </form>
 

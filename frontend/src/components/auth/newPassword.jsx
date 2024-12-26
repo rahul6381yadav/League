@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation} from 'react-router-dom';
 
 function NewPassword() {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
+    const location = useLocation();
+    const { email } = location.state || {};
+    if (!email) {
+        setError("No email found. Please try again.");
+        return;
+    }
+
 
     const navigate = useNavigate();
 
@@ -18,16 +25,17 @@ function NewPassword() {
             return;
         }
 
+
         try {
-            const response = await fetch("http://localhost:3000/user/reset-password", {
+            const response = await fetch("http://localhost:4000/user/reset-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ password: newPassword }),
+                body: JSON.stringify({email:email, newPassword: newPassword }),
             });
 
-            const result = await response.json();
+            let result = await response.json();
 
             if (response.ok) {
                 setMessage("Password reset successfully. You may now log in.");
@@ -41,6 +49,7 @@ function NewPassword() {
             setNewPassword("");
             setConfirmPassword("");
         } catch (err) {
+            console.log(err);
             setError("Failed to reset password. Try again later.");
             setMessage(null);
         }

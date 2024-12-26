@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation } from 'react-router-dom';
 
 function VerifyOTP() {
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
-
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleChange = (element, index) => {
         if (!/^\d*$/.test(element.value)) return; // Only allow digits
@@ -30,22 +30,27 @@ function VerifyOTP() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const otpValue = otp.join(""); // Combine all digits into a single string
-
+        const { email } =location.state || {};
         try {
-            const response = await fetch("http://localhost:3000/user/verify-otp", {
+            const response = await fetch("http://localhost:4000/user/verify-otp", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ otp: otpValue }),
+                body: JSON.stringify(
+                    {
+                    email:email,
+                    otp: otpValue
+                    }
+                ),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                setMessage("OTP verified successfully. You may proceed.");
-                setError(null);
-                setTimeout(() => navigate("/reset-password"), 2000); // Redirect after successful verification
+                navigate("/newPassword", { state: { email } }); // Redirect after successful verification
+                // setMessage("OTP verified successfully. You may proceed.");
+                // setError(null);
             } else {
                 setError(result.message || "Invalid OTP. Please try again.");
                 setMessage(null);
