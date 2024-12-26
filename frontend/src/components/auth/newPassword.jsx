@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { useNavigate , useLocation} from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 function NewPassword() {
+    const {isOTPVerified } = useAuth();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const location = useLocation();
-    const { email } = location.state || {};
-    if (!email) {
-        setError("No email found. Please try again.");
-        return;
-    }
-
-
     const navigate = useNavigate();
+    const { email } = location.state || {};
+
+    useEffect(() => {
+        if (!email) {
+            setError("No email found. Redirecting to the forgot password page...");
+            navigate("/forget"); // Redirect to the forgot password page
+        } else if (!isOTPVerified) {
+            navigate("/"); // Redirect to login page if OTP is not verified
+        }
+    }, [email, isOTPVerified, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -40,12 +45,12 @@ function NewPassword() {
             if (response.ok) {
                 setMessage("Password reset successfully. You may now log in.");
                 setError(null);
-                setTimeout(() => navigate('/'), 2000); // Redirect to login page
+                navigate("/"); // Redirect to login page
             } else {
                 setError(result.message || "Failed to reset password. Try again.");
                 setMessage(null);
             }
-
+            
             setNewPassword("");
             setConfirmPassword("");
         } catch (err) {
@@ -54,7 +59,7 @@ function NewPassword() {
             setMessage(null);
         }
     };
-
+    
     return (
         <>
             <iframe
@@ -74,7 +79,7 @@ function NewPassword() {
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="w-full max-w-md rounded-lg shadow-lg">
                     <div className="p-6 space-y-4">
-                        <h2 className="text-2xl font-bold text-center">Reset Password</h2>
+                        <h2 className="text-2xl font-bold text-center text-black">Reset Password</h2>
 
                         <p className="text-sm text-gray-600 text-center">
                             Enter and confirm your new password.
@@ -96,7 +101,7 @@ function NewPassword() {
                                 <input
                                     type="password"
                                     id="newPassword"
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                                     placeholder="Enter your new password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
@@ -111,7 +116,7 @@ function NewPassword() {
                                 <input
                                     type="password"
                                     id="confirmPassword"
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                                     placeholder="Re-enter your new password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}

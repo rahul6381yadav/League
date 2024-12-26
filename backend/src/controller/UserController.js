@@ -118,7 +118,6 @@ exports.verifyOtp = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
     try {
-        console.log("inside ");
         const { email, newPassword } = req.body;
 
         const user = await User.findOne({ email });
