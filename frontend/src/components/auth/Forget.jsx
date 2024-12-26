@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 function Forget() {
+    const { setForgotPasswordState } = useAuth(); 
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (token) {
+            navigate("/home"); // Redirect to Home if already logged in
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,6 +36,7 @@ function Forget() {
             const result = await response.json();
 
             if (response.ok) {
+                setForgotPasswordState(true);
                 setMessage(result.message); // Use `result.message`, not `response.data.message`
                 // setEmail(""); // Reset the email input field
                 console.log("Request successful:", result);
@@ -61,7 +70,7 @@ function Forget() {
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="w-full max-w-md rounded-lg shadow-lg">
                     <div className="p-6 space-y-4">
-                        <h2 className="text-2xl font-bold text-center">Forgot Password</h2>
+                        <h2 className="text-2xl font-bold text-center text-black">Forgot Password</h2>
 
                         <p className="text-sm text-gray-600 text-center">
                             Enter your email address to receive a OTP
@@ -83,7 +92,7 @@ function Forget() {
                                 <input
                                     type="email"
                                     id="email"
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                                     placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
