@@ -2,22 +2,31 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");;
 const dotenv = require('dotenv');
-dotenv.config();
-
-const PORT = process.env.PORT ||3000;
 const connectDB = require('./config/db');
 const userRoute = require('./routes/userRoutes'); 
 const cors = require('cors');
 const path = require('path');
+const jwtMiddleware = require("./middleware/jwtMiddleware");
+const authRoute = require('./routes/authRoutes');
 
+dotenv.config();
+
+const PORT = process.env.PORT ||3000;
 //connect to mongodb
 connectDB();
 
 app.use(cors());
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use((req, res, next) => {
+    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password" , "/user/reset-password" , "/user/verify-otp"];
+    if (excludedRoutes.includes(req.path)) {
+        return next(); // Skip token verification for excluded routes
+    }
+    jwtMiddleware.verifyToken(req, res, next); 
+});
+app.use("/auth", authRoute);
 app.use("/user", userRoute);
 
 app.use((err, req, res, next) => {
