@@ -28,18 +28,17 @@ function Home() {
                 <nav className="nav">
                     <a href="cosa_page">COSA</a>
                     <a href="club_page">CLUBS</a>
+                    <a href="my_profile">
+                    <img src="https://img.icons8.com/?size=100&id=85356&format=png&color=1A1A1A" alt="my profile" className="coins-icon" /></a>
                     <a href="#shopping-cart">
                         <img src="https://img.icons8.com/ios/59997/shopping-cart.png" alt="Shopping Cart" className="shopping-cart-icon" />
                     </a>
-
-
-
                     <a href="#coins">
                         <img src="https://img.icons8.com/?size=80&id=iqkTuaHn43hC&format=png" alt="Coins" className="coins-icon" />
                     </a>
-
-
-
+                    <a href="log_out">
+                       <img src="https://img.icons8.com/?size=100&id=Q1xkcFuVON39&format=png&color=1A1A1A" alt="log out" className="coins-icon" />
+                    </a>
                 </nav>
             </header>
 
