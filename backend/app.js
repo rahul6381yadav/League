@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");;
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
-const userRoute = require('./routes/userRoutes'); 
+const connectDB = require('./src/config/db');
+const userRoute = require('./src/routes/userRoutes'); 
 const cors = require('cors');
 const path = require('path');
-const jwtMiddleware = require("./middleware/jwtMiddleware");
-const authRoute = require('./routes/authRoutes');
+const jwtMiddleware = require("./src/middleware/jwtMiddleware");
+const authRoute = require('./src/routes/authRoutes');
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     }
     jwtMiddleware.verifyToken(req, res, next); 
 });
-app.use("/auth", authRoute);
+app.use("/api/v1", authRoute);
 app.use("/user", userRoute);
 
 app.use((err, req, res, next) => {

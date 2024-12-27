@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
-const User = require("../model/UserModel");
+const  User  = require("../model/UserModel");
 const crypto = require('crypto');
 
 exports.UserSignup = async (req, res) => {
