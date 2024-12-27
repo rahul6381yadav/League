@@ -8,13 +8,9 @@ exports.verifyToken = (req, res, next) => {
     if (!token) {
         return res.status(403).json({ message: "No token provided" });
     }
-    console.log("Extracted Token:", token);
     try {
         // Verify token
         const decoded = jwt.verify(token, "mysecretkey");
-        console.log("Token Expiration:", new Date(decoded.exp * 1000)); // Convert UNIX timestamp to readable date
-        console.log("Current Time:", new Date());
-        console.log("Decoded Token:", decoded);
         req.user = decoded.userId; // Attach user ID to request object
         next(); // Proceed to the next middleware or controller
     } catch (error) {
