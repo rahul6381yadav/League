@@ -1,19 +1,41 @@
 const express = require("express");
 const app = express();
-const PORT = 3000;
+const mongoose = require("mongoose");;
+const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const router = require('./routes/userRoutes'); 
+const userRoute = require('./routes/userRoutes'); 
 const cors = require('cors');
 const path = require('path');
+const jwtMiddleware = require("./middleware/jwtMiddleware");
+const authRoute = require('./routes/authRoutes');
 
+dotenv.config();
+
+const PORT = process.env.PORT ||3000;
+//connect to mongodb
 connectDB();
 
 app.use(cors());
-
-app.use(express.static(path.join(__dirname,'public')));
-
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/', router);
+app.use((req, res, next) => {
+    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password" , "/user/reset-password" , "/user/verify-otp"];
+    if (excludedRoutes.includes(req.path)) {
+        return next(); // Skip token verification for excluded routes
+    }
+    jwtMiddleware.verifyToken(req, res, next); 
+});
+app.use("/auth", authRoute);
+app.use("/user", userRoute);
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
+});
+
+
+
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+});
