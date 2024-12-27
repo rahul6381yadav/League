@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children }) => {
     if (!isAuthenticated) {
       navigate('/'); // Redirect to login if not authenticated
     }
-  }, [isAuthenticated, navigate]); // Ensure this runs only when isAuthenticated or navigate changes
+  }, [isAuthenticated,navigate]); // Ensure this runs only when isAuthenticated or navigate changes
 
   if (!isAuthenticated) {
     return null; // Optionally render a loading or fallback component

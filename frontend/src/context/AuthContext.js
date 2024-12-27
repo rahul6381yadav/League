@@ -21,7 +21,9 @@ export const AuthProvider = ({ children }) => {
                 const decoded = jwtDecode(token);
                 const currentTime = Date.now() / 1000; // Current time in seconds
                 if (decoded.exp > currentTime) {
-                    setIsAuthenticated(true);
+                    if (!isAuthenticated) {
+                        setIsAuthenticated(true);
+                    }
                 } else {
                     localStorage.removeItem("authToken");
                     setIsAuthenticated(false);
@@ -31,7 +33,7 @@ export const AuthProvider = ({ children }) => {
                 setIsAuthenticated(false);
             }
         }
-    }, []);
+    }, [isAuthenticated]);
 
     // Function to log the user out
     const logout = () => {

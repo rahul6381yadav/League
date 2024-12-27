@@ -1,16 +1,19 @@
 import React, { useState , useEffect } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; 
 
 function Login() {
     const [activeTab, setActiveTab] = useState("Student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { setIsAuthenticated } = useAuth();
 
     const navigate = useNavigate();
     useEffect(() => {
+        console.log("login.js");
         const token = localStorage.getItem("authToken");
-        if (token) {
+        if (token && window.location.pathname!=="/home") {
             navigate("/home"); // Redirect to Home if already logged in
         }
     }, [navigate]);
@@ -45,6 +48,7 @@ function Login() {
             if (response.ok) {
                 console.log("Login successful:", result);
                 localStorage.setItem("authToken", result.token);
+                setIsAuthenticated(true);
                 navigate('/home');
             } else {
                 console.error("Login failed:", result.message);
@@ -132,6 +136,7 @@ function Login() {
                                 placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="password"
                                 required
                             />
                         </div>
