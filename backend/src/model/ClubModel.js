@@ -1,39 +1,41 @@
-const mongoose = require("mongoose");
+const {mongoose, Schema} = require("mongoose");
 
 const clubSchema = new mongoose.Schema({
-    club_id: {
-      type: Number,
-      unique: true,
-    },
     name: {
       type: String,
+      unique: true,
       required: true,
     },
     description: {
       type: String,
       default: null,
     },
-    total_points: {
+    members: {
+      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
+      required: true
+    },
+    overallRating: {
       type: Number,
       default: 0,
     },
-    overall_rating: {
-      type: Number,
-      default: 0,
+    studentMembers:{
+      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
+      required: true
+    },
+    lastUpdated: {
+      type: Date,
+      default: Date.now(),
     },
 });
 
 
 const eventSchema = new mongoose.Schema({
-    club_id:{
-        type:Number,
+    clubId:{
+        type:Schema.Types.ObjectId,
+        ref:'Club',
         required:true
     },
-    event_id: {
-      type: Number,
-      unique: true, 
-    },
-    event_name: {
+    eventName: {
       type: String,
       required: true, 
     },
@@ -41,52 +43,65 @@ const eventSchema = new mongoose.Schema({
       type: String,
       default: null,
     },
+    vanue: {
+      type: String,
+      required: true,
+    },
+    duration: {
+      type: String,
+      required: true,
+    },
+    maxPoints: {
+      type: Number,
+      required: true,
+    },
     date: {
       type: Date,
       required: true, 
     },
-    participants_count: {
+    participantsCount: {
       type: Number,
       default: 0,
     },
-    winners: {
-      type: [String], 
-      default: [], 
-    },
-    photo_gallery: {
+    photoGallery: {
       type: [String],
       default: [],
     },
-    
   });
 
   const attendanceSchema = new mongoose.Schema({
-    student_id: {
+    studentId: {
+      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
+      required: true,
+    },
+    eventId: {
+      type: [{type: Schema.Types.ObjectId, ref: 'Event'}],
+      required: true,
+    },
+    pointsGiven: {
       type: Number,
-      unique: true, 
-    },
-    event_id: {
-      type: Number, 
       required: true,
-    },
-    email: {
-      type: String,
-      required: true,
+      default: 0,
     },
     status: {
       type: String,
       enum: ['Present', 'Absent'], 
+      default: 'Absent',
       required: true,
+    },
+    isWinner: {
+      type: Boolean,
+      default: false,
     },
 });
 
 
-const Club = mongoose.model("Club", clubSchema);
-const Event = mongoose.model('Event', eventSchema);
-const Attendance = mongoose.model('Attendance', attendanceSchema);
+const ClubModel = mongoose.model("Club", clubSchema);
+const EventModel = mongoose.model('Event', eventSchema);
+const AttendanceModel = mongoose.model('Attendance', attendanceSchema);
 
 module.exports = {
-    Club,
-    Event,
-    Attendance,
-  };
+  ClubModel,
+  EventModel,
+  AttendanceModel,
+};
