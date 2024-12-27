@@ -10,6 +10,15 @@ const clubSchema = new mongoose.Schema({
       type: String,
       default: null,
     },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    image: {
+      type: String,
+      default: null,
+    },
     members: {
       type: [{type: Schema.Types.ObjectId, ref: 'User'}],
       required: true
