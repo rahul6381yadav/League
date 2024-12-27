@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Home.css';
-
+import { useAuth } from '../../context/AuthContext';
 function Home() {
     const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+    const { setIsAuthenticated } = useAuth();
     useEffect(() => {
     let lastScrollTop = 0;
     const handleScroll = () => {
@@ -27,8 +28,8 @@ function Home() {
                 <div className="logo">Achieva</div>
                 <nav className="nav">
                     <a href="cosa_page">COSA</a>
-                    <a href="club_page">CLUBS</a>
-                    <a href="my_profile">
+                    <a href="/Clubs">CLUBS</a>
+                    <a href="myprofile">
                     <img src="https://img.icons8.com/?size=100&id=85356&format=png&color=1A1A1A" alt="my profile" className="coins-icon" /></a>
                     <a href="#shopping-cart">
                         <img src="https://img.icons8.com/ios/59997/shopping-cart.png" alt="Shopping Cart" className="shopping-cart-icon" />
@@ -36,7 +37,10 @@ function Home() {
                     <a href="#coins">
                         <img src="https://img.icons8.com/?size=80&id=iqkTuaHn43hC&format=png" alt="Coins" className="coins-icon" />
                     </a>
-                    <a href="log_out">
+                    <a href="/" onClick={() => {
+                        localStorage.removeItem("authToken");
+                        setIsAuthenticated(false);
+                    }}>
                        <img src="https://img.icons8.com/?size=100&id=Q1xkcFuVON39&format=png&color=1A1A1A" alt="log out" className="coins-icon" />
                     </a>
                 </nav>
