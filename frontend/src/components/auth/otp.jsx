@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useState,useEffect } from 'react';
+import { useNavigate , useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 function VerifyOTP() {
+    const { forgotPasswordState ,setisOTPVerified} = useAuth();
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
-
     const navigate = useNavigate();
-
+    const location = useLocation();
+    useEffect(() => {
+        if (!forgotPasswordState) {
+            navigate("/forget");
+        }
+    }, [forgotPasswordState, navigate]);
     const handleChange = (element, index) => {
         if (!/^\d*$/.test(element.value)) return; // Only allow digits
         const newOtp = [...otp];
@@ -30,22 +35,28 @@ function VerifyOTP() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const otpValue = otp.join(""); // Combine all digits into a single string
-
+        const { email } =location.state || {};
         try {
             const response = await fetch("http://localhost:4000/user/verify-otp", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ otp: otpValue }),
+                body: JSON.stringify(
+                    {
+                    email:email,
+                    otp: otpValue
+                    }
+                ),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                setMessage("OTP verified successfully. You may proceed.");
-                setError(null);
-                setTimeout(() => navigate("/reset-password"), 2000); // Redirect after successful verification
+                setisOTPVerified(true);
+                navigate("/newPassword", { state: { email } }); // Redirect after successful verification
+                // setMessage("OTP verified successfully. You may proceed.");
+                // setError(null);
             } else {
                 setError(result.message || "Invalid OTP. Please try again.");
                 setMessage(null);
@@ -76,7 +87,7 @@ function VerifyOTP() {
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="w-full max-w-md rounded-lg shadow-lg">
                     <div className="p-6 space-y-4">
-                        <h2 className="text-2xl font-bold text-center">OTP Verification</h2>
+                        <h2 className="text-2xl font-bold text-center text-black">OTP Verification</h2>
 
                         <p className="text-sm text-gray-600 text-center">
                             Enter the 6-digit OTP sent to your email address.
@@ -96,7 +107,7 @@ function VerifyOTP() {
                                     <input
                                         key={index}
                                         type="text"
-                                        className="w-12 h-12 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                                        className="w-12 h-12 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg text-black"
                                         maxLength="1"
                                         value={value}
                                         onChange={(e) => handleChange(e.target, index)}

@@ -6,11 +6,11 @@ const crypto = require('crypto');
 
 exports.UserSignup = async (req, res) => {
     try {
-        const { fullName, studentId, email, password, batchCode, photo} = req.body;
+        const { fullName, studentId, email, password, batchCode, photo } = req.body;
 
-        const user =  await User.findOne({email})
-        if(user) {
-            return res.status(400).json({message:"User already exists"})
+        const user = await User.findOne({ email })
+        if (user) {
+            return res.status(400).json({ message: "User already exists" })
         }
 
         const createUser = new User({
@@ -22,11 +22,11 @@ exports.UserSignup = async (req, res) => {
             photo,
         });
         await createUser.save()
-        res.status(201).json({message:"User created successfully"})
+        res.status(201).json({ message: "User created successfully" })
 
-    } catch(error) {
-        console.log("Error:" +error.message)
-        res.status(500).json({message:"Internal Server Error"})
+    } catch (error) {
+        console.log("Error:" + error.message)
+        res.status(500).json({ message: "Internal Server Error" })
     }
 
 
@@ -37,16 +37,16 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
-    }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: "Login successful", token });
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ message: "Login successful", token });
 
     } catch (error) {
         console.error("Error:", error.message);
@@ -64,7 +64,6 @@ exports.forgotPassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-
         // Generate a 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 

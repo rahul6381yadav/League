@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 function Forget() {
+    const { setForgotPasswordState } = useAuth(); 
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (token) {
+            navigate("/home"); // Redirect to Home if already logged in
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const forgotData = {
+            email,
+        };
 
         try {
             const response = await fetch("http://localhost:4000/user/forgot-password", {
@@ -17,24 +29,25 @@ function Forget() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify(forgotData),
             });
 
+            // Parse the response as JSON
             const result = await response.json();
 
             if (response.ok) {
-                setMessage("Password reset email sent successfully. Check your inbox.");
-                setError(null);
-                navigate('/VerifyOTP');
+                setForgotPasswordState(true);
+                setMessage(result.message); // Use `result.message`, not `response.data.message`
+                // setEmail(""); // Reset the email input field
+                console.log("Request successful:", result);
+                navigate('/VerifyOTP',{state:{email}}); // Navigate to the VerifyOTP page
             } else {
-                setError(result.message || "Something went wrong. Try again.");
-                setMessage(null);
+                console.error("Request failed:", result.message);
+                setError(result.message || "Something went wrong.");
             }
-            setEmail("");
-
-        } catch (err) {
-            setError("Failed to send password reset email. Try again later.");
-            setMessage(null);
+        } catch (error) {
+            console.error("Error:", error); // Log the full error for debugging
+            setError("Something went wrong. Please try again.");
         }
     };
 
@@ -57,10 +70,10 @@ function Forget() {
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="w-full max-w-md rounded-lg shadow-lg">
                     <div className="p-6 space-y-4">
-                        <h2 className="text-2xl font-bold text-center">Forgot Password</h2>
+                        <h2 className="text-2xl font-bold text-center text-black">Forgot Password</h2>
 
                         <p className="text-sm text-gray-600 text-center">
-                            Enter your email address to receive a password reset link.
+                            Enter your email address to receive a OTP
                         </p>
 
                         {message && (
@@ -79,10 +92,11 @@ function Forget() {
                                 <input
                                     type="email"
                                     id="email"
-                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                                     placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    autoComplete="email"
                                     required
                                 />
                             </div>

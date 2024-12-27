@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; 
 
 function Login() {
     const [activeTab, setActiveTab] = useState("Student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { setIsAuthenticated } = useAuth();
 
     const navigate = useNavigate();
-
+    useEffect(() => {
+        console.log("login.js");
+        const token = localStorage.getItem("authToken");
+        if (token && window.location.pathname!=="/home") {
+            navigate("/home"); // Redirect to Home if already logged in
+        }
+    }, [navigate]);
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
@@ -39,7 +47,9 @@ function Login() {
 
             if (response.ok) {
                 console.log("Login successful:", result);
-                
+                localStorage.setItem("authToken", result.token);
+                setIsAuthenticated(true);
+                navigate('/home');
             } else {
                 console.error("Login failed:", result.message);
                 
@@ -68,7 +78,7 @@ function Login() {
             />
         <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="w-full max-w-md rounded-lg shadow-lg">
-                <div className="flex border-b">
+                <div className="flex border-b ">
                     <button
                         className={`flex-1 p-3 text-center ${activeTab === "Student" ? "bg-blue-500 text-white" : ""} rounded-tl-lg`}
                         onClick={() => handleTabChange("Student")}
@@ -97,7 +107,7 @@ function Login() {
 
                 {/* Login Form */}
                 <div className="p-6 space-y-4">
-                    <h2 className="text-2xl font-bold text-center">{`Login as ${activeTab}`}</h2>
+                    <h2 className="text-2xl font-bold text-center text-black">{`Login as ${activeTab}`}</h2>
 
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div>
@@ -107,7 +117,7 @@ function Login() {
                             <input
                                 type="email"
                                 id="email"
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                                 placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -122,10 +132,11 @@ function Login() {
                             <input
                                 type="password"
                                 id="password"
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                                 placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="password"
                                 required
                             />
                         </div>
