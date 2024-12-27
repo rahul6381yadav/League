@@ -7,20 +7,22 @@ import NewPassword from './components/auth/newPassword';
 import Home from './components/Home/Home';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext'; 
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Clubs from './components/Home/Clubs';
+import MyProfile from './components/Home/myprofile';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); 
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isAuthenticated === false) {
-        navigate('/'); 
+        navigate('/');
       }
-    }, 1000); 
+    }, 1000);
 
-    return () => clearTimeout(timeout); 
+    return () => clearTimeout(timeout);
 
   }, [isAuthenticated, navigate]);
 
@@ -32,17 +34,20 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-    <Router>
-      <Routes>
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/" element={<Login />} />
-        <Route path="/forget" element={<Forget />} />
-        <Route path="/VerifyOTP" element={<VerifyOTP />} />
-        <Route path="/newPassword" element={<NewPassword />} />
-      </Routes>
+      <Router>
+        <Routes>
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/Clubs" element={<ProtectedRoute><Clubs /></ProtectedRoute>} />
+          <Route path="/myprofile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+          <Route path="/" element={<Login />} />
+          <Route path="/forget" element={<Forget />} />
+          <Route path="/VerifyOTP" element={<VerifyOTP />} />
+          <Route path="/newPassword" element={<NewPassword />} />
+        </Routes>
       </Router>
     </AuthProvider>
   );
+
 }
 
 export default App;
