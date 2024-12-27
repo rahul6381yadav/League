@@ -9,22 +9,22 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 
-// ProtectedRoute component to protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); // Access isAuthenticated from context
+  const { isAuthenticated } = useAuth(); 
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/'); // Redirect to login if not authenticated
-    }
-  }, [isAuthenticated,navigate]); // Ensure this runs only when isAuthenticated or navigate changes
+    const timeout = setTimeout(() => {
+      if (isAuthenticated === false) {
+        navigate('/'); 
+      }
+    }, 1000); 
 
-  if (!isAuthenticated) {
-    return null; // Optionally render a loading or fallback component
-  }
+    return () => clearTimeout(timeout); 
 
-  return children; // Allow access to the route if authenticated
+  }, [isAuthenticated, navigate]);
+
+  return children;
 };
 
 
