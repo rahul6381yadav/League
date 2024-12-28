@@ -1,0 +1,102 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #0b0c10; /* Dark background */
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .app {
+    text-align: center;
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .title {
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Clubs Container */
+  .clubs-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  /* Club Box Styles */
+  .club-box {
+    background-color: #1f2833; /* Deep gray */
+    border-radius: 20px;
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .club-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  
+  }
+  
+  .club-logo {
+    width: 250px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+  
+  .club-name {
+    color: #66fcf1;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .club-description {
+    font-size: 1rem;
+    color: #c5c6c7;
+    margin-bottom: 20px;
+  }
+  
+  /* Button Styles */
+  .details-button {
+    background-color: #66fcf1;
+    color: #1f2833;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .details-button:hover {
+    background-color: #1f2833;
+    color: #66fcf1;
+    border: 1px solid #66fcf1;
+  }
+  /* Styling the mail logo */
+  .mail-logo {
+  
+    width: 30px; /* Set the width of the logo */
+    height: auto; /* Maintain the aspect ratio */
+    transition: transform 0.3s ease-in-out; /* Animation for hover effect */
+  }
+  
+  /* Mail logo hover effect */
+  .mail-link:hover .mail-logo {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+  }
+  
+  .mail-link {
+    text-decoration: none; /* Remove underline from the link */
+  }
