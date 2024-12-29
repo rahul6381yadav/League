@@ -3,6 +3,9 @@ import "./Clubs.css";
 
 function Clubs() {
   const [clubs, setClubs] = useState([]);
+  const [filteredClubs, setFilteredClubs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const token = localStorage.getItem("authToken");
 
   const handleClubsDetails = async () => {
@@ -16,23 +19,52 @@ function Clubs() {
       });
       const result = await response.json();
       setClubs(result.clubs);
+      setFilteredClubs(result.clubs); 
     } catch (err) {
-      console.log(err);
+      console.error("Error fetching clubs:", err);
     }
+  };
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    setFilteredClubs(
+      clubs.filter((club) =>
+        club.name.toLowerCase().includes(query) ||
+      club.description.toLowerCase().includes(query) 
+      )
+    );
   };
 
   useEffect(() => {
     handleClubsDetails();
-  });
+  }, []); 
 
   if (clubs.length === 0) {
-    return <div className="text-center text-gray-500 mt-10">Loading clubs...</div>;
+    return (
+      <div className="text-center text-gray-500 mt-10">
+        Loading clubs...
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-4 md:mx-6 lg:mx-8 2xl:mx-10 sm:[max-width:355px]:mx-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:[max-width:355px]:gap-6">
-        {clubs.map((club) => (
+    <div className="container mx-auto p-4">
+     <div className="search-bar">
+  <div className="search-input-container">
+    <i className="fas fa-search search-icon"></i>
+    <input
+      type="text"
+      placeholder="Search for a club..."
+      value={searchQuery}
+      onChange={handleSearch}
+      className="search-input"
+    />
+  </div>
+</div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredClubs.map((club) => (
           <div key={club._id} className="card">
             <div className="card-image">
               <img
@@ -47,12 +79,9 @@ function Clubs() {
               <p className="text-gray-400 text-sm">
                 <strong>Rating:</strong> {club.overallRating}
               </p>
-              <p className="text-gray-400 text-sm">
-                <br></br>
-                <i className="fa fa-envelope" style={{ fontSize: '15px' }}></i>
-                <a href={`mailto:${club.email}`}>
-                   {club.email}
-                </a>
+              <p className="text-gray-400 text-sm mt-2">
+                <i className="fa fa-envelope mr-1"></i>
+                <a href={`mailto:${club.email}`}>{club.email}</a>
               </p>
             </div>
           </div>
