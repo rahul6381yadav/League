@@ -1,7 +1,8 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState , useEffect} from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
+import { useRole } from '../../context/RoleContext';
 
 function Login() {
     const [activeTab, setActiveTab] = useState("student");
@@ -9,10 +10,10 @@ function Login() {
     const [password, setPassword] = useState("");
     const [Error, setError] = useState("");
     const { setIsAuthenticated } = useAuth();
-
+    const { setRole } = useRole();
     const navigate = useNavigate();
+
     useEffect(() => {
-        console.log("login.js");
         const token = localStorage.getItem("authToken");
         if (token && window.location.pathname!=="/home") {
             navigate("/home"); // Redirect to Home if already logged in
@@ -50,6 +51,7 @@ function Login() {
                 console.log("Login successful:", result);
                 localStorage.setItem("authToken", result.token);
                 setIsAuthenticated(true);
+                setRole(activeTab);
                 navigate('/home');
             } else {
                 setError(result.message);

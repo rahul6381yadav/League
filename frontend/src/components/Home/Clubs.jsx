@@ -38,7 +38,7 @@ function Clubs() {
 
   useEffect(() => {
     handleClubsDetails();
-  }, []); 
+  }); 
 
   if (clubs.length === 0) {
     return (

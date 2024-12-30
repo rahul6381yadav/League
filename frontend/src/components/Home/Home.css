@@ -44,6 +44,10 @@
   .header.hidden {
     top: -100px; 
   }
+
+  .navbar .hidden{
+    display:none;
+  }
   
   .header .logo {
     font-size: 1.5rem;
