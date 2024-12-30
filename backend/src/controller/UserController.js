@@ -6,7 +6,7 @@ const crypto = require('crypto');
 
 exports.UserSignup = async (req, res) => {
     try {
-        const { fullName, studentId, email, password, batchCode, photo } = req.body;
+        const { fullName, studentId, email, password, batchCode, photo, roles} = req.body;
 
         const user = await User.findOne({ email })
         if (user) {
@@ -20,6 +20,7 @@ exports.UserSignup = async (req, res) => {
             password,
             batchCode,
             photo,
+            roles,
         });
         await createUser.save()
         res.status(201).json({ message: "User created successfully" })
