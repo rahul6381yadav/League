@@ -6,7 +6,10 @@ const crypto = require('crypto');
 
 exports.UserSignup = async (req, res) => {
     try {
+
         const { fullName, studentId, email, password, batchCode, photo, roles} = req.body;
+
+    
 
         const user = await User.findOne({ email })
         if (user) {
@@ -35,7 +38,7 @@ exports.UserSignup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password,roles } = req.body;
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -45,6 +48,10 @@ exports.login = async (req, res) => {
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
+        }
+        console.log("user.roles ", user.roles, " ", roles);
+        if (user.roles != roles) {
+            return res.status(403).json({ message: "Access denied" });
         }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ message: "Login successful", token });

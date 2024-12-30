@@ -7,42 +7,80 @@ import NewPassword from './components/auth/newPassword';
 import Home from './components/Home/Home';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext'; 
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Clubs from './components/Home/Clubs';
+import MyProfile from './components/Home/myprofile';
+import { RoleProvider,useRole} from './context/RoleContext';
+import Createclub from './components/Home/createclub';
+import AdminLogin from './components/auth/adminLogin';
+import AdminPanel from './components/admin/adminPanel';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); 
-
+  const { isAuthenticated } = useAuth();
+  
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isAuthenticated === false) {
-        navigate('/'); 
+        navigate('/');
       }
-    }, 1000); 
-
-    return () => clearTimeout(timeout); 
+    }, 1000);
+    
+    return () => clearTimeout(timeout);
 
   }, [isAuthenticated, navigate]);
-
+  
   return children;
 };
+
+const PrivateRoutes = ({ children,requiredRole }) => {
+  const { roles } = useRole(); 
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  console.log("roles is ", roles);
+  console.log("required role ", requiredRole);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!isAuthenticated) {
+        navigate('/');
+      }
+      if (isAuthenticated && requiredRole && roles !== requiredRole && roles !== 'admin') {
+        navigate('/home');
+      }
+      if (isAuthenticated && requiredRole && roles !== requiredRole &&roles==='admin') {
+        navigate('/');
+      }
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, [navigate,isAuthenticated,requiredRole,roles]);
+  return children;
+}
 
 
 // App component
 function App() {
   return (
+
+      <RoleProvider>
     <AuthProvider>
-    <Router>
-      <Routes>
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/" element={<Login />} />
-        <Route path="/forget" element={<Forget />} />
-        <Route path="/VerifyOTP" element={<VerifyOTP />} />
-        <Route path="/newPassword" element={<NewPassword />} />
-      </Routes>
-      </Router>
+      <Router>
+        <Routes>
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/Clubs" element={<ProtectedRoute><Clubs /></ProtectedRoute>} />
+            <Route path="/myprofile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+            <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} /> 
+            <Route path="/adminPanel" element={<PrivateRoutes requiredRole="admin"><AdminPanel/></PrivateRoutes>}/>
+            <Route path="/" element={<Login />} />
+            <Route path="/admin" element={<AdminLogin/>}/>
+          <Route path="/forget" element={<Forget />} />
+          <Route path="/VerifyOTP" element={<VerifyOTP />} />
+          <Route path="/newPassword" element={<NewPassword />} />
+        </Routes>
+        </Router>
     </AuthProvider>
+      </RoleProvider>
   );
+
 }
 
 export default App;

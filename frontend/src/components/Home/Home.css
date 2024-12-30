@@ -44,6 +44,10 @@
   .header.hidden {
     top: -100px; 
   }
+
+  .navbar .hidden{
+    display:none;
+  }
   
   .header .logo {
     font-size: 1.5rem;
@@ -190,3 +194,26 @@
     color: white;
     flex-shrink: 0;
   }
+  h1, h1::after {
+  margin: 0;
+  font-size: clamp(2rem, 1rem + 3vw, 12rem);
+  background: linear-gradient(90deg in lch longer hue, oklch(105% 90% 0) 0 0);
+/*   background: linear-gradient(90deg in hsl longer hue, hsl(0 100% 70%) 0 0); */
+  background-size: 500% 100%;
+  animation: blend 30s infinite linear;
+  color: transparent;
+  background-clip: text;
+}
+
+h1::after {
+  content: '';
+  filter: blur(8px);
+  position: absolute;
+/*   z-index: -1; */
+  left: 0;
+  mix-blend-mode: plus-lighter;
+}
+
+@keyframes blend {
+  to { background-position: 500% 100%; }
+}
