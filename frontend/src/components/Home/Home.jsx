@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import './Home.css';
 import { useAuth } from '../../context/AuthContext';
 function Home() {
     const [isHeaderHidden, setIsHeaderHidden] = useState(false);
     const { setIsAuthenticated } = useAuth();
+    const roles = localStorage.getItem('roles');
+    const [isCreateClub, setIsCreateClub] = useState(false);
     useEffect(() => {
+        (roles !== "cosa") ? setIsCreateClub(true) : setIsCreateClub(false);
     let lastScrollTop = 0;
     const handleScroll = () => {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
@@ -19,17 +22,18 @@ function Home() {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
-
+ 
+    }, [roles]);
     return (
         <div className="app">
             {/* Header */}
             <header className={`header ${isHeaderHidden ? 'hidden' : ''}`}>
                 <div className="logo">Achieva</div>
                 <nav className="nav">
+                    <a href="/createclub" className={`navbar ${isCreateClub ? 'hidden' : '' }`}>CREATE CLUB</a>
                     <a href="cosa_page">COSA</a>
                     <a href="/Clubs">CLUBS</a>
-                    <a href="myprofile">
+                    <a href="/myprofile">
                     <img src="https://img.icons8.com/?size=100&id=85356&format=png&color=1A1A1A" alt="my profile" className="coins-icon" /></a>
                     <a href="#shopping-cart">
                         <img src="https://img.icons8.com/ios/59997/shopping-cart.png" alt="Shopping Cart" className="shopping-cart-icon" />

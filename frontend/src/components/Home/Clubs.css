@@ -1,102 +1,135 @@
-/* General Styles */
+@property --rotate {
+  syntax: "<angle>";
+  initial-value: 132deg;
+  inherits: false;
+}
+
+:root {
+  --card-height: 65vh;
+  --card-width: calc(var(--card-height) / 1.5);
+}
+
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #0b0c10; /* Dark background */
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  box-sizing: border-box;
+}
+
+.card {
+  background: #191c29;
+  width: var(--card-width);
+  height: var(--card-height);
+  padding: 3px;
+  position: relative;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.5em;
+  color: rgb(88 199 250 / 0%);
+  cursor: pointer;
+  font-family: cursive;
+}
+
+.card:hover {
+  color: rgb(88 199 250 / 100%);
+  transition: color 1s;
+}
+.card:hover:before,
+.card:hover:after {
+  animation: none;
+  opacity: 0;
+}
+
+.card::before {
+  content: "";
+  width: 104%;
+  height: 102%;
+  border-radius: 8px;
+  background-image: linear-gradient(var(--rotate), #5ddcff, #3c67e3 43%, #4e00c2);
+  position: absolute;
+  z-index: -1;
+  top: -1%;
+  left: -2%;
+  animation: spin 2.5s linear infinite;
+}
+
+.card::after {
+  position: absolute;
+  content: "";
+  top: calc(var(--card-height) / 6);
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  transform: scale(0.8);
+  filter: blur(calc(var(--card-height) / 6));
+  background-image: linear-gradient(var(--rotate), #5ddcff, #3c67e3 43%, #4e00c2);
+  opacity: 1;
+  transition: opacity 0.5s;
+  animation: spin 2.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    --rotate: 0deg;
   }
-  
-  .app {
-    text-align: center;
-    max-width: 1200px;
-    width: 100%;
-    padding: 20px;
-    box-sizing: border-box;
+  100% {
+    --rotate: 360deg;
   }
-  
-  .title {
-    color: #ffffff;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-  
-  /* Clubs Container */
-  .clubs-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-  }
-  
-  /* Club Box Styles */
-  .club-box {
-    background-color: #1f2833; /* Deep gray */
-    border-radius: 20px;
-    width: 300px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .club-box:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-  
-  }
-  
-  .club-logo {
-    width: 250px;
-    height: auto;
-    margin-bottom: 15px;
-  }
-  
-  .club-name {
-    color: #66fcf1;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .club-description {
-    font-size: 1rem;
-    color: #c5c6c7;
-    margin-bottom: 20px;
-  }
-  
-  /* Button Styles */
-  .details-button {
-    background-color: #66fcf1;
-    color: #1f2833;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  
-  .details-button:hover {
-    background-color: #1f2833;
-    color: #66fcf1;
-    border: 1px solid #66fcf1;
-  }
-  /* Styling the mail logo */
-  .mail-logo {
-  
-    width: 30px; /* Set the width of the logo */
-    height: auto; /* Maintain the aspect ratio */
-    transition: transform 0.3s ease-in-out; /* Animation for hover effect */
-  }
-  
-  /* Mail logo hover effect */
-  .mail-link:hover .mail-logo {
-    transform: scale(1.1); /* Slight zoom effect on hover */
-  }
-  
-  .mail-link {
-    text-decoration: none; /* Remove underline from the link */
-  }
+}
+
+/* For Search bar */
+.search-input-container {
+  position: relative;
+  display: inline-block;
+  width: 50%;
+}
+
+.search-bar {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1rem; /* General padding */
+  padding-left: 2.5rem; /* Extra padding on the left for the icon */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  background: #191c29;
+  color: white;
+  transition: border-color 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: #888;
+}
+
+.search-input:focus {
+  border-color: #5ddcff;
+  box-shadow: 0 0 5px rgba(93, 220, 255, 0.5);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px; /* Position icon inside the container */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 1.2rem;
+  pointer-events: none; /* Prevent interference with input */
+}
+
+.search-input:focus + .search-icon {
+  color: #5ddcff;
+}
