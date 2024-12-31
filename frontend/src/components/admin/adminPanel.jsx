@@ -1,6 +1,6 @@
 // React Component
 import React, { useState } from "react";
-
+import { useAuth } from "../../context/AuthContext";
 const AdminPanel = () => {
     const [users, setUsers] = useState([
         {
@@ -14,9 +14,15 @@ const AdminPanel = () => {
             resetOtpExpiry: "",
         },
     ]);
-
+    const { setIsAuthenticated } = useAuth();
     const batchCodeEnum = [19, 20, 21, 22, 23, 24, 25, 26, 27];
     const rolesEnum = ["student", "coordinator", "admin", "cosa", "faculty"];
+    const handleLogout = () => {
+        localStorage.removeItem("authToken");
+        setIsAuthenticated(false);
+        // Logic for logging out (e.g., clearing tokens, redirecting, etc.)
+        console.log('Logged out');
+    };
 
     const addRow = () => {
         setUsers([
@@ -91,6 +97,12 @@ const AdminPanel = () => {
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h1 className="text-2xl text-black font-bold mb-4">Admin Panel - Manage Users</h1>
+            <button
+                onClick={handleLogout}
+                className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+            >
+                Logout
+            </button>
             <table className="min-w-full text-black bg-white border border-gray-200">
                 <thead>
                     <tr>
