@@ -3,6 +3,7 @@ import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
 import { useRole } from '../../context/RoleContext';
+import { useEmail } from '../../context/EmailContext';
 
 function Login() {
     const [activeTab, setActiveTab] = useState("student");
@@ -11,6 +12,7 @@ function Login() {
     const [Error, setError] = useState("");
     const { setIsAuthenticated } = useAuth();
     const { setRole } = useRole();
+    const { setEmailCont } = useEmail();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -52,6 +54,7 @@ function Login() {
                 localStorage.setItem("authToken", result.token);
                 setIsAuthenticated(true);
                 setRole(activeTab);
+                setEmailCont(email);
                 navigate('/home');
             } else {
                 setError(result.message);
