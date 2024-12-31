@@ -1,4 +1,3 @@
-// src/components/ClubPage.js
 import React from 'react';
 import Events from './Events';
 

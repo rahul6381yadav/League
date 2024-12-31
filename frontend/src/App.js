@@ -26,6 +26,7 @@ import SAS from './components/clubs/Stage&Studio';
 import EHaCs from './components/clubs/E-HaCs';
 import DeepLabs from './components/clubs/Deep-Labs';
 import DevX from './components/clubs/DevX';
+import { EmailProvider } from './context/EmailContext';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -73,7 +74,8 @@ const PrivateRoutes = ({ children,requiredRole }) => {
 function App() {
   return (
 
-      <RoleProvider>
+    <RoleProvider>
+      <EmailProvider>
     <AuthProvider>
       <Router>
         <Routes>
@@ -101,7 +103,8 @@ function App() {
           <Route path="/newPassword" element={<NewPassword />} />
         </Routes>
         </Router>
-    </AuthProvider>
+        </AuthProvider>
+      </EmailProvider>
       </RoleProvider>
   );
 
