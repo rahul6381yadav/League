@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./Clubs.css";
+import { useNavigate } from 'react-router-dom';
 
 function Clubs() {
   const [clubs, setClubs] = useState([]);
-  const [filteredClubs, setFilteredClubs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [ratingMin, setRatingMin] = useState(0);
   const [ratingMax, setRatingMax] = useState(5);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("authToken");
 
@@ -17,6 +18,7 @@ function Clubs() {
 
     try {
       const queryParams = new URLSearchParams({
+        search:searchQuery,
         ratingMin: validatedMin,
         ratingMax: validatedMax,
       }).toString();
@@ -31,40 +33,30 @@ function Clubs() {
 
       const result = await response.json();
       setClubs(result.clubs);
-      setFilteredClubs(result.clubs);
     } catch (err) {
       console.error("Error fetching clubs:", err);
     }
   };
 
   const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-    setFilteredClubs(
-      clubs.filter((club) =>
-        (club.name.toLowerCase().includes(query)) ||
-        (club.description && club.description.toLowerCase().includes(query))
-      )
-    );
+    setSearchQuery(e.target.value.toLowerCase());
   };
 
   const handleMinRatingChange = (e) => {
     let value = Number(e.target.value);
-
     value = Math.max(0, Math.min(value, ratingMax, 5));
     setRatingMin(value);
   };
 
   const handleMaxRatingChange = (e) => {
     let value = Number(e.target.value);
-
     value = Math.max(ratingMin, Math.min(value, 5));
     setRatingMax(value);
   };
 
   useEffect(() => {
     handleClubsDetails();
-  }, []);
+  },[searchQuery,ratingMin,ratingMax]);
 
   if (clubs.length === 0) {
     return (
@@ -104,15 +96,12 @@ function Clubs() {
             onChange={handleMaxRatingChange}
             className="filter-input"
           />
-          <button onClick={() => handleClubsDetails()} className="filter-button">
-            Apply Filters
-          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredClubs.map((club) => (
-          <div key={club._id} className="card">
+        {clubs.map((club) => (
+          <div key={club._id} className="card" onClick={()=>navigate(`${club.name}`)}>
             <div className="card-image">
               <img
                 src={club.image}
