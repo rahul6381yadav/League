@@ -6,7 +6,10 @@ const crypto = require('crypto');
 
 exports.UserSignup = async (req, res) => {
     try {
-        const { fullName, studentId, email, password, batchCode, photo,roles } = req.body;
+
+        const { fullName, studentId, email, password, batchCode, photo, roles} = req.body;
+
+    
 
         const user = await User.findOne({ email })
         if (user) {

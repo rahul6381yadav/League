@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password" , "/user/reset-password" , "/user/verify-otp"];
+    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password" , "/user/reset-password" , "/user/verify-otp" , "/user/create-user"];
     if (excludedRoutes.includes(req.path)) {
         return next(); // Skip token verification for excluded routes
     }

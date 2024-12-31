@@ -1,4 +1,4 @@
-const {ClubModel} = require("../model/clubModel");
+const {ClubModel} = require("../model/ClubModel");
 
 // Create a new club
 exports.createClub = async (req, res) => {
