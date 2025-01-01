@@ -139,6 +139,23 @@
     - **403 Forbidden:** Insufficient permissions.
     - **500 Internal Server Error:** Internal Server Error.
 
+#### Get Users
+- **URL:** `/api/v1/user`
+- **Method:** `GET`
+- **Headers:** `Authorization: Bearer <token>`
+- **Query Parameters:**
+    - `id` (Fetch a specific user by ID)
+    - `search` (Search users by full name, case-insensitive)
+    - `studentId` (Search users by student ID)
+    - `roles` (Filter users by roles, comma-separated)
+    - `batchCode` (Filter users by batch code)
+    - `limit` (Optional: Number of users to return; default is 30)
+    - `skip` (Optional: Number of users to skip; default is 0)
+- **Responses:**
+    - **200 OK:** Users fetched successfully.
+    - **404 Not Found:** No users found.
+    - **500 Internal Server Error:** Internal Server Error.
+    
 #### Update User by ID
 - **URL:** `/api/v1/user`
 - **Method:** `PUT`

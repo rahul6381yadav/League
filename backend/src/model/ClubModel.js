@@ -29,45 +29,47 @@ const clubSchema = new mongoose.Schema({
 });
 
 
-const eventSchema = new mongoose.Schema({
-    clubId:{
-        type:Schema.Types.ObjectId,
-        ref:'Club',
-        required:true
-    },
-    eventName: {
+const eventSchema = new Schema({
+  clubIds: [
+      {
+          type: Schema.Types.ObjectId,
+          ref: 'Club',
+          required: true, // At least one club is required
+      },
+  ],
+  eventName: {
       type: String,
-      required: true, 
-    },
-    description: {
+      required: true,
+  },
+  description: {
       type: String,
       default: null,
-    },
-    vanue: {
+  },
+  vanue: {
       type: String,
       required: true,
-    },
-    duration: {
+  },
+  duration: {
       type: String,
       required: true,
-    },
-    maxPoints: {
+  },
+  maxPoints: {
       type: Number,
       required: true,
-    },
-    date: {
+  },
+  date: {
       type: Date,
-      required: true, 
-    },
-    participantsCount: {
+      required: true,
+  },
+  participantsCount: {
       type: Number,
       default: 0,
-    },
-    photoGallery: {
+  },
+  photoGallery: {
       type: [String],
       default: [],
-    },
-  });
+  },
+});
 
   const attendanceSchema = new mongoose.Schema({
     studentId: {
