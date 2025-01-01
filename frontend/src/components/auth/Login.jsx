@@ -1,17 +1,21 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState , useEffect} from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
+import { useRole } from '../../context/RoleContext';
+import { useEmail } from '../../context/EmailContext';
 
 function Login() {
-    const [activeTab, setActiveTab] = useState("Student");
+    const [activeTab, setActiveTab] = useState("student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [Error, setError] = useState("");
     const { setIsAuthenticated } = useAuth();
-
+    const { setRole } = useRole();
+    const { setEmailCont } = useEmail();
     const navigate = useNavigate();
+
     useEffect(() => {
-        console.log("login.js");
         const token = localStorage.getItem("authToken");
         if (token && window.location.pathname!=="/home") {
             navigate("/home"); // Redirect to Home if already logged in
@@ -31,7 +35,7 @@ function Login() {
         const loginData = {
             email,
             password,
-            role: activeTab,
+            roles: activeTab,
         };
 
         try {
@@ -49,8 +53,11 @@ function Login() {
                 console.log("Login successful:", result);
                 localStorage.setItem("authToken", result.token);
                 setIsAuthenticated(true);
+                setRole(activeTab);
+                setEmailCont(email);
                 navigate('/home');
             } else {
+                setError(result.message);
                 console.error("Login failed:", result.message);
                 
             }
@@ -78,28 +85,28 @@ function Login() {
             />
         <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="w-full max-w-md rounded-lg shadow-lg">
-                <div className="flex border-b ">
+                    <div className="flex border-b ">
                     <button
-                        className={`flex-1 p-3 text-center ${activeTab === "Student" ? "bg-blue-500 text-white" : ""} rounded-tl-lg`}
-                        onClick={() => handleTabChange("Student")}
+                        className={`flex-1 p-3 text-center ${activeTab === "student" ? "bg-blue-500 text-white" : ""} rounded-tl-lg`}
+                        onClick={() => handleTabChange("student")}
                     >
                         Student
                     </button>
                     <button
-                        className={`flex-1 p-3 text-center ${activeTab === "COSA" ? "bg-blue-500 text-white" : ""}`}
-                        onClick={() => handleTabChange("COSA")}
+                        className={`flex-1 p-3 text-center ${activeTab === "cosa" ? "bg-blue-500 text-white" : ""}`}
+                        onClick={() => handleTabChange("cosa")}
                     >
                         COSA
                     </button>
                     <button
-                        className={`flex-1 p-3 text-center ${activeTab === "Coordinator" ? "bg-blue-500 text-white" : ""}`}
-                        onClick={() => handleTabChange("Coordinator")}
+                        className={`flex-1 p-3 text-center ${activeTab === "coordinator" ? "bg-blue-500 text-white" : ""}`}
+                        onClick={() => handleTabChange("coordinator")}
                     >
                         Coordinator
                     </button>
                     <button
-                        className={`flex-1 p-3 text-center ${activeTab === "Faculty" ? "bg-blue-500 text-white" : ""} rounded-tr-lg`}
-                        onClick={() => handleTabChange("Faculty")}
+                        className={`flex-1 p-3 text-center ${activeTab === "faculty" ? "bg-blue-500 text-white" : ""} rounded-tr-lg`}
+                        onClick={() => handleTabChange("faculty")}
                     >
                         Faculty
                     </button>
@@ -110,7 +117,10 @@ function Login() {
                     <h2 className="text-2xl font-bold text-center text-black">{`Login as ${activeTab}`}</h2>
 
                     <form className="space-y-4" onSubmit={handleSubmit}>
-                        <div>
+                            <div>
+                                <p className="text-sm text-red-600 text-center">
+                                    {Error}
+                                </p>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Email
                             </label>

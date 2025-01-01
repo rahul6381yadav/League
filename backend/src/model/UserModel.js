@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema({
     studentId: {
         type: String,
         required: true,
-        unique: true,
     },
     email: {
         type: String,
@@ -43,7 +42,7 @@ const userSchema = new mongoose.Schema({
         required: false,
     },
     roles: {
-        type: [{type: String, enum: ["student", "coordinator", "admin", "cosa"]}],
+        type: [{type: String, enum: ["student", "coordinator", "admin", "cosa","faculty"]}],
         required: true,
         default: ["student"]
     },
