@@ -101,7 +101,7 @@ function Clubs() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {clubs.map((club) => (
-          <div key={club._id} className="card" onClick={()=>navigate(`${club.name}`)}>
+          <div key={club._id} className="card" onClick={() => navigate(`${club.name}`, { state: { clubId:club._id , clubEmail:club.email } })}>
             <div className="card-image">
               <img
                 src={club.image}

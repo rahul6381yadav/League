@@ -11,11 +11,11 @@ exports.createEvent = async (req, res) => {
         const newEvent = new EventModel({
             clubIds,
             eventName,
-            description,
+            description: description || null,
             vanue,
             duration,
             maxPoints,
-            date,
+            date: new Date(date),
         });
 
         await newEvent.save();

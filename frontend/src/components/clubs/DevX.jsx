@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import Events from './Events';
-import AddMembers from './Addmember';
-import AddStudentMembers from './Addstudents';
+import CreateEvents from '../club_page/CreateEvents';
+import AddMembers from '../club_page/Addmember';
+import AddStudentMembers from '../club_page/Addstudents';
+import { useLocation } from 'react-router-dom';
 
 const DevX = () => {
     const [isCoordinator, setIsCoordinator] = useState(false);
     const email = localStorage.getItem("emailCont");
+    const location = useLocation();
+    const { clubId, clubEmail } = location.state || {};
     useEffect(() => {
         const roles = localStorage.getItem('roles');
-        setIsCoordinator((roles === "coordinator") && (email === ""));
-    }, []);
+        setIsCoordinator((roles === "coordinator") && (email === clubEmail));
+    }, [email]);
     return (
         <div className="p-6 space-y-6">
             <h1 className="text-3xl font-bold text-black text-center">DevX</h1>
             <div className="space-y-6">
-                <Events club={"DevX"} />
+                {isCoordinator && <CreateEvents club={"DevX"} />}
                 {isCoordinator && <AddMembers />}
                 {isCoordinator && <AddStudentMembers />}
 
