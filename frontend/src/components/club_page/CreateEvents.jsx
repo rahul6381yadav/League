@@ -17,6 +17,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
         // Fetch the list of all clubs excluding the primary club
         const fetchClubs = async () => {
             try {
+                console.log(token);
                 console.log("primary club id ", primaryClubId);
                 console.log("primary club name ", primaryClubName);
                 const response = await fetch(`http://localhost:4000/api/v1/club`, {

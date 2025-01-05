@@ -19,10 +19,9 @@ const Xposure = () => {
             <h1 className="text-3xl font-bold text-black text-center">Xposure</h1>
             <div className="space-y-6">
                 {isCoordinator && <CreateEvents club={"Xposure"} />}
-                <ViewEvents/>
                 {isCoordinator && <AddMembers />}
                 {isCoordinator && <AddStudentMembers />}
-
+                <ViewEvents primaryClubId={clubId} />
             </div>
         </div>
     );

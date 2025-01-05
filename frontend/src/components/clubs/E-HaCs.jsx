@@ -3,6 +3,7 @@ import CreateEvents from '../club_page/CreateEvents';
 import AddMembers from '../club_page/Addmember';
 import AddStudentMembers from '../club_page/Addstudents';
 import { useLocation } from 'react-router-dom';
+import ViewEvents from '../club_page/ViewEvents';
 
 const EHaCs = () => {
     const [isCoordinator, setIsCoordinator] = useState(false);
@@ -20,7 +21,7 @@ const EHaCs = () => {
                 {isCoordinator && <CreateEvents club={"E-HaCs"} />}
                 {isCoordinator && <AddMembers />}
                 {isCoordinator && <AddStudentMembers />}
-
+                <ViewEvents primaryClubId={clubId} />
             </div>
         </div>
     );

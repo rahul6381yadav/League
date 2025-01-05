@@ -3,6 +3,7 @@ import CreateEvents from '../club_page/CreateEvents';
 import AddMembers from '../club_page/Addmember';
 import { useLocation } from 'react-router-dom';
 import AddStudentMembers from '../club_page/Addstudents';
+import ViewEvents from '../club_page/ViewEvents';
 
 const DeepLabs = () => {
     const [isCoordinator, setIsCoordinator] = useState(false);
@@ -20,6 +21,7 @@ const DeepLabs = () => {
                 {isCoordinator && <CreateEvents club={"Deep-Labs"} />}
                 {isCoordinator && <AddMembers />}
                 {isCoordinator && <AddStudentMembers />}
+                <ViewEvents primaryClubId={clubId} />
 
             </div>
         </div>

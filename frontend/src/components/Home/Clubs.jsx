@@ -58,7 +58,7 @@ function Clubs() {
     handleClubsDetails();
   },[searchQuery,ratingMin,ratingMax]);
 
-  if (clubs.length === 0) {
+  if (clubs&&clubs.length === 0) {
     return (
       <div className="text-center text-gray-500 mt-10">
         Loading clubs...
@@ -100,7 +100,7 @@ function Clubs() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {clubs.map((club) => (
+        {clubs?clubs.map((club) => (
           <div key={club._id} className="card" onClick={() => navigate(`${club.name}`, { state: { clubId:club._id , clubEmail:club.email } })}>
             <div className="card-image">
               <img
@@ -121,7 +121,7 @@ function Clubs() {
               </p>
             </div>
           </div>
-        ))}
+        )):<p>no club available</p>}
       </div>
     </div>
   );
