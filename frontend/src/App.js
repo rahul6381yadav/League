@@ -14,7 +14,6 @@ import { RoleProvider,useRole} from './context/RoleContext';
 import Createclub from './components/Home/createclub';
 import AdminLogin from './components/auth/adminLogin';
 import AdminPanel from './components/admin/adminPanel';
-import ClubPage from './components/clubs/clubpage';
 import Codesoc from './components/clubs/Codesoc';
 import Electrogeeks from './components/clubs/Elctrogeeks';
 import Finesse from './components/clubs/Finesse';
@@ -82,7 +81,6 @@ function App() {
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/Clubs" element={<ProtectedRoute><Clubs /></ProtectedRoute>} />
             <Route path="/myprofile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
-            <Route path="/clubpage" element={<ProtectedRoute><ClubPage /></ProtectedRoute>} />
             <Route path="/Clubs/Codesoc" element={<ProtectedRoute><Codesoc /></ProtectedRoute>} />
             <Route path="/Clubs/Electrogeeks" element={<ProtectedRoute><Electrogeeks /></ProtectedRoute>} />
             <Route path="/Clubs/Finesse" element={<ProtectedRoute><Finesse /></ProtectedRoute>} />
