@@ -26,6 +26,8 @@ import EHaCs from './components/clubs/E-HaCs';
 import DeepLabs from './components/clubs/Deep-Labs';
 import DevX from './components/clubs/DevX';
 import { EmailProvider } from './context/EmailContext';
+import ClubMembers from './components/club_page/ClubMember';
+import ViewUsers from './components/club_page/ViewUsers';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -82,7 +84,9 @@ function App() {
           <Route path="/Clubs" element={<ProtectedRoute><Clubs /></ProtectedRoute>} />
             <Route path="/myprofile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
             <Route path="/Clubs/Codesoc" element={<ProtectedRoute><Codesoc /></ProtectedRoute>} />
-            <Route path="/Clubs/Electrogeeks" element={<ProtectedRoute><Electrogeeks /></ProtectedRoute>} />
+              <Route path="/Clubs/Electrogeeks" element={<ProtectedRoute><Electrogeeks /></ProtectedRoute>} />
+              <Route path="/Clubs/ClubMember" element={<ProtectedRoute><ClubMembers /></ProtectedRoute>} />
+              <Route path="/ViewUsers" element={<ProtectedRoute><ViewUsers/></ProtectedRoute>}/>
             <Route path="/Clubs/Finesse" element={<ProtectedRoute><Finesse /></ProtectedRoute>} />
             <Route path="/Clubs/Finspiration" element={<ProtectedRoute><Finspiration /></ProtectedRoute>} />
             <Route path="/Clubs/Xposure" element={<ProtectedRoute><Xposure /></ProtectedRoute>} />
