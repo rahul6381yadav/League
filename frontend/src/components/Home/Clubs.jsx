@@ -18,12 +18,12 @@ function Clubs() {
 
     try {
       const queryParams = new URLSearchParams({
-        search:searchQuery,
+        search: searchQuery,
         ratingMin: validatedMin,
         ratingMax: validatedMax,
       }).toString();
 
-      const response = await fetch(`http://localhost:4000/api/v1/club?${queryParams}`, {
+      const response = await fetch(`http://192.168.11.8:4000/api/v1/club?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -56,9 +56,9 @@ function Clubs() {
 
   useEffect(() => {
     handleClubsDetails();
-  },[searchQuery,ratingMin,ratingMax]);
+  }, [searchQuery, ratingMin, ratingMax]);
 
-  if (clubs&&clubs.length === 0) {
+  if (clubs && clubs.length === 0) {
     return (
       <div className="text-center text-gray-500 mt-10">
         Loading clubs...
@@ -100,8 +100,8 @@ function Clubs() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {clubs?clubs.map((club) => (
-          <div key={club._id} className="card" onClick={() => navigate(`${club.name}`, { state: { clubId:club._id , clubEmail:club.email } })}>
+        {clubs ? clubs.map((club) => (
+          <div key={club._id} className="card" onClick={() => navigate('/ClubPages', { state: { clubId: club._id, clubEmail: club.email, clubName: club.name } })}>
             <div className="card-image">
               <img
                 src={club.image}
@@ -121,7 +121,7 @@ function Clubs() {
               </p>
             </div>
           </div>
-        )):<p>no club available</p>}
+        )) : <p>no club available</p>}
       </div>
     </div>
   );

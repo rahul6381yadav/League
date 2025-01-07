@@ -39,7 +39,7 @@ exports.getUsers = [
 
             let filter = {};
             if (search) filter.fullName = { $regex: search, $options: "i" };
-            if (studentId) filter.studentId = studentId; // Search by studentId
+            if (studentId) filter.studentId = {$regex:studentId, $option:"i"}; // Search by studentId
             if (roles) filter.roles = { $in: roles.split(",") };
             if (batchCode) filter.batchCode = batchCode;
 

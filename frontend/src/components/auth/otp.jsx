@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from 'react';
-import { useNavigate , useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 function VerifyOTP() {
-    const { forgotPasswordState ,setisOTPVerified} = useAuth();
+    const { forgotPasswordState, setisOTPVerified } = useAuth();
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
@@ -35,17 +35,17 @@ function VerifyOTP() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const otpValue = otp.join(""); // Combine all digits into a single string
-        const { email } =location.state || {};
+        const { email } = location.state || {};
         try {
-            const response = await fetch("http://localhost:4000/user/verify-otp", {
+            const response = await fetch("http://192.168.11.8:4000/user/verify-otp", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(
                     {
-                    email:email,
-                    otp: otpValue
+                        email: email,
+                        otp: otpValue
                     }
                 ),
             });

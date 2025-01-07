@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 function Createclub() {
     const [Error, setError] = useState("");
     const [Success, setSuccess] = useState("");
@@ -24,13 +24,13 @@ function Createclub() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:4000/api/v1/club", {
+            const response = await fetch("http://192.168.11.8:4000/api/v1/club", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body:JSON.stringify(formData),
+                body: JSON.stringify(formData),
             });
             const data = await response.json();
             if (response.ok) {
@@ -56,7 +56,7 @@ function Createclub() {
             console.error('Error:', error);
             // Handle network or other errors
         }
-        
+
         console.log(formData);
     };
 
