@@ -20,13 +20,13 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 console.log(token);
                 console.log("primary club id ", primaryClubId);
                 console.log("primary club name ", primaryClubName);
-                const response = await fetch(`http://localhost:4000/api/v1/club`, {
+                const response = await fetch(`http://192.168.11.8:4000/api/v1/club`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                }); 
+                });
                 const data = await response.json();
                 const filteredClubs = data.clubs.filter((club) => club._id !== primaryClubId);
                 setCollateralClubs(filteredClubs);
@@ -59,7 +59,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
         console.log(newEvent);
         console.log(token);
         try {
-            const response = await fetch('http://localhost:4000/api/v1/club/events', {
+            const response = await fetch('http://192.168.11.8:4000/api/v1/club/events', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

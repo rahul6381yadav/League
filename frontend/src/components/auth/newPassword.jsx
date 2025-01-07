@@ -1,9 +1,9 @@
-import React, { useState , useEffect} from 'react';
-import { useNavigate , useLocation} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 function NewPassword() {
-    const {isOTPVerified } = useAuth();
+    const { isOTPVerified } = useAuth();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState(null);
@@ -32,12 +32,12 @@ function NewPassword() {
 
 
         try {
-            const response = await fetch("http://localhost:4000/user/reset-password", {
+            const response = await fetch("http://192.168.11.8:4000/user/reset-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({email:email, newPassword: newPassword }),
+                body: JSON.stringify({ email: email, newPassword: newPassword }),
             });
 
             let result = await response.json();
@@ -50,7 +50,7 @@ function NewPassword() {
                 setError(result.message || "Failed to reset password. Try again.");
                 setMessage(null);
             }
-            
+
             setNewPassword("");
             setConfirmPassword("");
         } catch (err) {
@@ -59,7 +59,7 @@ function NewPassword() {
             setMessage(null);
         }
     };
-    
+
     return (
         <>
             <iframe

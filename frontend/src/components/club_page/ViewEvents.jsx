@@ -24,7 +24,7 @@ function ViewEvents(props) {
         const fetchAllEvents = async () => {
             try {
                 const response = await fetch(
-                    `http://localhost:4000/api/v1/club/events?clubId=${props.primaryClubId}`,
+                    `http://192.168.11.8:4000/api/v1/club/events?clubId=${props.primaryClubId}`,
                     {
                         method: "GET",
                         headers: {

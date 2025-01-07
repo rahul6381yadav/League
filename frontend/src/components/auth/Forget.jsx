@@ -1,9 +1,9 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 function Forget() {
-    const { setForgotPasswordState } = useAuth(); 
+    const { setForgotPasswordState } = useAuth();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
@@ -24,7 +24,7 @@ function Forget() {
         };
 
         try {
-            const response = await fetch("http://localhost:4000/user/forgot-password", {
+            const response = await fetch("http://192.168.11.8:4000/user/forgot-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -40,7 +40,7 @@ function Forget() {
                 setMessage(result.message); // Use `result.message`, not `response.data.message`
                 // setEmail(""); // Reset the email input field
                 console.log("Request successful:", result);
-                navigate('/VerifyOTP',{state:{email}}); // Navigate to the VerifyOTP page
+                navigate('/VerifyOTP', { state: { email } }); // Navigate to the VerifyOTP page
             } else {
                 console.error("Request failed:", result.message);
                 setError(result.message || "Something went wrong.");

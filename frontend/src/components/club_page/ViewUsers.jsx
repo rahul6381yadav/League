@@ -15,7 +15,7 @@ function ViewUsers() {
 
     const fetchAllUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:4000/user/profile?roles=${rolesFilter}&search=${search}`, {
+            const response = await fetch(`http://192.168.11.8:4000/user/profile?roles=${rolesFilter}&search=${search}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -78,7 +78,7 @@ function ViewUsers() {
                     onChange={handleRoleFilterChange}
                     className="p-2 border text-black rounded w-1/4"
                 >
-                    <option value=""></option>
+                    <option value="">All Roles</option>
                     <option value="student">Student</option>
                     <option value="coordinator">Coordinator</option>
                     <option value="faculty">Faculty</option>
@@ -101,7 +101,7 @@ function ViewUsers() {
                         <tr key={user._id}>
                             <td className="border p-2">
                                 <img
-                                    src={`http://localhost:4000/uploads/${user.photo}`}
+                                    src={`http://192.168.11.8:4000/uploads/${user.photo}`}
                                     alt="Profile"
                                     className="w-10 h-10 rounded-full"
                                 />
