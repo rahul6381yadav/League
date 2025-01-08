@@ -24,7 +24,7 @@ function Createclub() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://192.168.11.8:4000/api/v1/club", {
+            const response = await fetch("http://localhost:4000/api/v1/club", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

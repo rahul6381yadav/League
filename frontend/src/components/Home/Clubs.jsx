@@ -23,7 +23,7 @@ function Clubs() {
         ratingMax: validatedMax,
       }).toString();
 
-      const response = await fetch(`http://192.168.11.8:4000/api/v1/club?${queryParams}`, {
+      const response = await fetch(`http://localhost:4000/api/v1/club?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
