@@ -15,7 +15,7 @@
     height: 100%;
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    background: linear-gradient(to bottom, #00b3b3, #000);
+    background: linear-gradient(to bottom, #0fdfdf, #000);
     color: white;
     display: flex;
     flex-direction: column;
