@@ -8,9 +8,6 @@ exports.UserSignup = async (req, res) => {
     try {
 
         const { fullName, studentId, email, password, batchCode, photo, roles} = req.body;
-
-    
-
         const user = await User.findOne({ email })
         if (user) {
             return res.status(400).json({ message: "User already exists" })

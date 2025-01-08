@@ -1,6 +1,7 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
+
 // Create a context to hold authentication state
 const AuthContext = createContext();
 
@@ -21,19 +22,22 @@ export const AuthProvider = ({ children }) => {
                 const decoded = jwtDecode(token);
                 const currentTime = Date.now() / 1000; // Current time in seconds
                 if (decoded.exp > currentTime) {
-                    if (!isAuthenticated) {
-                        setIsAuthenticated(true);
-                    }
+                    // Token is valid
+                    setIsAuthenticated(true);
                 } else {
+                    // Token is expired
                     localStorage.removeItem("authToken");
                     setIsAuthenticated(false);
                 }
             } catch (error) {
+                // If the token is invalid or there's an error decoding it
                 localStorage.removeItem("authToken");
                 setIsAuthenticated(false);
             }
+        } else {
+            setIsAuthenticated(false); // No token found
         }
-    }, [isAuthenticated]);
+    }, []); // Empty dependency array to run this effect only once (on mount)
 
     // Function to log the user out
     const logout = () => {
@@ -42,7 +46,17 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, logout, forgotPasswordState, setForgotPasswordState, isOTPVerified,setisOTPVerified}}>
+        <AuthContext.Provider
+            value={{
+                isAuthenticated,
+                setIsAuthenticated,
+                logout,
+                forgotPasswordState,
+                setForgotPasswordState,
+                isOTPVerified,
+                setisOTPVerified,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
