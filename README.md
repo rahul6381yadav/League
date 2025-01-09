@@ -118,7 +118,7 @@
 ### User Management Endpoints-2
 
 #### Create a New User (Admin/Coordinator Only)
-- **URL:** `/api/v1/user`
+- **URL:** `/user/create-user`
 - **Method:** `POST`
 - **Headers:** `Authorization: Bearer <token>`
 - **Request Body:**
@@ -140,7 +140,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Get Users
-- **URL:** `/api/v1/user`
+- **URL:** `/user/profile`
 - **Method:** `GET`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:**
@@ -157,7 +157,7 @@
     - **500 Internal Server Error:** Internal Server Error.
     
 #### Update User by ID
-- **URL:** `/api/v1/user`
+- **URL:** `/user/update-user`
 - **Method:** `PUT`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:** `id` (User ID)
@@ -175,7 +175,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Delete User by ID
-- **URL:** `/api/v1/user`
+- **URL:** `/user/delete-user`
 - **Method:** `DELETE`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:** `id` (User ID)
@@ -279,7 +279,7 @@
 ### Event Endpoints
 
 #### Create a New Event
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `POST`
 - **Headers:** `Authorization: Bearer <token>`
 - **Permitted Users:** Club Coordinators & Faculty
@@ -301,7 +301,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Fetch One Event in Detail
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `GET`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:** `id` (Event ID)
@@ -311,7 +311,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Search Events or Fetch All Events
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `GET`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:**
@@ -325,7 +325,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Filter Events
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `GET`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:**
@@ -339,7 +339,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Fetch Events Coordinated by a Specific User
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `GET`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:**
@@ -352,7 +352,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Update an Event by ID
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `PUT`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:** `id` (Event ID)
@@ -373,7 +373,7 @@
     - **500 Internal Server Error:** Internal Server Error.
 
 #### Delete an Event by ID
-- **URL:** `/api/v1/event`
+- **URL:** `/api/v1/club/events`
 - **Method:** `DELETE`
 - **Headers:** `Authorization: Bearer <token>`
 - **Query Parameters:** `id` (Event ID)
@@ -382,6 +382,74 @@
     - **404 Not Found:** Event not found.
     - **500 Internal Server Error:** Internal Server Error.
 
+### Attendance Management Endpoints
+
+#### Mark Attendance
+- **URL:** `/api/v1/club/attendance`
+- **Method:** `POST`
+- **Headers:**  
+  `Authorization: Bearer <token>`
+- **Request Body:**
+    ```json
+    {
+        "studentId": "Student ID",
+        "eventId": "Event ID",
+        "pointsGiven": 50,
+        "status": "Present",
+        "isWinner": true
+    }
+    ```
+- **Responses:**
+  - `201 Created`: Attendance marked successfully.
+  - `500 Internal Server Error`: Internal Server Error.
+
+#### Get Attendance Records
+- **URL:** `/api/v1/club/attendance`
+- **Method:** `GET`
+- **Headers:**  
+  `Authorization: Bearer <token>`
+- **Query Parameters:**  
+  - `studentId` (Filter by student ID)
+  - `eventId` (Filter by event ID)
+  - `status` (Filter by attendance status)
+  - `limit` (Optional: Number of records to fetch; default is 30)
+  - `skip` (Optional: Number of records to skip; default is 0)
+- **Responses:**
+  - `200 OK`: Attendance records fetched successfully.
+  - `404 Not Found`: No attendance records found.
+  - `500 Internal Server Error`: Internal Server Error.
+
+#### Update Attendance by ID
+- **URL:** `/api/v1/club/attendance`
+- **Method:** `PUT`
+- **Headers:**  
+  `Authorization: Bearer <token>`
+- **Query Parameters:**  
+  - `id` (Attendance record ID)
+- **Request Body:** (Include only the fields to update.)
+    ```json
+    {
+        "pointsGiven": 60,
+        "status": "Absent",
+        "isWinner": false
+    }
+    ```
+- **Responses:**
+  - `200 OK`: Attendance updated successfully.
+  - `404 Not Found`: Attendance record not found.
+  - `500 Internal Server Error`: Internal Server Error.
+
+#### Delete Attendance Record by ID
+- **URL:** `/api/v1/club/attendance`
+- **Method:** `DELETE`
+- **Headers:**  
+  `Authorization: Bearer <token>`
+- **Query Parameters:**  
+  - `id` (Attendance record ID)
+- **Responses:**
+  - `200 OK`: Attendance record deleted successfully.
+  - `404 Not Found`: Attendance record not found.
+  - `500 Internal Server Error`: Internal Server Error.
 
 
 ## Frontend Setup

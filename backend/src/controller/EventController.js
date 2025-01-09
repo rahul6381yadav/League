@@ -8,6 +8,15 @@ exports.createEvent = async (req, res) => {
             return res.status(400).json({ message: "At least one club is required", isError: true });
         }
 
+        if (!eventName || !vanue || !duration || !maxPoints || !date) {
+            return res.status(400).json({ message: "Missing required fields", isError: true });
+        }
+
+        const existingEvent = await EventModel.findOne({ eventName, date });
+        if (existingEvent) {
+            return res.status(400).json({ message: "Event with the same name and date already exists", isError: true });
+        }
+
         const newEvent = new EventModel({
             clubIds,
             eventName,
