@@ -21,6 +21,7 @@ import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
 import AllEvents from './components/Events/AllEvents';
 import Layout from './components/Home/Layout';
+import Home_club from './components/Club_coordinators/home_club';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -116,6 +117,7 @@ function UserRoutes() {
         <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
+        <Route path="/home_club" element={<Layout><Home_club/></Layout>}/>
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/adminPanel" element={<AdminRoutes><AdminPanel/></AdminRoutes>}/>
