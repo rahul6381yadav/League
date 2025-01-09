@@ -29,7 +29,9 @@ const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("authToken");
 
   useEffect(() => {
-    const checkAuthentication = () => {
+    console.log(token);
+    console.log(isAuthenticated);
+    const timeout = setTimeout(() => {
       if (!token) {
         setIsAuthenticated(false);
         navigate('/');
@@ -37,10 +39,8 @@ const ProtectedRoute = ({ children }) => {
       if (isAuthenticated === false) {
         navigate('/');
       }
-    };
-
-    checkAuthentication(); // Run authentication check
-
+    }, 10);
+    return () => clearTimeout(timeout);
   }, [isAuthenticated, navigate, token, setIsAuthenticated]);
 
   return children;
@@ -62,7 +62,7 @@ const PrivateRoutes = ({ children, requiredRole }) => {
       if (isAuthenticated  && roles === 'admin') {
         navigate('/');
       }
-    }, 10);
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, [navigate, isAuthenticated, requiredRole, roles]);
