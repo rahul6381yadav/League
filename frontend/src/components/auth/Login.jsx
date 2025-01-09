@@ -15,6 +15,7 @@ function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("login page ");
         const token = localStorage.getItem("authToken");
         if (token && window.location.pathname !== "/home") {
             navigate("/home"); // Redirect to Home if already logged in
@@ -38,7 +39,7 @@ function Login() {
         };
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/user/login`, {
+            const response = await fetch(`http://localhost:4000/user/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

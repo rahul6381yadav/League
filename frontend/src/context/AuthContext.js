@@ -10,12 +10,13 @@ export const useAuth = () => useContext(AuthContext);
 
 // AuthProvider component to wrap the app with the authentication context
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [forgotPasswordState, setForgotPasswordState] = useState(false);
     const [isOTPVerified, setisOTPVerified] = useState(false);
 
     // Check if the user is authenticated on initial load
     useEffect(() => {
+        console.log("auth Context");
         const token = localStorage.getItem("authToken");
         if (token) {
             try {
