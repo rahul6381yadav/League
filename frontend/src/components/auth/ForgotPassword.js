@@ -12,7 +12,7 @@ function ForgotPassword() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://192.168.11.8:4000/user/forgot-password", { email });
+            const response = await axios.post("http://localhost:4000/user/forgot-password", { email });
 
             if (response.status === 200) {
                 setMessage(response.data.message);

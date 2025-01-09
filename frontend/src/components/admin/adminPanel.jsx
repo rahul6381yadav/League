@@ -60,7 +60,7 @@ const AdminPanel = () => {
     const handleSubmit = async () => {
         try {
             const promises = users.map(async (user) => {
-                const response = await fetch("http://192.168.11.8:4000/user/signup", {
+                const response = await fetch("http://localhost:4000/user/signup", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
