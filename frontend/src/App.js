@@ -21,6 +21,7 @@ import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
 import AllEvents from './components/Events/AllEvents';
 import Layout from './components/Home/Layout';
+import { DarkModeProvider } from './context/DarkModeContext';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -127,8 +128,10 @@ function App() {
     <AuthProvider>
       <RoleProvider>
         <EmailProvider>
-            <Router>
+          <Router>
+            <DarkModeProvider>
               <UserRoutes />
+            </DarkModeProvider>
             </Router>
         </EmailProvider>
       </RoleProvider>
