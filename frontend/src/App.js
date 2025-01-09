@@ -19,14 +19,17 @@ import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
+import AllEvents from './components/Events/AllEvents';
+import Layout from './components/Home/Layout';
 
 const ProtectedRoute = ({ children }) => {
+  const { roles } = useRole();
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const token = localStorage.getItem("authToken");
 
   useEffect(() => {
-    const checkAuthentication = async () => {
+    const checkAuthentication = () => {
       if (!token) {
         setIsAuthenticated(false);
         navigate('/');
@@ -82,6 +85,9 @@ const AdminRoutes = ({ children }) => {
       if (isAuthenticated === false) {
         navigate('/admin');
       }
+      if (token && isAuthenticated&&roles==='admin'&&window.location.pathname !== "/adminPanel") {
+        navigate("/adminPanel"); // Redirect to Home if already logged in
+      }
     }
     checkAdmin();
   }, [isAuthenticated, navigate, token, setIsAuthenticated]);
@@ -102,12 +108,13 @@ function UserRoutes() {
     <>
       {loading && <Loader />}
       <Routes>
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/Clubs" element={<ProtectedRoute><Clubs /></ProtectedRoute>} />
-        <Route path="/myprofile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
-        <Route path="/ClubPages" element={<ProtectedRoute><ClubPages /></ProtectedRoute>} />
-        <Route path="/Clubs/ClubMember" element={<ProtectedRoute><ClubMembers /></ProtectedRoute>} />
-        <Route path="/ViewUsers" element={<ProtectedRoute><ViewUsers /></ProtectedRoute>} />
+        <Route path="/home" element={<ProtectedRoute><Layout><Home/></Layout></ProtectedRoute>} />
+        <Route path="/Clubs" element={<ProtectedRoute><Layout><Clubs /></Layout></ProtectedRoute>} />
+        <Route path="/myprofile" element={<ProtectedRoute><Layout><MyProfile /></Layout></ProtectedRoute>} />
+        <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
+        <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
+        <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
+        <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
@@ -122,15 +129,15 @@ function UserRoutes() {
 
 function App() {
   return (
-    <RoleProvider>
-      <EmailProvider>
-        <AuthProvider>
-          <Router>
-            <UserRoutes />
-          </Router>
-        </AuthProvider>
-      </EmailProvider>
-    </RoleProvider>
+    <AuthProvider>
+      <RoleProvider>
+        <EmailProvider>
+            <Router>
+              <UserRoutes />
+            </Router>
+        </EmailProvider>
+      </RoleProvider>
+    </AuthProvider>
   );
 }
 
