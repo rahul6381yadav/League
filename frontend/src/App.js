@@ -30,7 +30,7 @@ const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const token = localStorage.getItem("authToken");
-
+  console.log("protected routes");
   useEffect(() => {
     console.log(token);
     console.log(isAuthenticated);
@@ -39,8 +39,11 @@ const ProtectedRoute = ({ children }) => {
         setIsAuthenticated(false);
         navigate('/');
       }
-      if (isAuthenticated === false) {
+      if (isAuthenticated === false && roles!=='admin') {
         navigate('/');
+      }
+      if (isAuthenticated === true && roles === 'admin') {
+        navigate('/AdminPanel');
       }
     }, 10);
     return () => clearTimeout(timeout);
@@ -49,54 +52,46 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+
+const AdminRoutes = ({ children }) => {
+  console.log("admin Routes");
+  const { roles } = useRole();
+  const navigate = useNavigate();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!token || roles !== 'admin') {
+        setIsAuthenticated(false);
+        navigate('/admin'); // Redirect to admin login
+      }
+      else {
+        navigate('/AdminPanel');
+      }
+    };
+    checkAdmin();
+  }, [isAuthenticated, roles, navigate, token, setIsAuthenticated]);
+
+  return children;
+};
+
 const PrivateRoutes = ({ children, requiredRole }) => {
+  console.log("private routes");
   const { roles } = useRole();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isAuthenticated) {
-        navigate('/');
-      }
-      if (isAuthenticated && requiredRole && roles !== requiredRole && roles !== 'admin') {
-        navigate('/home');
-      }
-      if (isAuthenticated  && roles === 'admin') {
-        navigate('/');
-      }
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, [navigate, isAuthenticated, requiredRole, roles]);
-
-  return children;
-};
-
-
-const AdminRoutes = ({ children }) => {
-  const { roles } = useRole();
-  const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
-  const token = localStorage.getItem("authToken");
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!token) {
-        setIsAuthenticated(false);
-        navigate('/admin');
-      }
-      if (isAuthenticated === false) {
-        navigate('/admin');
-      }
-      if (token && isAuthenticated&&roles==='admin'&&window.location.pathname !== "/adminPanel") {
-        navigate("/adminPanel"); // Redirect to Home if already logged in
-      }
+    if (!isAuthenticated) {
+      navigate('/'); // Redirect to admin login
+    } else if (requiredRole && roles !== requiredRole) {
+      navigate('/home'); // Redirect to home for unauthorized roles
     }
-    checkAdmin();
-  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
+  }, [isAuthenticated, roles, navigate, requiredRole]);
+
   return children;
 };
-// App component
 function UserRoutes() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -120,7 +115,7 @@ function UserRoutes() {
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel/></AdminRoutes>}/>
+        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel /></AdminRoutes>}/>
         <Route path="/forget" element={<Forget />} />
         <Route path="/VerifyOTP" element={<VerifyOTP />} />
         <Route path="/newPassword" element={<NewPassword />} />
