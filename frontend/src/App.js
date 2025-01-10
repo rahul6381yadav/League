@@ -19,8 +19,11 @@ import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
-import AllEvents from './components/Events/AllEvents';
+
 import Layout from './components/Home/Layout';
+import EventPage from './components/manageEvents/EventPage'; 
+
+
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -113,7 +116,6 @@ function UserRoutes() {
         <Route path="/myprofile" element={<ProtectedRoute><Layout><MyProfile /></Layout></ProtectedRoute>} />
         <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
-        <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
         <Route path="/" element={<Login />} />
@@ -122,6 +124,9 @@ function UserRoutes() {
         <Route path="/forget" element={<Forget />} />
         <Route path="/VerifyOTP" element={<VerifyOTP />} />
         <Route path="/newPassword" element={<NewPassword />} />
+
+        <Route path="/home/manage-events" element={<EventPage />} />
+        {/* test Route*/}
       </Routes>
     </>
   );
