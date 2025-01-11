@@ -22,6 +22,7 @@ import Loader from './components/loader/loader';
 
 import Layout from './components/Home/Layout';
 import EventPage from './components/manageEvents/EventPage'; 
+import ClubCoordinatorPage from './components/Club_coordinators/ClubCoordinatorPage';
 
 import { DarkModeProvider } from './context/DarkModeContext';
 
@@ -121,6 +122,7 @@ function UserRoutes() {
         <Route path="/newPassword" element={<NewPassword />} />
 
         <Route path="/home/manage-events" element={<Layout><EventPage /></Layout>} />
+        <Route path="/home/club-coordinator" element={<Layout><ClubCoordinatorPage /></Layout>} />
         {/* test Route*/}
       </Routes>
     </>
