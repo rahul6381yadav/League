@@ -15,6 +15,7 @@ function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("login page ");
         const token = localStorage.getItem("authToken");
         if (token && window.location.pathname !== "/home") {
             navigate("/home"); // Redirect to Home if already logged in

@@ -9,9 +9,10 @@ import {
     LogoutIcon,
     UserGroupIcon,
 } from "@heroicons/react/outline";
-import { useState} from "react";
+import { useState,useEffect} from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Sidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -26,7 +27,36 @@ const Sidebar = ({ onToggle }) => {
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         setIsAuthenticated(false);
+        navigate("/");
     };
+    useEffect(() => {
+        const checkAuthStatus = () => {
+            const token = localStorage.getItem("authToken");
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    const currentTime = Date.now() / 1000; // Current time in seconds
+                    if (decoded.exp > currentTime) {
+                        setIsAuthenticated(true);
+                    } else {
+                        localStorage.removeItem("authToken");
+                        setIsAuthenticated(false);
+                    }
+                } catch (error) {
+                    localStorage.removeItem("authToken");
+                    setIsAuthenticated(false);
+                }
+            } else {
+                setIsAuthenticated(false);
+            }
+        };
+
+        checkAuthStatus();
+
+        // Optional: Check periodically
+        const interval = setInterval(checkAuthStatus, 10000); // Check every 1 minute
+        return () => clearInterval(interval);
+    }, []);
     return (
         <div
             className={`fixed top-0 left-0 h-screen bg-gray-800 text-white ${isCollapsed ? "w-16" : "w-64"
@@ -66,6 +96,7 @@ const Sidebar = ({ onToggle }) => {
                         key={idx}
                         className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
                         onClick={() => {
+                            console.log("isAuthenticated ",isAuthenticated);
                             if (isAuthenticated === false) {
                                 handleLogout();
                             }

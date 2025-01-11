@@ -22,79 +22,75 @@ import Loader from './components/loader/loader';
 import AllEvents from './components/Events/AllEvents';
 import Layout from './components/Home/Layout';
 import Home_club from './components/Club_coordinators/home_club';
+import { DarkModeProvider } from './context/DarkModeContext';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const token = localStorage.getItem("authToken");
-
+  console.log("protected routes");
   useEffect(() => {
-    const checkAuthentication = () => {
+    console.log(token);
+    console.log(isAuthenticated);
+    const timeout = setTimeout(() => {
       if (!token) {
         setIsAuthenticated(false);
         navigate('/');
       }
-      if (isAuthenticated === false) {
+      if (isAuthenticated === false && roles!=='admin') {
         navigate('/');
       }
-    };
-
-    checkAuthentication(); // Run authentication check
-
-  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
-
-  return children;
-};
-
-const PrivateRoutes = ({ children, requiredRole }) => {
-  const { roles } = useRole();
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isAuthenticated) {
-        navigate('/');
-      }
-      if (isAuthenticated && requiredRole && roles !== requiredRole && roles !== 'admin') {
-        navigate('/home');
-      }
-      if (isAuthenticated  && roles === 'admin') {
-        navigate('/');
+      if (isAuthenticated === true && roles === 'admin') {
+        navigate('/AdminPanel');
       }
     }, 10);
-
     return () => clearTimeout(timeout);
-  }, [navigate, isAuthenticated, requiredRole, roles]);
+  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
 
   return children;
 };
 
 
 const AdminRoutes = ({ children }) => {
+  console.log("admin Routes");
   const { roles } = useRole();
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const token = localStorage.getItem("authToken");
+
   useEffect(() => {
     const checkAdmin = async () => {
-      if (!token) {
+      if (!token || roles !== 'admin') {
         setIsAuthenticated(false);
-        navigate('/admin');
+        navigate('/admin'); // Redirect to admin login
       }
-      if (isAuthenticated === false) {
-        navigate('/admin');
+      else {
+        navigate('/AdminPanel');
       }
-      if (token && isAuthenticated&&roles==='admin'&&window.location.pathname !== "/adminPanel") {
-        navigate("/adminPanel"); // Redirect to Home if already logged in
-      }
-    }
+    };
     checkAdmin();
-  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
+  }, [isAuthenticated, roles, navigate, token, setIsAuthenticated]);
+
   return children;
 };
-// App component
+
+const PrivateRoutes = ({ children, requiredRole }) => {
+  console.log("private routes");
+  const { roles } = useRole();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/'); // Redirect to admin login
+    } else if (requiredRole && roles !== requiredRole) {
+      navigate('/home'); // Redirect to home for unauthorized roles
+    }
+  }, [isAuthenticated, roles, navigate, requiredRole]);
+
+  return children;
+};
 function UserRoutes() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -120,7 +116,7 @@ function UserRoutes() {
         <Route path="/home_club" element={<Layout><Home_club/></Layout>}/>
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel/></AdminRoutes>}/>
+        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel /></AdminRoutes>}/>
         <Route path="/forget" element={<Forget />} />
         <Route path="/VerifyOTP" element={<VerifyOTP />} />
         <Route path="/newPassword" element={<NewPassword />} />
@@ -134,8 +130,10 @@ function App() {
     <AuthProvider>
       <RoleProvider>
         <EmailProvider>
-            <Router>
+          <Router>
+            <DarkModeProvider>
               <UserRoutes />
+            </DarkModeProvider>
             </Router>
         </EmailProvider>
       </RoleProvider>
