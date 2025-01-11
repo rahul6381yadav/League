@@ -1,37 +1,5 @@
-// import React, { useState } from 'react';
-// import { FaSearch } from 'react-icons/fa';
-
-// const EventFilters = ({ setFilters }) => {
-//   const [search, setSearch] = useState('');
-
-//   const applyFilters = () => {
-//     setFilters({ search });
-//   };
-
-//   return (
-//     <div className="flex space-x-4 mb-4">
-//       <input
-//         type="text"
-//         placeholder="Search events..."
-//         value={search}
-//         onChange={(e) => setSearch(e.target.value)}
-//         className="p-2 border rounded w-full"
-//       />
-//       <button
-//         onClick={applyFilters}
-//         className="p-2 bg-blue-500 text-white rounded flex items-center space-x-2"
-//       >
-//         <FaSearch />
-//         <span>Apply</span>
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default EventFilters;
-
 import React, { useState } from 'react';
-import { FaSearch, FaCalendarAlt } from 'react-icons/fa';
+import { FaSearch, FaCalendarAlt, FaTimes } from 'react-icons/fa';
 
 const EventFilters = ({ setFilters }) => {
   const [search, setSearch] = useState('');
@@ -41,38 +9,55 @@ const EventFilters = ({ setFilters }) => {
     setFilters({ search, date });
   };
 
+  const clearFilters = () => {
+    setSearch('');
+    setDate('');
+    setFilters({ search: '', date: '' });
+  };
+
   return (
-    <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-4 bg-white p-4 rounded-lg shadow-md">
-      <div className="flex-grow">
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+    <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row md:space-x-4">
+      <div className="flex-grow mb-2 md:mb-0">
+        <div className="relative">
+          <FaSearch className="absolute left-3 top-2 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
       </div>
-      <div className="flex-grow">
-        <div className="flex items-center space-x-2">
-          <FaCalendarAlt className="text-gray-500" />
+      <div className="flex-grow mb-2 md:mb-0">
+        <div className="relative">
+          <FaCalendarAlt className="absolute left-3 top-2 text-gray-500" />
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
       </div>
-      <button
-        onClick={applyFilters}
-        className="p-2 bg-blue-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-blue-600 transition"
-      >
-        <FaSearch />
-        <span>Apply</span>
-      </button>
+      <div className="flex space-x-2">
+        <button
+          onClick={applyFilters}
+          className="p-2 bg-blue-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-blue-600 transition"
+        >
+          <FaSearch />
+          <span>Apply</span>
+        </button>
+        <button
+          onClick={clearFilters}
+          className="p-2 bg-red-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-red-600 transition"
+        >
+          <FaTimes />
+          <span>Clear</span>
+        </button>
+      </div>
     </div>
   );
 };
 
 export default EventFilters;
-

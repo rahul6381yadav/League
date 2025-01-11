@@ -13,11 +13,11 @@ const Pagination = ({ pagination, setPagination }) => {
         className="p-2 bg-gray-200 rounded flex items-center space-x-1"
       >
         <FaArrowLeft />
-        <span>Previous</span>
+        <footer>Previous</footer>
       </button>
       <button onClick={handleNext} className="p-2 bg-gray-200 rounded flex items-center space-x-1">
         <FaArrowRight />
-        <span>Next</span>
+        <footer>Next</footer>
       </button>
     </div>
   );

@@ -23,7 +23,7 @@ import Loader from './components/loader/loader';
 import Layout from './components/Home/Layout';
 import EventPage from './components/manageEvents/EventPage'; 
 
-
+import { DarkModeProvider } from './context/DarkModeContext';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -120,7 +120,7 @@ function UserRoutes() {
         <Route path="/VerifyOTP" element={<VerifyOTP />} />
         <Route path="/newPassword" element={<NewPassword />} />
 
-        <Route path="/home/manage-events" element={<EventPage />} />
+        <Route path="/home/manage-events" element={<Layout><EventPage /></Layout>} />
         {/* test Route*/}
       </Routes>
     </>
@@ -132,8 +132,10 @@ function App() {
     <AuthProvider>
       <RoleProvider>
         <EmailProvider>
-            <Router>
+          <Router>
+            <DarkModeProvider>
               <UserRoutes />
+            </DarkModeProvider>
             </Router>
         </EmailProvider>
       </RoleProvider>
