@@ -1,4 +1,4 @@
-import Sidebar from "./Sidebar";
+import Sidebar from "./StudentSidebar";
 import { useState } from "react";
 import { useDarkMode } from '../../context/DarkModeContext'; // Import the dark mode context
 
