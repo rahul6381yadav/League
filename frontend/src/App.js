@@ -20,9 +20,10 @@ import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
 import AllEvents from './components/Events/AllEvents';
-import Layout from './components/Home/Layout';
+import Layout from './components/Home/LayoutStudent';
 import Home_club from './components/Club_coordinators/home_club';
 import { DarkModeProvider } from './context/DarkModeContext';
+import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -41,12 +42,31 @@ const ProtectedRoute = ({ children }) => {
       if (isAuthenticated === false && roles!=='admin') {
         navigate('/');
       }
+      if (isAuthenticated === true && roles === 'coordinator') {
+        navigate('/home_club');
+      }
       if (isAuthenticated === true && roles === 'admin') {
         navigate('/AdminPanel');
       }
     }, 10);
     return () => clearTimeout(timeout);
   }, [isAuthenticated, navigate, token, setIsAuthenticated]);
+
+  return children;
+};
+
+const CoordinatorRoute = ({ children }) => {
+  const { roles } = useRole();
+  const navigate = useNavigate();
+  const { isAuthenticated,setIsAuthenticated} = useAuth();
+  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    if (!token || !isAuthenticated || roles !== 'coordinator') {
+      setIsAuthenticated(false);
+      navigate('/'); // Redirect to login or appropriate page
+    }
+  }, [isAuthenticated, roles, navigate]);
 
   return children;
 };
@@ -113,7 +133,7 @@ function UserRoutes() {
         <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
-        <Route path="/home_club" element={<Layout><Home_club/></Layout>}/>
+        <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/adminPanel" element={<AdminRoutes><AdminPanel /></AdminRoutes>}/>
