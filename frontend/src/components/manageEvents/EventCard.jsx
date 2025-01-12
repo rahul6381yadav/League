@@ -1,17 +1,16 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaUsers } from 'react-icons/fa';
 
-const EventCard = ({ event }) => {
-  const navigate = useNavigate();
-
+const EventCard = ({ event, onTitleClick }) => {
   return (
-    <div
-      className="p-4 border rounded-lg shadow-md bg-gradient-to-br from-pink-100 to-purple-300 dark:bg-gradient-to-br dark:from-purple-100 dark:to-blue-400 transform transition-all duration-200 hover:scale-105"
-      onClick={() => console.log(event.clubIds[0]._id)}
-    >
+    <div className="p-4 border rounded-lg shadow-md bg-gradient-to-br from-pink-100 to-purple-300 dark:bg-gradient-to-br dark:from-purple-100 dark:to-blue-400 transform transition-all duration-200 hover:scale-105">
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-blue-600 truncate">{event.eventName}</h3>
+        <h3 
+          className="text-lg font-semibold text-blue-600 truncate cursor-pointer"
+          onClick={() => onTitleClick(event)} // Trigger onTitleClick on title click
+        >
+          {event.eventName}
+        </h3>
         <p className="text-sm text-gray-600 truncate">
           {event.description || 'No description available'}
         </p>
@@ -45,7 +44,7 @@ const EventCard = ({ event }) => {
                   <img
                     src={club.image}
                     alt={club.name}
-                    className="w-12 h-12 rounded-full border border-gray-300"
+                    className="w-12 h-12 rounded-full border border-gray-300 bg-black bg-opacity-30 object-cover"
                   />
                   {/* Club Details (Bubble above on hover) */}
                   <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-white border border-gray-300 rounded-lg shadow-lg p-3 transition-opacity duration-300">
