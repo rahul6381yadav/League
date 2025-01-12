@@ -1,5 +1,6 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Forget from './components/auth/Forget';
 import VerifyOTP from './components/auth/otp';
@@ -18,6 +19,11 @@ import { EmailProvider } from './context/EmailContext';
 import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
+import Layout from './components/Home/Layout';
+import Loader from './components/loader/loader';
+import AllEvents from './components/Events/AllEvents';
+import ManageParticipants from './components/clubs/ManageParticipants';
+
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -116,6 +122,7 @@ function UserRoutes() {
         <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
+        <Route path="/events/:id" element={<ProtectedRoute><Layout><ManageParticipants/></Layout></ProtectedRoute>}/>        
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/adminPanel" element={<AdminRoutes><AdminPanel/></AdminRoutes>}/>

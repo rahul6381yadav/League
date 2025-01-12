@@ -23,11 +23,7 @@ function Clubs() {
         ratingMax: validatedMax,
       }).toString();
 
-<<<<<<< HEAD
       const response = await fetch(`http://localhost:4000/api/v1/club?${queryParams}`, {
-=======
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/club?${queryParams}`, {
->>>>>>> 28d418038531f2eb92465c60a1052ca9e33e2e03
         method: "GET",
         headers: {
           "Content-Type": "application/json",

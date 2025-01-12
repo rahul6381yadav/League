@@ -1,13 +1,18 @@
 import React from "react";
 import Winners from "./Winners";
 import ParticipationCard from "./Participants";
+import EventHeader from "./EventHeader";
+import { useParams } from "react-router-dom";
 
 const ManageParticipants = () => {
+  const {id} = useParams();
+
   return (
     <>
-      <div className="p-6 max-w-4xl space-y-5 rounded-lg bg-gray-100">
+    <EventHeader id ={id}/>
+      <div className=" flex flex-col p-6 w-full space-y-5 rounded-lg items-center bg-gray-200 dark:bg-gray-900">
         <Winners />
-        <ParticipationCard />
+        <ParticipationCard id={id}/>
       </div>
     </>
   );

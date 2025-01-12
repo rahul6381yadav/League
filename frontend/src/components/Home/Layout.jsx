@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
             <Sidebar onToggle={handleSidebarToggle} />
             <main
                 className={`transition-all duration-300 ${isCollapsed ? "ml-16" : "ml-64"
-                    } p-4 flex-1`}
+                    } pl-4 flex-1`}
             >
                 {children}
             </main>

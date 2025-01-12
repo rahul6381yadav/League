@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import Pagination from "./Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import {
   faUser,
   faUsers,
@@ -45,70 +47,51 @@ const ParticipantsTable = () => {
       points: 0,
     },
   ]);
-
-  const [isEditOn, setIsEditOn] = useState(false);
-  const [ids, setIds] = useState([]);
-  
+  const [isEdit, setIsEdit] = useState(false);
 
   return (
-    // <div className="p-6 bg-gray-50">
-    <div className="overflow-x-auto">
-      <table className="bg-white shadow-md rounded-lg border-collapse overflow-hidden min-w-full">
+    <div className="w-full overflow-x-auto">
+      <table className="bg-white dark:bg-gray-800 shadow-md rounded-lg border-collapse min-w-full">
         <thead>
-          <tr className="border-b hover:bg-gray-100 transition-colors">
-            <th className="px-5 py-4 text-left text-[14px] sticky inset-y-0 start-0 bg-white dark:bg-gray-900">
-              <label htmlFor="SelectAll" className="sr-only">
-                Select All
-              </label>
-
+          <tr className="border-b hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors">
+            <th className="px-5 py-4 text-left text-[14px] sticky inset-y-0 start-0 bg-white dark:bg-gray-800">
               <input
                 type="checkbox"
-                id="SelectAll"
-                className="size-5 rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
+                className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 
+             dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-blue-600 
+             dark:ring-offset-gray-800"
               />
             </th>
-            {/* <th className="px-5 py-4 text-left text-[14px]">#</th> */}
-            <th className="px-4 py-4 text-left text-[14px]">
+            <th className="px-4 py-4 text-left text-[14px] dark:text-white">
               <FontAwesomeIcon icon={faUser} className="mr-2" />
               Student
             </th>
-            <th className="px-4 py-4 text-left text-[14px]">
+            <th className="px-4 py-4 text-left text-[14px] dark:text-white">
               <FontAwesomeIcon icon={faUsers} className="mr-2" />
               Batch
             </th>
-            <th className="px-4 py-4 text-left text-[14px]">
+            <th className="px-4 py-4 text-left text-[14px] dark:text-white">
               <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
               Status
             </th>
-            <th className="px-4 py-4 text-left text-[14px]">
-              <div>
-                <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
-                Points
-              </div>
-              <div>(Max: 100)</div>
+            <th className="px-4 py-4 text-left text-[14px] dark:text-white">
+              <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
+              Points
             </th>
-            {/* <th className="px-4 py-4 text-left text-[14px]">
-                <FontAwesomeIcon icon={faEdit} className="mr-2" />
-                Actions
-              </th> */}
           </tr>
         </thead>
         <tbody>
           {participants.map((participant, index) => (
             <tr
               key={participant.roll_no}
-              className="border-b last:border-none hover:bg-gray-100 transition-colors text-[14px]"
+              className="border-b last:border-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-[14px] dark:text-white"
             >
-              {/* <td className="px-5 py-4 text-gray-700">{index + 1}</td> */}
-              <td className="sticky inset-y-0 start-0 bg-white px-4 py-2 dark:bg-gray-900">
-                <label className="sr-only" htmlFor={index}>
-                  Row 1
-                </label>
-
+              <td className="sticky inset-y-0 start-0 bg-white px-4 py-2 dark:bg-gray-800">
                 <input
-                  className="size-5 rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
                   type="checkbox"
-                  id={index}
+                  className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 
+             dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-blue-600 
+             dark:ring-offset-gray-800"
                 />
               </td>
               <td className="flex items-center px-2 py-4">
@@ -120,140 +103,78 @@ const ParticipantsTable = () => {
                   />
                 </div>
                 <div className="ml-4">
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-semibold text-gray-900 dark:text-white">
                     {participant.name}
                   </div>
-                  <div className="text-[14px] text-gray-500">
+                  <div className="text-[14px] text-gray-500 dark:text-gray-400">
                     {participant.roll_no}
                   </div>
                 </div>
               </td>
-              <td className="px-5 py-4 text-gray-700">{participant.batch}</td>
+              <td className="px-5 py-4 text-gray-700 dark:text-gray-400">
+                {participant.batch}
+              </td>
               <td className="px-5 py-4">
                 <span
                   className={`px-3 py-1 rounded-full text-[14px] ${
                     participant.status === "Present"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-red-100 text-red-600"
+                      ? "bg-green-100 text-green-600 dark:bg-green-700 dark:text-green-200"
+                      : "bg-red-100 text-red-600 dark:bg-red-700 dark:text-red-200"
                   }`}
                 >
                   {participant.status}
                 </span>
               </td>
-              <td className="px-5 py-4 text-gray-700">{participant.points}</td>
+              <td className="px-5 py-4 text-gray-700 dark:text-gray-400">
+                {participant.points}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-    // </div>
-  );
-};
-
-const Pagination = () => {
-  return (
-    <>
-      <ol className="flex mt-3 justify-center gap-1 text-xs font-medium">
-        <li>
-          <a
-            href="#"
-            className="inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white text-gray-900 rtl:rotate-180"
-          >
-            <span className="sr-only">Prev Page</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="size-3"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </a>
-        </li>
-
-        <li>
-          <a
-            href="#"
-            className="block size-8 rounded border border-gray-200 bg-white text-center leading-8 text-gray-900"
-          >
-            1
-          </a>
-        </li>
-
-        <li className="block size-8 rounded border-blue-600 bg-blue-600 text-center leading-8 text-white">
-          2
-        </li>
-
-        <li>
-          <a
-            href="#"
-            className="block size-8 rounded border border-gray-200 bg-white text-center leading-8 text-gray-900"
-          >
-            3
-          </a>
-        </li>
-
-        <li>
-          <a
-            href="#"
-            className="block size-8 rounded border border-gray-200 bg-white text-center leading-8 text-gray-900"
-          >
-            4
-          </a>
-        </li>
-
-        <li>
-          <a
-            href="#"
-            className="inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white text-gray-900 rtl:rotate-180"
-          >
-            <span className="sr-only">Next Page</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="size-3"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </a>
-        </li>
-      </ol>
-    </>
   );
 };
 
 const ParticipationCard = () => {
-    return (
-      <>
-        <div className="max-w-4xl">
-          <div className="bg-white flex flex-col rounded-lg items-center justify-center p-4 w-full md:w-1/2">
-            {/* Title and Edit Button */}
-            <div className="flex flex-row sm:flex-row mb-2 w-full md:px-20">
-              <div className="flex font-semibold text-lg ml-4">
-                Participants
-              </div>
-              <button className="ml-auto flex items-center bg-gray-500 text-xs text-white px-4 py-2 rounded-lg hover:bg-gray-600 focus:outline-none mt-2 sm:mt-0">
-                <FontAwesomeIcon icon={faEdit} className="mr-2" /> Edit
-              </button>
-            </div>
-  
-            {/* Participants Table */}
-            <ParticipantsTable />
-            <Pagination />
+  return (
+    <div className="w-full px-3 mx-auto">
+      <div className="bg-white dark:bg-gray-800 flex flex-col rounded-lg items-center justify-center p-4 w-full">
+        <div className="flex flex-row w-full p-3">
+          <h2 className="font-semibold text-lg ml-4 dark:text-white">
+            Participants
+          </h2>
+          <div className="ml-auto mr-5 relative">
+            <label htmlFor="participant" className="sr-only">
+              Participants
+            </label>
+
+            <input
+              type="text"
+              id="participant"
+              placeholder="Search Participants"
+              className="w-full border h-10 rounded-md p-1 border-gray-200 pe-5 shadow-sm sm:text-sm px-1
+               text-gray-700 bg-white placeholder-gray-400
+               dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+            />
+
+            <span
+              className="pointer-events-none absolute inset-y-0 end-0 grid w-10 place-content-center text-gray-500 
+                   dark:text-gray-400"
+            >
+              <FontAwesomeIcon icon={faSearch} />
+            </span>
           </div>
+
+          <button className="flex items-center bg-gray-500 text-xs text-white px-4 py-2 rounded-lg hover:bg-gray-600 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">
+            <FontAwesomeIcon icon={faEdit} className="mr-2" /> Edit
+          </button>
         </div>
-      </>
-    );
-  };
-  
+        <ParticipantsTable />
+      </div>
+      <Pagination currentPage={2} totalPages={5} />
+    </div>
+  );
+};
 
 export default ParticipationCard;
