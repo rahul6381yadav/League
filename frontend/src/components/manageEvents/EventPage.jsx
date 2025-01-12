@@ -112,8 +112,8 @@ const EventPage = () => {
   };
 
   return (
-    <div className="text-gray-900 min-h-screen flex flex-col">
-      <div className="container mx-auto p-4 flex-grow">
+    <div className="text-gray-900 max-h-screen flex flex-col">
+      <div className="container mx-auto p-4 flex-1">
         <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">ALL EVENTS</h1>
         <EventFilters setFilters={setFilters} />
         <button
@@ -131,7 +131,7 @@ const EventPage = () => {
             filteredEvents.slice(pagination.skip, pagination.skip + pagination.limit).map((event) => (
               <EventCard 
                 key={event.id} 
-                event={event } 
+                event={event} 
                 onEdit={handleEditEvent} 
                 onDelete={handleDeleteEvent} 
               />
@@ -142,9 +142,9 @@ const EventPage = () => {
             </p>
           )}
         </div>
-      </div>
 
-      <Pagination pagination={pagination} setPagination={setPagination} />
+        <Pagination pagination={pagination} setPagination={setPagination} />
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
