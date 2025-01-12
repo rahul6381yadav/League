@@ -40,17 +40,17 @@ const EventFilters = ({ setFilters }) => {
           />
         </div>
       </div>
-      <div className="flex space-x-2">
+      <div className="flex flex-col md:flex-row md:space-x-2">
         <button
           onClick={applyFilters}
-          className="p-2 bg-blue-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-blue-600 transition"
+          className="w-full md:w-auto p-2 bg-blue-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-blue-600 transition mb-2 md:mb-0"
         >
           <FaSearch />
           <span>Apply</span>
         </button>
         <button
           onClick={clearFilters}
-          className="p-2 bg-red-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-red-600 transition"
+          className="w-full md:w-auto p-2 bg-red-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-red-600 transition"
         >
           <FaTimes />
           <span>Clear</span>

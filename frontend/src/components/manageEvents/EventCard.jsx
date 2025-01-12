@@ -2,19 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaUsers } from 'react-icons/fa';
 
-const EventCard = ({ event, viewMode }) => {
+const EventCard = ({ event }) => {
   const navigate = useNavigate();
 
   return (
     <div
-      className={`p-4 border rounded-lg shadow-md bg-gradient-to-br from-pink-100 to-purple-300 p-6 rounded-lg shadow-md dark:bg-gradient-to-br dark:from-purple-100 dark:to-blue-400 transform transition-all duration-200 hover:scale-105 ${
-        viewMode === 'grid' ? 'max-w-l' : 'flex justify-between items-center'
-      }`}
+      className="p-4 border rounded-lg shadow-md bg-gradient-to-br from-pink-100 to-purple-300 dark:bg-gradient-to-br dark:from-purple-100 dark:to-blue-400  transform transition-all duration-200 hover:scale-105"
       onClick={() => console.log(event.clubIds[0]._id)}
     >
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-blue-600">{event.eventName}</h3>
-        <p className="text-sm text-gray-600">
+        <h3 className="text-lg font-semibold text-blue-600 truncate">{event.eventName}</h3>
+        <p className="text-sm text-gray-600 truncate">
           {event.description || 'No description available'}
         </p>
         <div className="mt-2 space-y-1">

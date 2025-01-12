@@ -3,13 +3,17 @@ import axios from 'axios';
 import EventCard from './EventCard';
 import EventFilters from './EventFilter';
 import Pagination from './Pagination';
-import { FaTh, FaList } from 'react-icons/fa';
+import CreateEvents from '../club_page/CreateEvents';
+import { FaPlus } from 'react-icons/fa';
 
 const EventPage = () => {
   const [events, setEvents] = useState([]);
-  const [viewMode, setViewMode] = useState('grid');
   const [filters, setFilters] = useState({});
   const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null); // For updating an event
+  const [primaryClubId, setPrimaryClubId] = useState(''); // Set this to your primary club ID
+  const [primaryClubName, setPrimaryClubName] = useState(''); // Set this to your primary club name
 
   const fetchEvents = async () => {
     try {
@@ -49,37 +53,49 @@ const EventPage = () => {
     return matchesSearch && matchesDate;
   });
 
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      await axios.delete(`http://localhost:4000/api/v1/club/events/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchEvents(); 
+    } catch (err) {
+      console.error('Error deleting event:', err.response || err.message);
+    }
+  };
+
+  const handleEditEvent = (event) => {
+    setCurrentEvent(event);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="text-gray-900 min-h-screen flex flex-col">
       <div className="container mx-auto p-4 flex-grow">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray dark:text-white text-center flex-1">ALL EVENTS</h1>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 flex items-center space-x-1 rounded-md shadow-md ${
-                viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-100'
-              }`}
-            >
-              <FaTh />
-              <span>Grid</span>
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 flex items-center space-x-1 rounded-md shadow-md ${
-                viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-100'
-              }`}
-            >
-              <FaList />
-              <span>List</span>
-            </button>
-          </div>
-        </div>
+        <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">ALL EVENTS</h1>
         <EventFilters setFilters={setFilters} />
-        <div className={viewMode === 'grid' ? 'grid grid-cols-3 gap-6' : 'space-y-4'}>
+        <button
+          onClick={() => {
+            setCurrentEvent(null); 
+            setIsModalOpen(true);
+          }}
+          className="mb-4 p-2 bg-green-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-green-600 transition"
+        >
+          <FaPlus />
+          <span>Create Event</span>
+        </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.length > 0 ? (
             filteredEvents.slice(pagination.skip, pagination.skip + pagination.limit).map((event) => (
-              <EventCard key={event.id} event={event} viewMode={viewMode} />
+              <EventCard 
+                key={event.id} 
+                event={event } 
+                onEdit={handleEditEvent} 
+                onDelete={handleDeleteEvent} 
+              />
             ))
           ) : (
             <p className="text-center text-gray-800 font-semibold dark:text-white">
@@ -90,6 +106,24 @@ const EventPage = () => {
       </div>
 
       <Pagination pagination={pagination} setPagination={setPagination} />
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-black opacity-50 absolute inset-0" onClick={() => setIsModalOpen(false)}></div>
+          <div className="bg-white rounded-lg shadow-lg z-10 p-6">
+            <CreateEvents 
+              primaryClubId={primaryClubId} 
+              primaryClubName={primaryClubName} 
+              currentEvent={currentEvent} 
+              onClose={() => {
+                setIsModalOpen(false);
+                setCurrentEvent(null); 
+                fetchEvents(); // Refresh events after creating/updating
+              }} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

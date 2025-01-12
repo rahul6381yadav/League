@@ -11,11 +11,10 @@ import {
   isSameDay,
 } from "date-fns";
 
-const ClubCoordinatorPage = () => {
+const HomeClub = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -28,16 +27,15 @@ const ClubCoordinatorPage = () => {
         console.error("No auth token found. Please log in.");
         return;
       }
-  
+
       const response = await axios.get("http://localhost:4000/api/v1/club/events", {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (response.data && response.data.events) {
-        
         const formattedEvents = response.data.events.map((event) => ({
           ...event,
-          date: new Date(event.date).toISOString().split('T')[0], 
+          date: new Date(event.date).toISOString().split('T')[0],
         }));
         setEvents(formattedEvents);
       }
@@ -45,14 +43,12 @@ const ClubCoordinatorPage = () => {
       console.error("Error fetching events:", err.response || err.message);
     }
   };
-  
 
   const getEventsForDate = (date) => {
-    const formattedDate = format(date, "yyyy-MM-dd"); 
+    const formattedDate = format(date, "yyyy-MM-dd");
     console.log("Checking events for date:", formattedDate);
     return events.filter((event) => event.date === formattedDate);
   };
-  
 
   const renderHeader = () => (
     <div className="flex justify-between items-center mb-5">
@@ -88,35 +84,43 @@ const ClubCoordinatorPage = () => {
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
-
+  
     const rows = [];
     let days = [];
-    let day = startDate;
-
-    while (day <= endDate) {
+    let currentDay = new Date(startDate);
+  
+    while (currentDay <= endDate) {
       for (let i = 0; i < 7; i++) {
-        const isOutsideMonth = !isSameMonth(day, currentMonth);
-        const eventsForDay = getEventsForDate(day);
+        const isOutsideMonth = !isSameMonth(currentDay, currentMonth);
+        const eventsForDay = getEventsForDate(currentDay);
+  
         days.push(
           <div
-            key={day}
+            key={currentDay}
             className={`flex justify-center items-center h-12 w-12 m-1 rounded-lg transition transform hover:scale-110 cursor-pointer ${
-              isSameDay(day, selectedDate) ? "bg-blue-500 text-white" : ""
+              isSameDay(currentDay, selectedDate) ? "bg-blue-500 text-white" : ""
             } ${isOutsideMonth ? "text-gray-400" : "hover:bg-blue-200"}`}
-            onClick={() => !isOutsideMonth && setSelectedDate(day)}
+            onClick={() => {
+              if (!isOutsideMonth) {
+                const selectedDay = new Date(currentDay);
+                setSelectedDate(selectedDay); // Ensure we are setting the selected day correctly
+                console.log("Selected date:", format(selectedDay, "yyyy-MM-dd")); // Log the selected date
+              }
+            }}
           >
             <div className="text-center">
-              {format(day, "d")}
+              {format(currentDay, "d")}
               {eventsForDay.length > 0 && (
                 <span className="block mt-1 w-2 h-2 rounded-full bg-red-500"></span>
               )}
             </div>
           </div>
         );
-        day = addDays(day, 1);
+        currentDay = addDays(currentDay, 1);
       }
+  
       rows.push(
-        <div className="flex justify-center" key={day}>
+        <div className="flex justify-center" key={currentDay}>
           {days}
         </div>
       );
@@ -124,16 +128,17 @@ const ClubCoordinatorPage = () => {
     }
     return <div>{rows}</div>;
   };
+  
 
   const renderSidePanel = () => {
     if (!selectedDate) return null;
-
+  
     const eventsForDay = getEventsForDate(selectedDate);
-
+  
     return (
       <div className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg p-5 shadow-md">
         <h3 className="font-bold mb-3">
-          Events for {format(selectedDate, "MMMM dd, yyyy")}
+          Events for {format(selectedDate, "MMMM dd, yyyy")} {/* Correct date formatting */}
         </h3>
         <ul className="list-disc pl-5">
           {eventsForDay.length > 0 ? (
@@ -151,37 +156,10 @@ const ClubCoordinatorPage = () => {
       </div>
     );
   };
+  
 
   return (
-    <div className={`p-5 max-w-4xl mx-auto ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
-      <div className="flex justify-between items-center mb-5">
-        <div className="space-x-3">
-          <button className="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-700">
-            Profile
-          </button>
-          <button className="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-700">
-            Manage Events
-          </button>
-          <button className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-700">
-            Logout
-          </button>
-        </div>
-        <label className="flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="hidden"
-            checked={isDarkMode}
-            onChange={() => setIsDarkMode(!isDarkMode)}
-          />
-          <span className="bg-gray-300 dark:bg-gray-600 w-10 h-5 flex items-center rounded-full p-1">
-            <span
-              className={`bg-white w-4 h-4 rounded-full shadow transform transition-transform ${
-                isDarkMode ? "translate-x-5" : ""
-              }`}
-            ></span>
-          </span>
-        </label>
-      </div>
+    <div className="p-5 max-w-4xl mx-auto">
       {renderHeader()}
       {renderDays()}
       {renderCells()}
@@ -190,4 +168,4 @@ const ClubCoordinatorPage = () => {
   );
 };
 
-export default ClubCoordinatorPage;
+export default HomeClub;
