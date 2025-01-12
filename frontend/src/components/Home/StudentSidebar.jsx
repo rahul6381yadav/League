@@ -62,7 +62,7 @@ const Sidebar = ({ onToggle }) => {
 
     return (
         <div
-            className={`fixed top-0 left-0 h-screen bg-gray-800 text-white ${isCollapsed ? "w-16" : "w-64"
+            className={`fixed top-0 left-0 h-screen bg-gray-800 text-white px-4 ${isCollapsed ? "w-16" : "w-72"
                 } transition-all duration-300 z-50`}
         >
             {/* Sidebar Header */}

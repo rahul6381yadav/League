@@ -1,4 +1,5 @@
 import './App.css';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Forget from './components/auth/Forget';
@@ -6,11 +7,11 @@ import VerifyOTP from './components/auth/otp';
 import NewPassword from './components/auth/newPassword';
 import Home from './components/Home/Home';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Clubs from './components/Home/Clubs';
 import MyProfile from './components/Home/myprofile';
-import { RoleProvider, useRole } from './context/RoleContext';
+import { RoleProvider,useRole} from './context/RoleContext';
 import Createclub from './components/Home/createclub';
 import AdminLogin from './components/auth/adminLogin';
 import AdminPanel from './components/admin/adminPanel';
@@ -18,7 +19,11 @@ import { EmailProvider } from './context/EmailContext';
 import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
+import Layout from './components/Home/Layout';
 import Loader from './components/loader/loader';
+import AllEvents from './components/Events/AllEvents';
+import ManageParticipants from './components/clubs/ManageParticipants';
+
 import Layout from './components/Home/LayoutStudent';
 import Home_club from './components/Club_coordinators/home_club';
 import { DarkModeProvider } from './context/DarkModeContext';
@@ -70,7 +75,6 @@ const CoordinatorRoute = ({ children }) => {
 
   return children;
 };
-
 
 const AdminRoutes = ({ children }) => {
   console.log("admin Routes");
@@ -132,6 +136,7 @@ function UserRoutes() {
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
+        <Route path="/events/:id" element={<ProtectedRoute><LayoutCoordinator><ManageParticipants/></LayoutCoordinator></ProtectedRoute>}/>        
         <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/manage-events" element={<CoordinatorRoute><LayoutCoordinator><EventPage /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/" element={<Login />} />
