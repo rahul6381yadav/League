@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom"; 
 import { jwtDecode } from "jwt-decode";
-import Tooltip from './Tooltip_sidebar'; 
+import Tooltip from '../utils/Tooltip_sidebar'; 
 
 const Sidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -185,7 +185,9 @@ const Sidebar = ({ onToggle }) => {
                     className="flex items-center mt-4 p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded cursor-pointer"
                     onClick={handleLogout}
                 >
+                     <Tooltip text="Log Out" show={isCollapsed}>
                     <LogoutIcon className="h-6 w-6" />
+                </ Tooltip>
                     {!isCollapsed && <span className="ml-5">Log Out</span>}
                 </div>
             </div>
