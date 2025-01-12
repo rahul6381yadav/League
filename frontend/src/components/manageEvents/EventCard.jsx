@@ -8,7 +8,7 @@ const EventCard = ({ event }) => {
   return (
     <div
       className="p-4 border rounded-lg shadow-md bg-gradient-to-br from-pink-100 to-purple-300 dark:bg-gradient-to-br dark:from-purple-100 dark:to-blue-400  transform transition-all duration-200 hover:scale-105"
-      onClick={() => console.log(event.clubIds[0]._id)}
+      onClick={() => navigate(`/events/${event._id}`)}
     >
       <div className="flex-1">
         <h3 className="text-lg font-semibold text-blue-600 truncate">{event.eventName}</h3>

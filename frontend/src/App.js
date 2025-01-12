@@ -134,7 +134,7 @@ function UserRoutes() {
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
-        <Route path="/events/:id" element={<ProtectedRoute><LayoutCoordinator><ManageParticipants/></LayoutCoordinator></ProtectedRoute>}/>        
+        <Route path="/events/:id" element={<LayoutCoordinator><ManageParticipants/></LayoutCoordinator>}/>        
         <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/manage-events" element={<CoordinatorRoute><LayoutCoordinator><EventPage /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/" element={<Login />} />
