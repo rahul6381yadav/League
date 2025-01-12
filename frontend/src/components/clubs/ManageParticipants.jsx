@@ -10,7 +10,7 @@ const ManageParticipants = () => {
   return (
     <>
     <EventHeader id ={id}/>
-      <div className=" flex flex-col p-6 w-full space-y-5 rounded-lg items-center bg-gray-200 dark:bg-gray-900">
+      <div className=" flex flex-col p-6 w-full space-y-5 items-center bg-gray-200 dark:bg-gray-900">
         <Winners />
         <ParticipationCard id={id}/>
       </div>
