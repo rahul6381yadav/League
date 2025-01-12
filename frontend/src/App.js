@@ -19,11 +19,11 @@ import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
-import AllEvents from './components/Events/AllEvents';
 import Layout from './components/Home/LayoutStudent';
 import Home_club from './components/Club_coordinators/home_club';
 import { DarkModeProvider } from './context/DarkModeContext';
 import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
+import EventPage from './components/manageEvents/EventPage';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -130,16 +130,19 @@ function UserRoutes() {
         <Route path="/myprofile" element={<ProtectedRoute><Layout><MyProfile /></Layout></ProtectedRoute>} />
         <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
-        <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
         <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
+        <Route path="/manage-events" element={<CoordinatorRoute><LayoutCoordinator><EventPage /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/adminPanel" element={<AdminRoutes><AdminPanel /></AdminRoutes>}/>
         <Route path="/forget" element={<Forget />} />
         <Route path="/VerifyOTP" element={<VerifyOTP />} />
         <Route path="/newPassword" element={<NewPassword />} />
+
+        
+        {/* test Route*/}
       </Routes>
     </>
   );

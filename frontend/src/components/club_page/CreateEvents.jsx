@@ -14,12 +14,8 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
     });
 
     useEffect(() => {
-        // Fetch the list of all clubs excluding the primary club
         const fetchClubs = async () => {
             try {
-                console.log(token);
-                console.log("primary club id ", primaryClubId);
-                console.log("primary club name ", primaryClubName);
                 const response = await fetch(`http://localhost:4000/api/v1/club`, {
                     method: "GET",
                     headers: {
@@ -56,8 +52,6 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
 
         const clubIds = [primaryClubId, ...selectedCollateralClubs];
         const newEvent = { ...eventData, clubIds };
-        console.log(newEvent);
-        console.log(token);
         try {
             const response = await fetch('http://localhost:4000/api/v1/club/events', {
                 method: 'POST',
@@ -67,7 +61,6 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 },
                 body: JSON.stringify(newEvent),
             });
-            console.log(response);
 
             const data = await response.json();
             if (data.isError) {
@@ -89,9 +82,9 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
     };
 
     return (
-        <div className="p-8 bg-gray-100 text-black">
-            <form onSubmit={handleFormSubmit} className="bg-white p-6 text-black shadow-md rounded-lg">
-                <h2 className="text-lg font-semibold mb-4">Create Event</h2>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+            <form onSubmit={handleFormSubmit} className="bg-white p-4 text-black shadow-md rounded-lg w-96">
+                <h2 className="text-lg font-semibold mb-4 text-center">Create Event</h2>
 
                 {/* Primary Club */}
                 <label className="block mb-2 font-medium">Primary Club:</label>
@@ -182,7 +175,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 />
 
                 {/* Submit Button */}
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded w-full">
                     Create Event
                 </button>
             </form>
