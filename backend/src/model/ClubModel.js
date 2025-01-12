@@ -86,7 +86,8 @@ const eventSchema = new Schema({
       required: true,
     },
     eventId: {
-      type: [{type: Schema.Types.ObjectId, ref: 'Event'}],
+      type: Schema.Types.ObjectId,
+      ref: 'Event',
       required: true,
     },
     pointsGiven: {
