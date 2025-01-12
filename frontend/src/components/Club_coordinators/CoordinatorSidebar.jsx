@@ -99,7 +99,28 @@ const CoordinatorSidebar = ({ onToggle }) => {
 
             {/* Sidebar Menu */}
             <ul className="mt-6 space-y-2">
-                {menuItems.map((item, idx) => (
+                {[
+                    {
+                        icon: <UserGroupIcon className="h-6 w-6" />,
+                        label: "My Club",
+                        path: "/home_club",
+                    },
+                    {
+                        icon: <ClipboardListIcon className="h-6 w-6" />,
+                        label: "Manage Events",
+                        path: "/manage-events",
+                    },
+                    {
+                        icon: <BellIcon className="h-6 w-6" />,
+                        label: "Notifications",
+                        path: "/notifications",
+                    },
+                    {
+                        icon: <UserCircleIcon className="h-6 w-6" />,
+                        label: "My Profile",
+                        path: "/my-profile",
+                    },
+                ].map((item, idx) => (
                     <li
                         key={idx}
                         className={`flex items-center space-x-4 p-2 rounded cursor-pointer
