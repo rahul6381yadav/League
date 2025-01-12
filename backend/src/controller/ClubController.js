@@ -2,7 +2,7 @@ const {ClubModel} = require("../model/ClubModel");
 
 exports.getClubs = async (req, res) => {
     try {
-        const { search, ratingMin, ratingMax, limit, skip, coordinatorId, userId, id } = req.query;
+        const { search, ratingMin, ratingMax, limit, skip, coordinatorId, userId, id , email } = req.query;
 
         if (id) {
             const club = await ClubModel.findById(id).populate("coordinator1 coordinator2 members studentMembers");
@@ -31,7 +31,9 @@ exports.getClubs = async (req, res) => {
         if (coordinatorId) {
             filter.members = coordinatorId;
         }
-
+        if (email) {
+            filter.email = email;
+        }
         const clubs = await ClubModel.find(filter)
             .limit(limit ? parseInt(limit) : 30)
             .skip(skip ? parseInt(skip) : 0);

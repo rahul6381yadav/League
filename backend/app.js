@@ -25,6 +25,7 @@ app.use(morgan((tokens, req, res) => {
     ].join(' | ');
   }, { stream: { write: (msg) => logger.info(msg.trim()) } }));
 
+<<<<<<< HEAD
 app.use((req, res, next) => {
     const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password" , "/user/reset-password" , "/user/verify-otp" , "/user/create-user"];
     if (excludedRoutes.includes(req.path)) {
@@ -33,6 +34,15 @@ app.use((req, res, next) => {
     jwtMiddleware.verifyToken(req, res, next); 
 });
 
+=======
+// app.use((req, res, next) => {
+//     const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password" , "/user/reset-password" , "/user/verify-otp" , "/user/create-user"];
+//     if (excludedRoutes.includes(req.path)) {
+//         return next(); // Skip token verification for excluded routes
+//     }
+//     jwtMiddleware.verifyToken(req, res, next); 
+// });
+>>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
 app.use("/api/v1", authRoute);
 app.use("/user", userRoute);
 

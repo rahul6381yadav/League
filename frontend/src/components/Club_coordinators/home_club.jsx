@@ -9,18 +9,21 @@ import {
   addDays,
   isSameMonth,
   isSameDay,
+  addMonths,
 } from "date-fns";
 
 const HomeClub = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchEvents();
   }, [currentMonth]);
 
   const fetchEvents = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -32,36 +35,37 @@ const HomeClub = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.data && response.data.events) {
+      if (response.data?.events) {
         const formattedEvents = response.data.events.map((event) => ({
           ...event,
-          date: new Date(event.date).toISOString().split('T')[0],
+          date: new Date(event.date).toISOString().split("T")[0],
         }));
         setEvents(formattedEvents);
       }
     } catch (err) {
       console.error("Error fetching events:", err.response || err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getEventsForDate = (date) => {
     const formattedDate = format(date, "yyyy-MM-dd");
-    console.log("Checking events for date:", formattedDate);
     return events.filter((event) => event.date === formattedDate);
   };
 
   const renderHeader = () => (
-    <div className="flex justify-between items-center mb-5">
+    <div className="flex justify-between items-center mb-5 dark:text-white">
       <button
         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
-        onClick={() => setCurrentMonth(addDays(currentMonth, -30))}
+        onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
       >
         {"<"}
       </button>
       <h3 className="text-xl font-bold">{format(currentMonth, "MMMM yyyy")}</h3>
       <button
         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
-        onClick={() => setCurrentMonth(addDays(currentMonth, 30))}
+        onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
       >
         {">"}
       </button>
@@ -71,9 +75,11 @@ const HomeClub = () => {
   const renderDays = () => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return (
-      <div className="grid grid-cols-7 text-center font-bold mb-2">
+      <div className="grid grid-cols-7 text-center font-bold mb-2 dark:text-gray-300">
         {days.map((day, index) => (
-          <div key={index}>{day}</div>
+          <div key={index} className="py-2">
+            {day}
+          </div>
         ))}
       </div>
     );
@@ -84,43 +90,39 @@ const HomeClub = () => {
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
-  
+
     const rows = [];
     let days = [];
     let currentDay = new Date(startDate);
-  
+
     while (currentDay <= endDate) {
       for (let i = 0; i < 7; i++) {
         const isOutsideMonth = !isSameMonth(currentDay, currentMonth);
         const eventsForDay = getEventsForDate(currentDay);
-  
+
         days.push(
           <div
             key={currentDay}
-            className={`flex justify-center items-center h-12 w-12 m-1 rounded-lg transition transform hover:scale-110 cursor-pointer ${
-              isSameDay(currentDay, selectedDate) ? "bg-blue-500 text-white" : ""
-            } ${isOutsideMonth ? "text-gray-400" : "hover:bg-blue-200"}`}
+            className={`h-16 flex flex-col justify-center items-center rounded-lg transition transform hover:scale-110 cursor-pointer ${
+              isSameDay(currentDay, selectedDate) ? "bg-blue-500 text-white dark:bg-blue-700" : ""
+            } ${isOutsideMonth ? "text-gray-400 dark:text-gray-600" : "hover:bg-blue-200 dark:hover:bg-blue-900"}`}
             onClick={() => {
               if (!isOutsideMonth) {
-                const selectedDay = new Date(currentDay);
-                setSelectedDate(selectedDay); // Ensure we are setting the selected day correctly
-                console.log("Selected date:", format(selectedDay, "yyyy-MM-dd")); // Log the selected date
+                setSelectedDate(new Date(currentDay));
               }
             }}
           >
-            <div className="text-center">
-              {format(currentDay, "d")}
-              {eventsForDay.length > 0 && (
-                <span className="block mt-1 w-2 h-2 rounded-full bg-red-500"></span>
-              )}
-            </div>
+            <span>{format(currentDay, "d")}</span>
+            {eventsForDay.length > 0 && (
+              <span className="block mt-1 w-2 h-2 rounded-full bg-red-500"></span>
+            )}
           </div>
         );
         currentDay = addDays(currentDay, 1);
       }
-  
+
       rows.push(
-        <div className="flex justify-center" key={currentDay}>
+        <div className="grid grid-cols-7 gap-2 mb-2" key={currentDay}>
           {days}
         </div>
       );
@@ -128,17 +130,16 @@ const HomeClub = () => {
     }
     return <div>{rows}</div>;
   };
-  
 
   const renderSidePanel = () => {
     if (!selectedDate) return null;
-  
+
     const eventsForDay = getEventsForDate(selectedDate);
-  
+
     return (
-      <div className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg p-5 shadow-md">
+      <div className="bg-white text-black dark:bg-gray-800 dark:text-white rounded-lg p-5 shadow-md">
         <h3 className="font-bold mb-3">
-          Events for {format(selectedDate, "MMMM dd, yyyy")} {/* Correct date formatting */}
+          Events for {format(selectedDate, "MMMM dd, yyyy")}
         </h3>
         <ul className="list-disc pl-5">
           {eventsForDay.length > 0 ? (
@@ -156,14 +157,15 @@ const HomeClub = () => {
       </div>
     );
   };
-  
 
   return (
-    <div className="p-5 max-w-4xl mx-auto">
-      {renderHeader()}
-      {renderDays()}
-      {renderCells()}
-      {selectedDate && renderSidePanel()}
+    <div className="p-5 max-w-4xl mx-auto dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+        {renderHeader()}
+        {renderDays()}
+        {renderCells()}
+        {selectedDate && renderSidePanel()}
+      </div>
     </div>
   );
 };

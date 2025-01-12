@@ -13,7 +13,11 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [forgotPasswordState, setForgotPasswordState] = useState(false);
     const [isOTPVerified, setisOTPVerified] = useState(false);
+<<<<<<< HEAD
     const [loading, setLoading] = useState(false);
+=======
+    const [userId, setUserId] = useState(null);
+>>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
 
     // Check if the user is authenticated on initial load
     useEffect(() => {
@@ -23,6 +27,7 @@ export const AuthProvider = ({ children }) => {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
+                setUserId(decoded.userId);
                 const currentTime = Date.now() / 1000; // Current time in seconds
                 if (decoded.exp > currentTime) {
                     // Token is valid
@@ -59,8 +64,12 @@ export const AuthProvider = ({ children }) => {
                 setForgotPasswordState,
                 isOTPVerified,
                 setisOTPVerified,
+<<<<<<< HEAD
                 loading,
                 setLoading
+=======
+                userId
+>>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
             }}
         >
             {children}

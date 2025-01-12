@@ -16,7 +16,7 @@ const EventFilters = ({ setFilters }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row md:space-x-4">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row md:space-x-4">
       <div className="flex-grow mb-2 md:mb-0">
         <div className="relative">
           <FaSearch className="absolute left-3 top-2 text-gray-500" />
@@ -25,7 +25,7 @@ const EventFilters = ({ setFilters }) => {
             placeholder="Search events..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-gray-300"
           />
         </div>
       </div>
@@ -36,7 +36,7 @@ const EventFilters = ({ setFilters }) => {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-gray-300"
           />
         </div>
       </div>
