@@ -90,6 +90,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
             >
                 <h2 className="text-2xl font-semibold mb-6 text-center">Create Event</h2>
 
+
                 {/* Primary Club */}
                 <label className="block mb-2 font-medium">Primary Club:</label>
                 <p className="mb-4 p-3 bg-gray-200 dark:bg-gray-700 text-black dark:text-gray-100 rounded">
@@ -121,7 +122,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 <input
                     type="text"
                     name="eventName"
-                    placeholder="Enter event name"
+                    placeholder ="Enter event name"
                     value={eventData.eventName}
                     onChange={handleInputChange}
                     className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"

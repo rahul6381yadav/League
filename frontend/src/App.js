@@ -1,4 +1,5 @@
 import './App.css';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Forget from './components/auth/Forget';
@@ -6,10 +7,9 @@ import VerifyOTP from './components/auth/otp';
 import NewPassword from './components/auth/newPassword';
 import Home from './components/Home/Home';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Clubs from './components/Home/Clubs';
-import MyProfile from './components/Home/myprofile';
 import { RoleProvider, useRole } from './context/RoleContext';
 import Createclub from './components/Home/createclub';
 import AdminLogin from './components/auth/adminLogin';
@@ -19,11 +19,14 @@ import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
+import ManageParticipants from './components/clubs/ManageParticipants';
+
 import Layout from './components/Home/LayoutStudent';
 import Home_club from './components/Club_coordinators/home_club';
 import { DarkModeProvider } from './context/DarkModeContext';
 import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
 import EventPage from './components/manageEvents/EventPage';
+import StudentMyProfile from './components/Home/StudentMyProfile';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -70,7 +73,6 @@ const CoordinatorRoute = ({ children }) => {
 
   return children;
 };
-
 
 const AdminRoutes = ({ children }) => {
   console.log("admin Routes");
@@ -127,11 +129,12 @@ function UserRoutes() {
       <Routes>
         <Route path="/home" element={<ProtectedRoute><Layout><Home/></Layout></ProtectedRoute>} />
         <Route path="/Clubs" element={<ProtectedRoute><Layout><Clubs /></Layout></ProtectedRoute>} />
-        <Route path="/myprofile" element={<ProtectedRoute><Layout><MyProfile /></Layout></ProtectedRoute>} />
+        <Route path="/myprofile" element={<ProtectedRoute><Layout><StudentMyProfile /></Layout></ProtectedRoute>} />
         <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
+        <Route path="/events/:id" element={<ProtectedRoute><LayoutCoordinator><ManageParticipants/></LayoutCoordinator></ProtectedRoute>}/>        
         <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/manage-events" element={<CoordinatorRoute><LayoutCoordinator><EventPage /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/" element={<Login />} />

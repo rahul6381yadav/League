@@ -1,4 +1,55 @@
+# Backend Developer Guide
 
+## General Rule
+- Follow **DRY** (Don't Repeat Yourself) and **KISS** (Keep It Simple, Stupid) principles.
+- Ensure code readability with proper naming conventions and comments.
+- Write modular and reusable code.
+- Always validate and sanitize user input.
+- Avoid hardcoding sensitive information (use `.env` files).
+- Follow OWASP standards for backend security.
+- Use proper HTTP status codes:
+  - `200 OK`: Success
+  - `400 Bad Request`: Client error
+  - `500 Internal Server Error`: Server error
+- Log errors with proper details for debugging .
+- Test APIs for any minor changes
+---
+## Commit Message Guidelines
+Use the following commit types to keep a clean and organized history in backend projects:
+
+1. **`feat:`** – Adding a new backend feature or endpoint.  
+   *Example:* `feat: add endpoint for user registration`
+
+2. **`fix:`** – Fixing bugs in the backend logic or API responses.  
+   *Example:* `fix: correct data validation for login endpoint`
+
+3. **`docs:`** – Updating backend documentation (API docs, comments).  
+   *Example:* `docs: update API documentation for user routes`
+
+4. **`refactor:`** – Improving code structure without changing behavior, such as restructuring services or models.  
+   *Example:* `refactor: move authentication logic to middleware`
+
+5. **`test:`** – Adding or modifying tests for backend functions, routes, or services.  
+   *Example:* `test: add unit tests for authentication service`
+
+6. **`perf:`** – Performance improvements in backend logic, such as optimizing database queries or caching results.  
+   *Example:* `perf: add caching for frequently accessed endpoints`
+
+7. **`chore:`** – Maintenance tasks, like updating dependencies or configuration files.  
+   *Example:* `chore: update dependency versions`
+
+8. **`add:`** – Adding new modules, services, or components (e.g., new database tables or files).  
+   *Example:* `add: implement Redis cache service`
+
+9. **`update:`** – Modifying existing backend functionality or updating dependencies/configurations.  
+   *Example:* `update: enhance data validation in user schema`
+
+10. **`delete:`** – Removing outdated code, unused files, or deprecated endpoints.  
+    *Example:* `delete: remove unused email service`
+
+11. **`style:`** – Minor code style changes (indentation, formatting) with no logic changes.  
+    *Example:* `style: reformat API response code style`
+    
 ## Backend Setup
 
 ### Prerequisites
