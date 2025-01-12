@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from '../../context/AuthContext';
 import axios from "axios";
 import {
   format,
@@ -15,11 +16,17 @@ const HomeClub = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([]);
-
   useEffect(() => {
     fetchEvents();
   }, [currentMonth]);
-
+  // const fetchClubDetails = async () => {
+  //   try {
+      
+  //   }
+  //   catch {
+      
+  //   }
+  // }
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem("authToken");
@@ -46,7 +53,7 @@ const HomeClub = () => {
 
   const getEventsForDate = (date) => {
     const formattedDate = format(date, "yyyy-MM-dd");
-    console.log("Checking events for date:", formattedDate);
+    // console.log("Checking events for date:", formattedDate);
     return events.filter((event) => event.date === formattedDate);
   };
 
