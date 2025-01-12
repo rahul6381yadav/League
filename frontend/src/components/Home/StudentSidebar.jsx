@@ -9,15 +9,17 @@ import {
     LogoutIcon,
     UserGroupIcon,
 } from "@heroicons/react/outline";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Sidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const {isAuthenticated, setIsAuthenticated } = useAuth();
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
     const navigate = useNavigate();
     const email = localStorage.getItem("emailCont");
+
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
         onToggle(!isCollapsed); // Notify the parent about the change
@@ -26,7 +28,38 @@ const Sidebar = ({ onToggle }) => {
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         setIsAuthenticated(false);
+        navigate("/");
     };
+
+    useEffect(() => {
+        const checkAuthStatus = () => {
+            const token = localStorage.getItem("authToken");
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    const currentTime = Date.now() / 1000; // Current time in seconds
+                    if (decoded.exp > currentTime) {
+                        setIsAuthenticated(true);
+                    } else {
+                        localStorage.removeItem("authToken");
+                        setIsAuthenticated(false);
+                    }
+                } catch (error) {
+                    localStorage.removeItem("authToken");
+                    setIsAuthenticated(false);
+                }
+            } else {
+                setIsAuthenticated(false);
+            }
+        };
+
+        checkAuthStatus();
+
+        // Optional: Check periodically
+        const interval = setInterval(checkAuthStatus, 10000); // Check every 1 minute
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div
             className={`fixed top-0 left-0 h-screen bg-gray-800 text-white px-4 ${isCollapsed ? "w-16" : "w-72"
@@ -51,26 +84,56 @@ const Sidebar = ({ onToggle }) => {
 
             {/* Sidebar Menu */}
             <ul className="mt-6 space-y-2">
-                {[
-                    { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/home" },
-                    { icon: <FolderIcon className="h-6 w-6" />, label: "Projects" },
-                    { icon: <UserGroupIcon className="h-6 w-6" />, label: "Clubs", path: "/Clubs" },
-                    { icon: <ClipboardListIcon className="h-6 w-6" />, label: "Events", path: "/AllEvents" },
-                    { icon: <SparklesIcon className="h-6 w-6" />, label: "Leaderboard" },
-                    {
-                        icon: <ChartSquareBarIcon className="h-6 w-6" />,
-                        label: "My Achievements",
-                    },
-                ].map((item, idx) => (
+                {[{
+                    icon: <HomeIcon className="h-6 w-6" />,
+                    label: "Home",
+                    path: "/home"
+                },
+                {
+                    icon: <UserGroupIcon className="h-6 w-6" />,
+                    label: "All Clubs",
+                    path: "/Clubs"
+                },
+                {
+                    icon: <ClipboardListIcon className="h-6 w-6" />,
+                    label: "My Events",
+                    path: "/my-events"
+                },
+                {
+                    icon: <ClipboardListIcon className="h-6 w-6" />,
+                    label: "All Events",
+                    path: "/all-events"
+                },
+                {
+                    icon: <SparklesIcon className="h-6 w-6" />,
+                    label: "My Batch Leaderboard",
+                    path: "/batch-leaderboard"
+                },
+                {
+                    icon: <SparklesIcon className="h-6 w-6" />,
+                    label: "Overall Leaderboard",
+                    path: "/overall-leaderboard"
+                },
+                {
+                    icon: <ChartSquareBarIcon className="h-6 w-6" />,
+                    label: "My Achievements",
+                    path: "/my-achievements"
+                },
+                {
+                    icon: <UserGroupIcon className="h-6 w-6" />,
+                    label: "My Profile",
+                    path: "/profile"
+                }].map((item, idx) => (
                     <li
                         key={idx}
                         className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
                         onClick={() => {
+                            console.log("isAuthenticated ", isAuthenticated);
                             if (isAuthenticated === false) {
                                 handleLogout();
                             }
                             navigate(item.path);
-                        } }
+                        }}
                     >
                         <span className="text-lg">{item.icon}</span>
                         {!isCollapsed && <span>{item.label}</span>}
@@ -81,13 +144,20 @@ const Sidebar = ({ onToggle }) => {
             {/* Sidebar Footer */}
             <div className="absolute bottom-4">
                 <ul className="space-y-2">
-                    {[
-                        { icon: <BellIcon className="h-6 w-6" />, label: "Notifications" },
-                        { icon: <CogIcon className="h-6 w-6" />, label: "Settings" },
-                    ].map((item, idx) => (
+                    {[{
+                        icon: <BellIcon className="h-6 w-6" />,
+                        label: "Notifications",
+                        path: "/notifications"
+                    },
+                    {
+                        icon: <CogIcon className="h-6 w-6" />,
+                        label: "Settings",
+                        path: "/settings"
+                    }].map((item, idx) => (
                         <li
                             key={idx}
                             className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
+                            onClick={() => navigate(item.path)}
                         >
                             <span className="text-lg">{item.icon}</span>
                             {!isCollapsed && <span>{item.label}</span>}

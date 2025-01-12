@@ -24,82 +24,97 @@ import Loader from './components/loader/loader';
 import AllEvents from './components/Events/AllEvents';
 import ManageParticipants from './components/clubs/ManageParticipants';
 
+import Layout from './components/Home/LayoutStudent';
+import Home_club from './components/Club_coordinators/home_club';
+import { DarkModeProvider } from './context/DarkModeContext';
+import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
+import EventPage from './components/manageEvents/EventPage';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const token = localStorage.getItem("authToken");
+  console.log("protected routes");
   useEffect(() => {
+    console.log(token);
+    console.log(isAuthenticated);
     const timeout = setTimeout(() => {
-      if (isAuthenticated === false) {
+      if (!token) {
+        setIsAuthenticated(false);
         navigate('/');
       }
-    }, 1000);
-    
+      if (isAuthenticated === false && roles!=='admin') {
+        navigate('/');
+      }
+      if (isAuthenticated === true && roles === 'coordinator') {
+        navigate('/home_club');
+      }
+      if (isAuthenticated === true && roles === 'admin') {
+        navigate('/AdminPanel');
+      }
+    }, 10);
     return () => clearTimeout(timeout);
+  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
 
-  }, [isAuthenticated, navigate]);
-  
   return children;
 };
 
-const PrivateRoutes = ({ children, requiredRole }) => {
+const CoordinatorRoute = ({ children }) => {
   const { roles } = useRole();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated,setIsAuthenticated} = useAuth();
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isAuthenticated) {
-        navigate("/");
-      }
-      if (
-        isAuthenticated &&
-        requiredRole &&
-        roles !== requiredRole &&
-        roles !== "admin"
-      ) {
-        navigate("/home");
-      }
-      if (
-        isAuthenticated &&
-        requiredRole &&
-        roles !== requiredRole &&
-        roles === "admin"
-      ) {
-        navigate("/");
-      }
-    }, 10);
+    if (!token || !isAuthenticated || roles !== 'coordinator') {
+      setIsAuthenticated(false);
+      navigate('/'); // Redirect to login or appropriate page
+    }
+  }, [isAuthenticated, roles, navigate]);
 
-    return () => clearTimeout(timeout);
-  }, [navigate, isAuthenticated, requiredRole, roles]);
   return children;
 };
 
 const AdminRoutes = ({ children }) => {
+  console.log("admin Routes");
   const { roles } = useRole();
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const token = localStorage.getItem("authToken");
+
   useEffect(() => {
     const checkAdmin = async () => {
-      if (!token) {
+      if (!token || roles !== 'admin') {
         setIsAuthenticated(false);
-        navigate('/admin');
+        navigate('/admin'); // Redirect to admin login
       }
-      if (isAuthenticated === false) {
-        navigate('/admin');
+      else {
+        navigate('/AdminPanel');
       }
-      if (token && isAuthenticated&&roles==='admin'&&window.location.pathname !== "/adminPanel") {
-        navigate("/adminPanel"); // Redirect to Home if already logged in
-      }
-    }
+    };
     checkAdmin();
-  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
+  }, [isAuthenticated, roles, navigate, token, setIsAuthenticated]);
+
   return children;
 };
-// App component
+
+const PrivateRoutes = ({ children, requiredRole }) => {
+  console.log("private routes");
+  const { roles } = useRole();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/'); // Redirect to admin login
+    } else if (requiredRole && roles !== requiredRole) {
+      navigate('/home'); // Redirect to home for unauthorized roles
+    }
+  }, [isAuthenticated, roles, navigate, requiredRole]);
+
+  return children;
+};
 function UserRoutes() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -119,16 +134,20 @@ function UserRoutes() {
         <Route path="/myprofile" element={<ProtectedRoute><Layout><MyProfile /></Layout></ProtectedRoute>} />
         <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
-        <Route path="/AllEvents" element={<ProtectedRoute><Layout><AllEvents /></Layout></ProtectedRoute>}/>
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
         <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
-        <Route path="/events/:id" element={<ProtectedRoute><Layout><ManageParticipants/></Layout></ProtectedRoute>}/>        
+        <Route path="/events/:id" element={<ProtectedRoute><LayoutCoordinator><ManageParticipants/></LayoutCoordinator></ProtectedRoute>}/>        
+        <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
+        <Route path="/manage-events" element={<CoordinatorRoute><LayoutCoordinator><EventPage /></LayoutCoordinator></CoordinatorRoute>}/>
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel/></AdminRoutes>}/>
+        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel /></AdminRoutes>}/>
         <Route path="/forget" element={<Forget />} />
         <Route path="/VerifyOTP" element={<VerifyOTP />} />
         <Route path="/newPassword" element={<NewPassword />} />
+
+        
+        {/* test Route*/}
       </Routes>
     </>
   );
@@ -139,8 +158,10 @@ function App() {
     <AuthProvider>
       <RoleProvider>
         <EmailProvider>
-            <Router>
+          <Router>
+            <DarkModeProvider>
               <UserRoutes />
+            </DarkModeProvider>
             </Router>
         </EmailProvider>
       </RoleProvider>

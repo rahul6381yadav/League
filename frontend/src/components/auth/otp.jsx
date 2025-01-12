@@ -37,7 +37,7 @@ function VerifyOTP() {
         const otpValue = otp.join(""); // Combine all digits into a single string
         const { email } = location.state || {};
         try {
-            const response = await fetch("http://localhost:4000/user/verify-otp", {
+            const response = await fetch(`http://localhost:4000/user/verify-otp`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

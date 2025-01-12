@@ -32,7 +32,7 @@ function NewPassword() {
 
 
         try {
-            const response = await fetch("http://localhost:4000/user/reset-password", {
+            const response = await fetch(`http://localhost:4000user/reset-password`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
