@@ -1,109 +1,139 @@
-const {mongoose, Schema} = require("mongoose");
+const { mongoose, Schema } = require("mongoose");
 
 const clubSchema = new mongoose.Schema({
-    name: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    description: {
-      type: String,
-      default: null,
-    },
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    image: {
-      type: String,
-      default: null,
-    },
-    members: {
-      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
-      required: true
-    },
-    overallRating: {
-      type: Number,
-      default: 0,
-    },
-    studentMembers:{
-      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
-      required: true
-    },
-    lastUpdated: {
-      type: Date,
-      default: Date.now(),
-    },
+  coordinator1: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  coordinator2: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  name: {
+    type: String,
+    required: false,
+  },
+  description: {
+    type: String,
+    default: null,
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  image: {
+    type: String,
+    default: null,
+  },
+  members: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    required: false,
+    default: []
+  },
+  overallRating: {
+    type: Number,
+    default: 0,
+  },
+  studentMembers: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    required: false,
+    default: []
+  },
+  hasFirebaseId: {
+    type: Boolean,
+    default: false
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now(),
+  },
+  role: {
+    type: String,
+    default: "coordinator"
+  }
 });
 
 
 const eventSchema = new Schema({
   clubIds: [
-      {
-          type: Schema.Types.ObjectId,
-          ref: 'Club',
-          required: true, // At least one club is required
-      },
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Club',
+      required: true, // At least one club is required
+    },
   ],
   eventName: {
-      type: String,
-      required: true,
+    type: String,
+    required: true,
   },
   description: {
-      type: String,
-      default: null,
+    type: String,
+    default: null,
   },
-  vanue: {
-      type: String,
-      required: true,
+  venue: {
+    type: String,
+    required: true,
   },
   duration: {
-      type: String,
-      required: true,
+    type: String,
+    required: true,
   },
   maxPoints: {
-      type: Number,
-      required: true,
+    type: Number,
+    required: true,
   },
   date: {
-      type: Date,
-      required: true,
+    type: Date,
+    required: true,
+  },
+  winners: {
+    type: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        rank: { type: Number, required: false },
+        points: { type: Number, required: false, default: 0 }
+      }
+    ],
+    default: []
+  },
+  status: {
+    type: String,
+    required: false,
+    enum: ["Cancelled", "Scheduled", "Upcoming", "Past", "Active", "Draft"],
+    default: "Draft"
   },
   participantsCount: {
-      type: Number,
-      default: 0,
+    type: Number,
+    default: 0,
   },
   photoGallery: {
-      type: [String],
-      default: [],
+    type: [String],
+    default: [],
   },
 });
 
-  const attendanceSchema = new mongoose.Schema({
-    studentId: {
-      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
-      required: true,
-    },
-    eventId: {
-      type: [{type: Schema.Types.ObjectId, ref: 'Event'}],
-      required: true,
-    },
-    pointsGiven: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    status: {
-      type: String,
-      enum: ['Present', 'Absent'], 
-      default: 'Absent',
-      required: true,
-    },
-    isWinner: {
-      type: Boolean,
-      default: false,
-    },
+const attendanceSchema = new mongoose.Schema({
+  studentId: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    required: true,
+  },
+  eventId: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+    required: true,
+  },
+  pointsGiven: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  status: {
+    type: String,
+    enum: ['Present', 'Absent', "Blocked"],
+    default: 'Absent',
+    required: true,
+  },
 });
 
 

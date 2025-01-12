@@ -1,14 +1,14 @@
-const {EventModel} = require("../model/ClubModel");
+const { EventModel } = require("../model/ClubModel");
 
 exports.createEvent = async (req, res) => {
     try {
-        const { clubIds, eventName, description, vanue, duration, maxPoints, date } = req.body;
+        const { clubIds, eventName, description, venue, duration, maxPoints, date, status } = req.body;
 
         if (!Array.isArray(clubIds) || clubIds.length === 0) {
             return res.status(400).json({ message: "At least one club is required", isError: true });
         }
 
-        if (!eventName || !vanue || !duration || !maxPoints || !date) {
+        if (!eventName || !venue || !duration || !maxPoints || !date) {
             return res.status(400).json({ message: "Missing required fields", isError: true });
         }
 
@@ -21,10 +21,11 @@ exports.createEvent = async (req, res) => {
             clubIds,
             eventName,
             description: description || null,
-            vanue,
+            venue,
             duration,
             maxPoints,
             date: new Date(date),
+            status: status || null,
         });
 
         await newEvent.save();
@@ -37,10 +38,10 @@ exports.createEvent = async (req, res) => {
 
 exports.getEvents = async (req, res) => {
     try {
-        const { clubId, search, limit, skip, id } = req.query;
+        const { clubId, search, limit, skip, id, dateAfter, dateBefore, status } = req.query;
 
         if (id) {
-            const event = await EventModel.findById(id).populate("clubIds");
+            const event = await EventModel.findById(id).populate("clubIds winners");
             if (!event) return res.status(404).json({ message: "Event not found", isError: true });
             return res.status(200).json({ message: "Event fetched successfully", event, isError: false });
         }
@@ -48,9 +49,20 @@ exports.getEvents = async (req, res) => {
         let filter = {};
         if (clubId) filter.clubIds = clubId;
         if (search) filter.eventName = { $regex: search, $options: "i" };
+        if (dateAfter) {
+            filter.date = { $gte: new Date(dateAfter) };
+        }
+        if (dateBefore) {
+            filter.date = { ...(filter.date || {}), $lte: new Date(dateBefore) };
+        }
+        if (status) {
+            if (statusValues) {
+                filter.status = { $in: status.split(',') };
+            }
+        }
 
         const events = await EventModel.find(filter)
-            .populate("clubIds")
+            .populate("clubIds winners")
             .limit(limit ? parseInt(limit) : 30)
             .skip(skip ? parseInt(skip) : 0);
 
