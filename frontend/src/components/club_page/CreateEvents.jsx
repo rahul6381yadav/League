@@ -82,8 +82,8 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <form onSubmit={handleFormSubmit} className="bg-white p-4 text-black shadow-md rounded-lg w-96">
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+            <form onSubmit={handleFormSubmit} className="bg-white p-6 text-black shadow-lg rounded-lg w-full max-w-lg">
                 <h2 className="text-lg font-semibold mb-4 text-center">Create Event</h2>
 
                 {/* Primary Club */}
@@ -115,7 +115,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 <input
                     type="text"
                     name="eventName"
-                    placeholder="Enter event name"
+                    placeholder ="Enter event name"
                     value={eventData.eventName}
                     onChange={handleInputChange}
                     className="w-full mb-4 p-2 border rounded text-black"

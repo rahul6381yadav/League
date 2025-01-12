@@ -7,13 +7,14 @@ import {
 } from "@heroicons/react/outline";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
+import {jwtDecode} from "jwt-decode";
 
 const CoordinatorSidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const { isAuthenticated, setIsAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation(); // Get the current location
     const email = localStorage.getItem("emailCont");
 
     const toggleSidebar = () => {
@@ -55,6 +56,29 @@ const CoordinatorSidebar = ({ onToggle }) => {
         return () => clearInterval(interval);
     }, []);
 
+    const menuItems = [
+        {
+            icon: <UserGroupIcon className="h-6 w-6" />,
+            label: "My Club",
+            path: "/my-club",
+        },
+        {
+            icon: <ClipboardListIcon className="h-6 w-6" />,
+            label: "Manage Events",
+            path: "/manage-events",
+        },
+        {
+            icon: <BellIcon className="h-6 w-6" />,
+            label: "Notifications",
+            path: "/notifications",
+        },
+        {
+            icon: <UserCircleIcon className="h-6 w-6" />,
+            label: "My Profile",
+            path: "/my-profile",
+        },
+    ];
+
     return (
         <div
             className={`fixed top-0 left-0 h-screen bg-gray-800 text-white ${isCollapsed ? "w-16" : "w-64"
@@ -75,31 +99,14 @@ const CoordinatorSidebar = ({ onToggle }) => {
 
             {/* Sidebar Menu */}
             <ul className="mt-6 space-y-2">
-                {[
-                    {
-                        icon: <UserGroupIcon className="h-6 w-6" />,
-                        label: "My Club",
-                        path: "/my-club",
-                    },
-                    {
-                        icon: <ClipboardListIcon className="h-6 w-6" />,
-                        label: "Manage Events",
-                        path: "/manage-events",
-                    },
-                    {
-                        icon: <BellIcon className="h-6 w-6" />,
-                        label: "Notifications",
-                        path: "/notifications",
-                    },
-                    {
-                        icon: <UserCircleIcon className="h-6 w-6" />,
-                        label: "My Profile",
-                        path: "/my-profile",
-                    },
-                ].map((item, idx) => (
+                {menuItems.map((item, idx) => (
                     <li
                         key={idx}
-                        className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded cursor-pointer"
+                        className={`flex items-center space-x-4 p-2 rounded cursor-pointer
+                            ${location.pathname === item.path
+                                ? "bg-blue-600 text-white shadow-md" // Active style
+                                : "hover:bg-gray-700"
+                            }`}
                         onClick={() => navigate(item.path)}
                     >
                         <span className="text-lg">{item.icon}</span>

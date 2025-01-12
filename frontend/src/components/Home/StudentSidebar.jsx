@@ -11,13 +11,14 @@ import {
 } from "@heroicons/react/outline";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import { jwtDecode } from "jwt-decode";
 
 const Sidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const { isAuthenticated, setIsAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation(); // Get the current location
     const email = localStorage.getItem("emailCont");
 
     const toggleSidebar = () => {
@@ -55,10 +56,20 @@ const Sidebar = ({ onToggle }) => {
 
         checkAuthStatus();
 
-        // Optional: Check periodically
-        const interval = setInterval(checkAuthStatus, 10000); // Check every 1 minute
+        const interval = setInterval(checkAuthStatus, 10000); // Check every 10 seconds
         return () => clearInterval(interval);
     }, []);
+
+    const menuItems = [
+        { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/home" },
+        { icon: <UserGroupIcon GroupIcon className="h-6 w-6" />, label: "All Clubs", path: "/Clubs" },
+        { icon: <ClipboardListIcon className="h-6 w-6" />, label: "My Events", path: "/my-events" },
+        { icon: <ClipboardListIcon className="h-6 w-6" />, label: "All Events", path: "/all-events" },
+        { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
+        { icon: <SparklesIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
+        { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
+        { icon: <UserGroupIcon GroupIcon className="h-6 w-6" />, label: "My Profile", path: "/profile" },
+    ];
 
     return (
         <div
@@ -84,49 +95,14 @@ const Sidebar = ({ onToggle }) => {
 
             {/* Sidebar Menu */}
             <ul className="mt-6 space-y-2">
-                {[{
-                    icon: <HomeIcon className="h-6 w-6" />,
-                    label: "Home",
-                    path: "/home"
-                },
-                {
-                    icon: <UserGroupIcon className="h-6 w-6" />,
-                    label: "All Clubs",
-                    path: "/Clubs"
-                },
-                {
-                    icon: <ClipboardListIcon className="h-6 w-6" />,
-                    label: "My Events",
-                    path: "/my-events"
-                },
-                {
-                    icon: <ClipboardListIcon className="h-6 w-6" />,
-                    label: "All Events",
-                    path: "/all-events"
-                },
-                {
-                    icon: <SparklesIcon className="h-6 w-6" />,
-                    label: "My Batch Leaderboard",
-                    path: "/batch-leaderboard"
-                },
-                {
-                    icon: <SparklesIcon className="h-6 w-6" />,
-                    label: "Overall Leaderboard",
-                    path: "/overall-leaderboard"
-                },
-                {
-                    icon: <ChartSquareBarIcon className="h-6 w-6" />,
-                    label: "My Achievements",
-                    path: "/my-achievements"
-                },
-                {
-                    icon: <UserGroupIcon className="h-6 w-6" />,
-                    label: "My Profile",
-                    path: "/profile"
-                }].map((item, idx) => (
+                {menuItems.map((item, idx) => (
                     <li
                         key={idx}
-                        className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
+                        className={`flex items-center space-x-4 p-2 rounded cursor-pointer
+                            ${location.pathname === item.path
+                                ? "bg-blue-600 text -white shadow-md" // Active style
+                                : "hover:bg-gray-700"
+                            }`}
                         onClick={() => {
                             console.log("isAuthenticated ", isAuthenticated);
                             if (isAuthenticated === false) {
@@ -156,7 +132,11 @@ const Sidebar = ({ onToggle }) => {
                     }].map((item, idx) => (
                         <li
                             key={idx}
-                            className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
+                            className={`flex items-center space-x-4 p-2 rounded cursor-pointer
+                                ${location.pathname === item.path
+                                    ? "bg-blue-600 text-white shadow-md" // Active style
+                                    : "hover:bg-gray-700"
+                                }`}
                             onClick={() => navigate(item.path)}
                         >
                             <span className="text-lg">{item.icon}</span>
