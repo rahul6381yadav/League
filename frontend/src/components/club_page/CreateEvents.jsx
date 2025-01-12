@@ -34,6 +34,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
         fetchClubs();
     }, [primaryClubId]);
 
+    
     const handleInputChange = (e) => {
         setEventData({ ...eventData, [e.target.name]: e.target.value });
     };
@@ -82,19 +83,24 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <form onSubmit={handleFormSubmit} className="bg-white p-4 text-black shadow-md rounded-lg w-96">
-                <h2 className="text-lg font-semibold mb-4 text-center">Create Event</h2>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+            <form
+                onSubmit={handleFormSubmit}
+                className="bg-white dark:bg-gray-800 p-6 text-gray-900 dark:text-gray-100 shadow-md rounded-lg w-full max-w-md"
+            >
+                <h2 className="text-2xl font-semibold mb-6 text-center">Create Event</h2>
 
                 {/* Primary Club */}
                 <label className="block mb-2 font-medium">Primary Club:</label>
-                <p className="mb-4 p-2 bg-gray-200 text-black rounded">{primaryClubName}</p>
+                <p className="mb-4 p-3 bg-gray-200 dark:bg-gray-700 text-black dark:text-gray-100 rounded">
+                    {primaryClubName}
+                </p>
 
                 {/* Collateral Clubs */}
                 <label className="block mb-2 font-medium">Collateral Clubs (Optional):</label>
-                <div className="mb-4 text-black">
+                <div className="grid grid-cols-4 gap-2 md:gap-4 mb-6">
                     {collateralClubs.map((club) => (
-                        <div key={club._id} className="flex items-center mb-2">
+                        <div key={club._id} className="flex items-center">
                             <input
                                 type="checkbox"
                                 id={club._id}
@@ -118,27 +124,27 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                     placeholder="Enter event name"
                     value={eventData.eventName}
                     onChange={handleInputChange}
-                    className="w-full mb-4 p-2 border rounded text-black"
+                    className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                     required
                 />
 
                 <label className="block mb-2 font-medium">Description:</label>
                 <textarea
                     name="description"
-                    placeholder="Enter descriptions"
+                    placeholder="Enter description"
                     value={eventData.description}
                     onChange={handleInputChange}
-                    className="w-full mb-4 p-2 border rounded text-black"
+                    className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                 />
 
                 <label className="block mb-2 font-medium">Venue:</label>
                 <input
                     type="text"
                     name="vanue"
-                    placeholder="Enter Venue"
+                    placeholder="Enter venue"
                     value={eventData.vanue}
                     onChange={handleInputChange}
-                    className="w-full mb-4 p-2 border rounded text-black"
+                    className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                     required
                 />
 
@@ -146,10 +152,10 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 <input
                     type="text"
                     name="duration"
-                    placeholder="Enter durations"
+                    placeholder="Enter duration"
                     value={eventData.duration}
                     onChange={handleInputChange}
-                    className="w-full mb-4 p-2 border rounded text-black"
+                    className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                     required
                 />
 
@@ -157,10 +163,10 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 <input
                     type="number"
                     name="maxPoints"
-                    placeholder="Enter Maximum points"
+                    placeholder="Enter maximum points"
                     value={eventData.maxPoints}
                     onChange={handleInputChange}
-                    className="w-full mb-4 p-2 border rounded text-black"
+                    className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                     required
                 />
 
@@ -170,16 +176,20 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                     name="date"
                     value={eventData.date}
                     onChange={handleInputChange}
-                    className="w-full mb-4 p-2 border rounded text-black"
+                    className="w-full mb-6 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                     required
                 />
 
                 {/* Submit Button */}
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded w-full">
+                <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800 text-white py-3 px-4 rounded w-full transition"
+                >
                     Create Event
                 </button>
             </form>
         </div>
+
     );
 }
 

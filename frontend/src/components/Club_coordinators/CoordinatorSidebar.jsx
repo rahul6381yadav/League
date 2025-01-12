@@ -79,7 +79,7 @@ const CoordinatorSidebar = ({ onToggle }) => {
                     {
                         icon: <UserGroupIcon className="h-6 w-6" />,
                         label: "My Club",
-                        path: "/my-club",
+                        path: "/home_club",
                     },
                     {
                         icon: <ClipboardListIcon className="h-6 w-6" />,
