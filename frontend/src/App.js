@@ -10,8 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Clubs from './components/Home/Clubs';
-import MyProfile from './components/Home/myprofile';
-import { RoleProvider,useRole} from './context/RoleContext';
+import { RoleProvider, useRole } from './context/RoleContext';
 import Createclub from './components/Home/createclub';
 import AdminLogin from './components/auth/adminLogin';
 import AdminPanel from './components/admin/adminPanel';
@@ -19,9 +18,7 @@ import { EmailProvider } from './context/EmailContext';
 import ClubMembers from './components/club_page/ClubMember';
 import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
-import Layout from './components/Home/Layout';
 import Loader from './components/loader/loader';
-import AllEvents from './components/Events/AllEvents';
 import ManageParticipants from './components/clubs/ManageParticipants';
 
 import Layout from './components/Home/LayoutStudent';
@@ -29,6 +26,7 @@ import Home_club from './components/Club_coordinators/home_club';
 import { DarkModeProvider } from './context/DarkModeContext';
 import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
 import EventPage from './components/manageEvents/EventPage';
+import StudentMyProfile from './components/Home/StudentMyProfile';
 
 const ProtectedRoute = ({ children }) => {
   const { roles } = useRole();
@@ -131,7 +129,7 @@ function UserRoutes() {
       <Routes>
         <Route path="/home" element={<ProtectedRoute><Layout><Home/></Layout></ProtectedRoute>} />
         <Route path="/Clubs" element={<ProtectedRoute><Layout><Clubs /></Layout></ProtectedRoute>} />
-        <Route path="/myprofile" element={<ProtectedRoute><Layout><MyProfile /></Layout></ProtectedRoute>} />
+        <Route path="/myprofile" element={<ProtectedRoute><Layout><StudentMyProfile /></Layout></ProtectedRoute>} />
         <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
         <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
         <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
