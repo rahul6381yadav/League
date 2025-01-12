@@ -1,72 +1,134 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+// import { useAuth } from '../../context/AuthContext';
+import {useAuth} from "../../context/FirebaseAuthContext"
 import { useRole } from '../../context/RoleContext';
 import { useEmail } from '../../context/EmailContext';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import {auth} from "../../firebase"
+import Spinner from "../common/circulaRIndicator"
 
 function Login() {
     const [activeTab, setActiveTab] = useState("student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [Error, setError] = useState("");
-    const { setIsAuthenticated } = useAuth();
+    const [loading, setLoading] = useState("");
+    // const { setIsAuthenticated } = useAuth();
     const { setRole } = useRole();
     const { setEmailCont } = useEmail();
+
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("login page ");
-        const token = localStorage.getItem("authToken");
-        if (token && window.location.pathname !== "/home") {
-            navigate("/home"); // Redirect to Home if already logged in
+    const handleEmailLogin = async (e) => {
+        setLoading(true);
+        e.preventDefault();
+        const response = await loginWithEmail(email, password);
+        if (response.success) {
+            setError(null);
+            try {
+                console.log(response.user);
+                const firebaseToken = await (response.user).accessToken;
+                const reqBody = {
+                    email: (response.user).email,
+                    role: activeTab,
+                    photo: (response.user).photoURL,
+                    fullName: (response.user).displayName
+                };
+                const res = await fetch('http://localhost:4000/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reqBody),
+                });
+    
+                const result = await res.json();
+                console.log(result.token);
+                if (res.ok) {
+                    console.log("Login successful:", result);
+                    localStorage.setItem("authToken", result.token);
+                    localStorage.setItem("token", firebaseToken);
+                    // setIsAuthenticated(true);
+                    setRole(activeTab);
+                    setEmailCont(email);
+                    setError(null);
+                    navigate('/home');
+                    setLoading(false);
+                } else {
+                    setLoading(false);
+                    setError(result.message);
+                }
+            } catch (error) {
+                setLoading(false);
+                console.log(error);
+                setError('Something went wrong.');
+            }
+        } else {
+            setLoading(false);
+            setError(response.message);
         }
-    }, [navigate]);
+    };
+
+    const handleGoogleAuthentication = async () => {
+        setLoading(true);
+        const response = await loginWithGoogle();
+        if (response.success) {
+            setError(null);
+
+            try {
+                const firebaseToken = await (response.user).accessToken;
+                const reqBody = {
+                    email: (response.user).email,
+                    role: activeTab,
+                    photo: (response.user).photoURL,
+                    fullName: (response.user).displayName
+                };
+                const res = await fetch('http://localhost:4000/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reqBody),
+                });
+    
+                const result = await res.json();
+                console.log(result.token);
+                if (res.ok) {
+                    console.log("Login successful:", result);
+                    localStorage.setItem("authToken", result.token);
+                    localStorage.setItem("token", firebaseToken);
+                    // setIsAuthenticated(true);
+                    setRole(activeTab);
+                    setEmailCont(email);
+                    setError(null);
+                    navigate('/home');
+                    setLoading(false);
+                } else {
+                    setLoading(false);
+                    setError(result.message);
+                }
+            } catch (error) {
+                setLoading(false);
+                console.log(error);
+                setError('Something went wrong.');
+            }
+        } else {
+            setLoading(false);
+            setError(response.message);
+        }
+    };
+
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
 
-    const handleGoogleSignIn = () => {
-        console.log("Sign in with Google");
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent form from refreshing the page
-
-        const loginData = {
-            email,
-            password,
-            roles: activeTab,
-        };
-
-        try {
-            const response = await fetch(`http://localhost:4000/user/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(loginData),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                console.log("Login successful:", result);
-                localStorage.setItem("authToken", result.token);
-                setIsAuthenticated(true);
-                setRole(activeTab);
-                setEmailCont(email);
-                navigate('/home');
-            } else {
-                setError(result.message);
-                console.error("Login failed:", result.message);
-
-            }
-            setEmail("");
-            setPassword("");
-        } catch (error) {
-            console.error("Error during login request:", error);
-        }
-    };
+    // useEffect(() => {
+    //     const token = localStorage.getItem("authToken");
+    //     if (token && window.location.pathname !== "/home") {
+    //         navigate("/home"); // Redirect to Home if already logged in
+    //     }
+    // }, [navigate]);
 
     return (
         <>
@@ -116,7 +178,7 @@ function Login() {
                     <div className="p-6 space-y-4">
                         <h2 className="text-2xl font-bold text-center text-black">{`Login as ${activeTab}`}</h2>
 
-                        <form className="space-y-4" onSubmit={handleSubmit}>
+                        <form className="space-y-4" onSubmit={handleEmailLogin}>
                             <div>
                                 <p className="text-sm text-red-600 text-center">
                                     {Error}
@@ -171,7 +233,7 @@ function Login() {
 
                             {/* Google Sign-In Button */}
                             <button
-                                onClick={handleGoogleSignIn}
+                                onClick={handleGoogleAuthentication}
                                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <img
@@ -185,8 +247,49 @@ function Login() {
                     </div>
                 </div>
             </div>
+            {loading && (<div className='fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center'><Spinner className='h-10 w-10 border-blue-500'/></div>  )}
         </>
     );
 }
 
 export default Login;
+
+const loginWithEmail = async (email, password) => {
+    try {
+        const persistence = browserLocalPersistence;
+
+        if (persistence) {
+            await setPersistence(auth, persistence);
+        }
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        return { success: true, user: userCredential.user, message: "" };
+    } catch (error) {
+        console.log(error);
+        let errorMessage = 'Something went wrong.';
+        if (error.code === 'auth/invalid-credential') {
+            errorMessage = 'Invalid Credentials. Please try again.';
+        }
+        return { success: false, message: errorMessage, user: {} };
+    }
+};
+
+const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+        const persistence = browserLocalPersistence;
+
+        if (persistence) {
+            await setPersistence(auth, persistence);
+        }
+        const user = (await signInWithPopup(auth, provider)).user;
+        console.log('User logged in with Google:', user);
+        return { success: true, user: user, message: "User Successfully logged In" };
+    } catch (error) {
+        console.error('Error during Google login:', error.message);
+        let errorMessage = 'Something went wrong.';
+        if (error.code === 'auth/invalid-credential') {
+            errorMessage = `${error.code}. Please try again.`;
+        }
+        return { success: false, message: errorMessage, user: {} };
+    }
+};

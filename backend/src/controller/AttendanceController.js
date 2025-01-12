@@ -1,20 +1,18 @@
 const { AttendanceModel } = require("../model/ClubModel");
 
 // Mark attendance
-exports.markAttendance = async (req, res) => {
+exports.participate = async (req, res) => {
     try {
         const { studentId, eventId, pointsGiven, status, isWinner } = req.body;
 
-        const newAttendance = new AttendanceModel({
+        const newParticipation = new AttendanceModel({
             studentId,
-            eventId,
-            pointsGiven,
-            status,
-            isWinner,
-        });
+            eventId
+        }).populate("studentId eventId");
 
-        await newAttendance.save();
-        res.status(201).json({ message: "Attendance marked successfully", attendance: newAttendance, isError: false });
+        await newParticipation.save();
+        console.log(newParticipation);
+        res.status(201).json({ message: "Partcipation successfull!!!", participation: newParticipation, isError: false });
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).json({ message: "Internal Server Error", isError: true });
@@ -22,14 +20,20 @@ exports.markAttendance = async (req, res) => {
 };
 
 // Get attendance records with optional filters
-exports.getAttendanceRecords = async (req, res) => {
+exports.getPartcipation = async (req, res) => {
     try {
-        const { studentId, eventId, status, limit, skip } = req.query;
+        const { studentId, eventId, status, limit, skip, pointsGreaterThan, pointsLessThan } = req.query;
 
         let filter = {};
         if (studentId) filter.studentId = studentId;
         if (eventId) filter.eventId = eventId;
         if (status) filter.status = status;
+        if (pointsGreaterThan) {
+            filter.pointsGiven = { $gte: pointsGreaterThan };
+        }
+        if (pointsLessThan) {
+            filter.pointsGiven = { ...(filter.pointsGiven || {}), $lte: pointsLessThan };
+        }
 
         const records = await AttendanceModel.find(filter)
             .populate("studentId eventId")
@@ -49,7 +53,7 @@ exports.updateAttendance = async (req, res) => {
         const { id } = req.query;
         const updates = req.body;
 
-        const updatedAttendance = await AttendanceModel.findByIdAndUpdate(id, updates, { new: true }).populate("studentId eventId");
+        const updatedAttendance = await AttendanceModel.findByIdAndUpdate(id, updates, { new: false }).populate("studentId eventId");
         if (!updatedAttendance) return res.status(404).json({ message: "Attendance not found", isError: true });
 
         res.status(200).json({ message: "Attendance updated successfully", attendance: updatedAttendance, isError: false });

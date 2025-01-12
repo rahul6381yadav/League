@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../firebase";
 
 function Forget() {
     const { setForgotPasswordState } = useAuth();
@@ -9,47 +11,26 @@ function Forget() {
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
+
+    const handleReset = async (e) => {
+        e.preventDefault();
+        try {
+          await sendPasswordResetEmail(auth, email);
+          setMessage("Password reset email sent! Check your inbox.");
+          setError("");
+        } catch (err) {
+          setError(err.message);
+          setMessage("");
+        }
+      };
+
+
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (token) {
             navigate("/home"); // Redirect to Home if already logged in
         }
     }, [navigate]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const forgotData = {
-            email,
-        };
-
-        try {
-            const response = await fetch(`http://localhost:4000/user/forgot-password`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(forgotData),
-            });
-
-            // Parse the response as JSON
-            const result = await response.json();
-
-            if (response.ok) {
-                setForgotPasswordState(true);
-                setMessage(result.message); // Use `result.message`, not `response.data.message`
-                // setEmail(""); // Reset the email input field
-                console.log("Request successful:", result);
-                navigate('/VerifyOTP', { state: { email } }); // Navigate to the VerifyOTP page
-            } else {
-                console.error("Request failed:", result.message);
-                setError(result.message || "Something went wrong.");
-            }
-        } catch (error) {
-            console.error("Error:", error); // Log the full error for debugging
-            setError("Something went wrong. Please try again.");
-        }
-    };
 
     return (
         <>
@@ -73,7 +54,7 @@ function Forget() {
                         <h2 className="text-2xl font-bold text-center text-black">Forgot Password</h2>
 
                         <p className="text-sm text-gray-600 text-center">
-                            Enter your email address to receive a OTP
+                            Enter your email address to recieve password reset link
                         </p>
 
                         {message && (
@@ -84,7 +65,7 @@ function Forget() {
                             <div className="text-red-500 text-sm text-center">{error}</div>
                         )}
 
-                        <form className="space-y-4" onSubmit={handleSubmit}>
+                        <form className="space-y-4" onSubmit={handleReset}>
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                     Email
@@ -105,7 +86,7 @@ function Forget() {
                                 type="submit"
                                 className="w-full py-2 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                Send OTP
+                                Send Link
                             </button>
                         </form>
 

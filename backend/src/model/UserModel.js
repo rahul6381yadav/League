@@ -9,29 +9,29 @@ const batchCodeEnum = {
 const userSchema = new mongoose.Schema({
     fullName: {
         type: String,
-        required: true,
+        required: false,
     },
     studentId: {
         type: String,
-        required: true,
+        required: false,
     },
     email: {
         type: String,
         required: true,
         unique: true,
     },
-    password: {
+    photo: {
         type: String,
-        required: true,
+        default: ""
+    },
+    joiningDate: {
+        type: Date,
+        default: Date.now()
     },
     batchCode: {
         type: Number,
-        required: true,
-        enum: batchCodeEnum,
-    },
-    photo: {
-        type: String,
         required: false,
+        enum: batchCodeEnum,
     },
     resetOtp: {
         type: String,
@@ -41,10 +41,15 @@ const userSchema = new mongoose.Schema({
         type: Date,
         required: false,
     },
-    roles: {
-        type: [{type: String, enum: ["student", "coordinator", "admin", "cosa","faculty"]}],
+    hasFirebaseId: {
+        type: Boolean,
+        default: false
+    },
+    role: {
+        type: String,
         required: true,
-        default: ["student"]
+        enum: ["student", "admin", "cosa","faculty"],
+        default: "student"
     },
 });
 
