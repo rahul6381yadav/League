@@ -45,10 +45,10 @@ const ProtectedRoute = ({ children, requiredRole }) => {
       if (isAuthenticated === false && roles!=='admin') {
         navigate('/');
       }
-      if (isAuthenticated === true && roles === 'coordinator') {
+      if (isAuthenticated === true && requiredRole!==roles && roles === 'coordinator') {
         navigate('/home_club');
       }
-      if (isAuthenticated === true && roles === 'admin') {
+      if (isAuthenticated === true && requiredRole!==roles && roles === 'admin') {
         navigate('/AdminPanel');
       }
     }, 10);
