@@ -1,34 +1,22 @@
 const {ClubModel} = require("../model/ClubModel");
 
-// Create a new club
-exports.createClub = async (req, res) => {
-    try {
-        const club = await ClubModel.findOne({ name: req.body.name });
-        if (club) {
-            return res.status(400).json({ message: "Club with the given name already exists", isError: true });
-        }
-        const newClub = new ClubModel(req.body);
-        await newClub.save();
-        res.status(201).json({ message: "Club created successfully", club: newClub, isError: false });
-    } catch (error) {
-        console.error("Error:", error.message);
-        res.status(500).json({ message: "Internal Server Error", isError: true });
-    }
-};
-
 exports.getClubs = async (req, res) => {
     try {
         const { search, ratingMin, ratingMax, limit, skip, coordinatorId, userId, id , email } = req.query;
 
         if (id) {
-            const club = await ClubModel.findById(id).populate("members studentMembers");
+            const club = await ClubModel.findById(id).populate("coordinator1 coordinator2 members studentMembers");
             if (!club) return res.status(404).json({ message: "Club not found", isError: true, club: null });
             return res.status(200).json({ club: club, isError: false, message: "Club fetched successfully"});
         }
 
         let filter = {};
-        if (search) {
-            filter.name = { $regex: search, $options: "i" }; 
+        if(search) {
+            filter.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } }
+            ];
         }
         if (ratingMin || ratingMax) {
             filter.overallRating = {};
@@ -64,7 +52,7 @@ exports.updateClub = async (req, res) => {
         const updates = req.body;
         updates.lastUpdated = Date.now();
 
-        const updatedClub = await ClubModel.findByIdAndUpdate(id, updates, { new: true }).populate("members studentMembers");
+        const updatedClub = await ClubModel.findByIdAndUpdate(id, updates, { new: false }).populate("coordinator1 coordinator2 members studentMembers");
         if (!updatedClub) return res.status(404).json({ message: "Club not found", isError: true, club: null });
         res.status(200).json({ message: "Club updated successfully", club: updatedClub, isError: false });
     } catch (error) {

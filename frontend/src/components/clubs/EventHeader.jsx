@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const formatDateTime = (isoString) => {
-  const date = new Date(isoString);
+// function formatDateTime(isoString) {
+//   const date = new Date(isoString);
 
-  // Use Intl.DateTimeFormat for both date and time
-  const dateOptions = { year: "numeric", month: "long", day: "numeric" };
-  const timeOptions = { hour: "numeric", minute: "numeric", hour12: true }; // 12-hour format
+//   const options = {
+//     year: "numeric",
+//     month: "long",
+//     day: "2-digit",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   };
 
-  const formattedDate = new Intl.DateTimeFormat("en-US", dateOptions).format(
-    date
-  );
-  const formattedTime = new Intl.DateTimeFormat("en-US", timeOptions).format(
-    date
-  );
+//   return new Intl.DateTimeFormat("en-US", options).format(date);
+// }
 
-  return `${formattedDate} ${formattedTime}`;
-};
+function getEventStatus(eventDate, duration) {
+  if (!eventDate || !duration) return "Status TBD";
+
+  const startTime = new Date(eventDate);
+  const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
+  const now = new Date();
+
+  if (now < startTime) return "Upcoming";
+  if (now >= startTime && now <= endTime) return "Ongoing";
+  return "Completed";
+}
 
 const EventHeader = ({ id }) => {
   const [event, setEvent] = useState({});
@@ -36,8 +45,10 @@ const EventHeader = ({ id }) => {
     fetchData();
   }, [id]);
 
+  const eventStatus = getEventStatus(event.date, event.duration);
+
   return (
-    <div className="w-full bg-blue-500  text-white p-8 shadow-xl flex items-center justify-between dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-900">
+    <div className="w-full bg-blue-500 text-white p-8 shadow-xl flex items-center justify-between dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-900">
       {/* Left Section: Event Details */}
       <div className="flex items-center space-x-6">
         {/* Event Image */}
@@ -81,6 +92,11 @@ const EventHeader = ({ id }) => {
           <span className="text-sm dark:text-gray-400">
             {event.duration || "Duration TBD"}
           </span>
+        </div>
+        {/* Status */}
+        <div className="flex items-center space-x-2">
+          <span className="text-xl font-bold dark:text-white">📌</span>
+          <span className="text-sm dark:text-gray-400">{eventStatus}</span>
         </div>
       </div>
     </div>

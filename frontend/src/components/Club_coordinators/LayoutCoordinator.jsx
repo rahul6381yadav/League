@@ -18,7 +18,7 @@ const LayoutCoordinator = ({ children }) => {
             {/* Main Content */}
             <main
                 className={`transition-all duration-300 ${isCollapsed ? "ml-16" : "ml-64"
-                    } flex-1 p-4 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100`}
+                    } flex-1 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100`}
             >
                 {/* Top Bar with Dark Mode Toggle */}
                 <div className="flex justify-end items-center mb-4">
