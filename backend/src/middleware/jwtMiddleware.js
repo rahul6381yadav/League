@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../model/UserModel"); // Import User model
+const {ClubModel} = require("../model/ClubModel")
 
 dotenv.config();
 
@@ -14,7 +15,14 @@ exports.verifyToken = async (req, res, next) => {
     try {
         // Verify token using the secret from environment variables
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.userId).select("-password"); // Fetch user details (exclude password)
+        let user;
+     
+        if(decoded.clubId){
+            user = await ClubModel.findById(decoded.clubId); // Fetch user details (exclude password)
+        }else{
+            user = await User.findById(decoded.userId); // Fetch user details (exclude password)
+        }
+      
         
         if (!user) {
             return res.status(404).json({ message: "User not found", isError: true });

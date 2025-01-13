@@ -11,15 +11,18 @@ import {
   isSameDay,
   addMonths,
 } from "date-fns";
+import {jwtDecode} from "jwt-decode";
 
 const HomeClub = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [rating, setRating] = useState(null);
 
   useEffect(() => {
     fetchEvents();
+    fetchRating();
   }, [currentMonth]);
 
   const fetchEvents = async () => {
@@ -46,6 +49,29 @@ const HomeClub = () => {
       console.error("Error fetching events:", err.response || err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRating = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        console.error("No auth token found. Please log in.");
+        return;
+      }
+
+      const decoded = jwtDecode(token);
+      const { clubId } = decoded; 
+
+      const response = await axios.get(`http://localhost:4000/api/v1/club?id=${clubId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data?.club.overallRating !== undefined) {
+        setRating(response.data.club.overallRating);
+      }
+    } catch (err) {
+      console.error("Error fetching rating:", err.response || err.message);
     }
   };
 
@@ -159,12 +185,25 @@ const HomeClub = () => {
   };
 
   return (
-    <div className="p-5 max-w-4xl mx-auto dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        {renderHeader()}
-        {renderDays()}
-        {renderCells()}
-        {selectedDate && renderSidePanel()}
+    <div className="p-5 max-w-6xl mx-auto dark:bg-gray-900">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Calendar Section */}
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex-1">
+          {renderHeader()}
+          {renderDays()}
+          {renderCells()}
+          {selectedDate && renderSidePanel()}
+        </div>
+
+        {/* Club Rating Section */}
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 w-full lg:w-1/3">
+          <h3 className="text-lg font-bold mb-3 dark:text-white">Club Rating</h3>
+          {rating !== null ? (
+            <p className="text-2xl font-bold text-blue-500">{rating}</p>
+          ) : (
+            <p className="text-gray-500">Loading rating...</p>
+          )}
+        </div>
       </div>
     </div>
   );
