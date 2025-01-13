@@ -1,34 +1,16 @@
 import './App.css';
-<<<<<<< HEAD
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { RoleProvider, useRole } from './context/RoleContext';
-import { EmailProvider } from './context/EmailContext';
-import { DarkModeProvider } from './context/DarkModeContext';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
-import { jwtDecode } from 'jwt-decode';
-=======
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
 import Login from './components/auth/Login';
 import { useNavigate } from 'react-router-dom';
 import Forget from './components/auth/Forget';
 import VerifyOTP from './components/auth/otp';
 import NewPassword from './components/auth/newPassword';
 import Home from './components/Home/Home';
-<<<<<<< HEAD
-import Clubs from './components/Home/Clubs';
-import MyProfile from './components/Home/myprofile';
-=======
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Clubs from './components/Home/Clubs';
 import { RoleProvider, useRole } from './context/RoleContext';
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
 import Createclub from './components/Home/createclub';
 import AdminLogin from './components/auth/adminLogin';
 import AdminPanel from './components/admin/adminPanel';
@@ -43,13 +25,12 @@ import Home_club from './components/Club_coordinators/home_club';
 import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
 import EventPage from './components/manageEvents/EventPage';
 import StudentMyProfile from './components/Home/StudentMyProfile';
+import { EmailProvider } from './context/EmailContext';
+import { DarkModeProvider } from './context/DarkModeContext';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const { isAuthenticated, setIsAuthenticated, loading, setLoading } = useAuth();
   const { roles, setRole } = useRole();
   const navigate = useNavigate();
-<<<<<<< HEAD
-=======
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const token = localStorage.getItem("authToken");
   console.log("protected routes");
@@ -132,65 +113,12 @@ const PrivateRoutes = ({ children, requiredRole }) => {
 
   return children;
 };
-function UserRoutes() {
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
-
-  useEffect(() => {
-    setLoading(true);
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const token = localStorage.getItem('authToken');
-        const payload = jwtDecode(token);
-        console.log(payload.role);
-        setRole(payload.role);
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-        navigate('/');
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, [navigate, setIsAuthenticated, setRole, setLoading]);
-
-<<<<<<< HEAD
-  if (!isAuthenticated || (requiredRole && roles !== requiredRole)) {
-    navigate("/")
-  }
-=======
-  return (
-    <>
-      {loading && <Loader />}
-      <Routes>
-        <Route path="/home" element={<ProtectedRoute><Layout><Home/></Layout></ProtectedRoute>} />
-        <Route path="/Clubs" element={<ProtectedRoute><Layout><Clubs /></Layout></ProtectedRoute>} />
-        <Route path="/myprofile" element={<ProtectedRoute><Layout><StudentMyProfile /></Layout></ProtectedRoute>} />
-        <Route path="/ClubPages" element={<ProtectedRoute><Layout><ClubPages /></Layout></ProtectedRoute>} />
-        <Route path="/Clubs/ClubMember" element={<ProtectedRoute><Layout><ClubMembers /></Layout></ProtectedRoute>} />
-        <Route path="/ViewUsers" element={<ProtectedRoute><Layout><ViewUsers /></Layout></ProtectedRoute>} />
-        <Route path="/createclub" element={<PrivateRoutes requiredRole="cosa"><Createclub /></PrivateRoutes>} />
-        <Route path="/events/:id" element={<LayoutCoordinator><ManageParticipants/></LayoutCoordinator>}/>        
-        <Route path="/home_club" element={<CoordinatorRoute><LayoutCoordinator><Home_club /></LayoutCoordinator></CoordinatorRoute>}/>
-        <Route path="/manage-events" element={<CoordinatorRoute><LayoutCoordinator><EventPage /></LayoutCoordinator></CoordinatorRoute>}/>
-        <Route path="/" element={<Login />} />
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/adminPanel" element={<AdminRoutes><AdminPanel /></AdminRoutes>}/>
-        <Route path="/forget" element={<Forget />} />
-        <Route path="/VerifyOTP" element={<VerifyOTP />} />
-        <Route path="/newPassword" element={<NewPassword />} />
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
-
-  return children;
-};
 
 function UserRoutes() {
   return(
     <Routes>
       <Route path="/home" element={<ProtectedRoute requiredRole="student"><Layout><Home /></Layout></ProtectedRoute>} />
       <Route path="/Clubs" element={<ProtectedRoute requiredRole="student"><Layout><Clubs /></Layout></ProtectedRoute>} />
-      <Route path="/myprofile" element={<ProtectedRoute requiredRole="student"><Layout><MyProfile /></Layout></ProtectedRoute>} />
       <Route path="/ClubPages" element={<ProtectedRoute requiredRole="student"><Layout><ClubPages /></Layout></ProtectedRoute>} />
       <Route path="/Clubs/ClubMember" element={<ProtectedRoute requiredRole="student"><Layout><ClubMembers /></Layout></ProtectedRoute>} />
       <Route path="/ViewUsers" element={<ProtectedRoute requiredRole="student"><Layout><ViewUsers /></Layout></ProtectedRoute>} />
