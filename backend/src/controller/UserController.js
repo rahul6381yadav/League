@@ -43,7 +43,7 @@ exports.UserSignup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, role, photo, fullName } = req.body;
+        const { email, role,fullName,photo} = req.body;
         if(!email || !role){
             return res.status(400).json({ message: "Email and role are required" });
         }
@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
             }
 
             const token = jwt.sign({ clubId: club._id, email: club.email, coordinator1_Id: club.coordinator1, clubName: club.name }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.status(200).json({ message: "Login successful", token, email: user.email });
+            res.status(200).json({ message: "Login successful", token, email: club.email });
         } else {
             let user = await User.findOne({ email });
             if (!user) {
