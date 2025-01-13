@@ -114,28 +114,6 @@ const eventSchema = new Schema({
   },
 });
 
-<<<<<<< HEAD
-const attendanceSchema = new mongoose.Schema({
-  studentId: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    required: true,
-  },
-  eventId: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
-    required: true,
-  },
-  pointsGiven: {
-    type: Number,
-    required: false,
-    default: 0,
-  },
-  status: {
-    type: String,
-    enum: ['Present', 'Absent', "Blocked"],
-    default: 'Absent',
-    required: true,
-  },
-=======
   const attendanceSchema = new mongoose.Schema({
     studentId: {
       type: [{type: Schema.Types.ObjectId, ref: 'User'}],
@@ -161,7 +139,6 @@ const attendanceSchema = new mongoose.Schema({
       type: Boolean,
       default: false,
     },
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
 });
 
 

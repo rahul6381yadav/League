@@ -13,15 +13,10 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [forgotPasswordState, setForgotPasswordState] = useState(false);
     const [isOTPVerified, setisOTPVerified] = useState(false);
-<<<<<<< HEAD
-    const [loading, setLoading] = useState(false);
-=======
     const [userId, setUserId] = useState(null);
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
 
     // Check if the user is authenticated on initial load
     useEffect(() => {
-        setLoading(true);
         console.log("auth Context");
         const token = localStorage.getItem("authToken");
         if (token) {
@@ -42,9 +37,9 @@ export const AuthProvider = ({ children }) => {
                 localStorage.removeItem("authToken");
                 setIsAuthenticated(false);
             }
-            setLoading(false);
+       
         } else {
-            setLoading(false);
+         
             setIsAuthenticated(false); // No token found
         }
     }, []); // Empty dependency array to run this effect only once (on mount)
@@ -64,12 +59,7 @@ export const AuthProvider = ({ children }) => {
                 setForgotPasswordState,
                 isOTPVerified,
                 setisOTPVerified,
-<<<<<<< HEAD
-                loading,
-                setLoading
-=======
                 userId
->>>>>>> fa7359e5e8ce05b93bb91f78385ed0041e476178
             }}
         >
             {children}
