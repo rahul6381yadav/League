@@ -7,7 +7,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
     const [eventData, setEventData] = useState({
         eventName: '',
         description: '',
-        vanue: '',
+        venue: '',
         duration: '',
         maxPoints: '',
         date: '',
@@ -70,7 +70,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 setEventData({
                     eventName: '',
                     description: '',
-                    vanue: '',
+                    venue: '',
                     duration: '',
                     maxPoints: '',
                     date: '',
@@ -141,9 +141,9 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 <label className="block mb-2 font-medium">Venue:</label>
                 <input
                     type="text"
-                    name="vanue"
+                    name="venue"
                     placeholder="Enter venue"
-                    value={eventData.vanue}
+                    value={eventData.venue}
                     onChange={handleInputChange}
                     className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"
                     required

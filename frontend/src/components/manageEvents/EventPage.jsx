@@ -39,7 +39,6 @@ const EventPage = () => {
         setClubDetails(result.clubs);
         setPrimaryClubId(result.clubs[0]._id);
         setPrimaryClubName(result.clubs[0].name);
-   
       }
       else {
         console.log("error in response");
@@ -75,6 +74,8 @@ const EventPage = () => {
 
   useEffect(() => {
     fetchClubDetails();
+    console.log(primaryClubId);
+    console.log(primaryClubName)
   },[])
   useEffect(() => {
     fetchEvents();

@@ -91,7 +91,7 @@ const eventSchema = new Schema({
   winners: {
     type: [
       {
-        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: false },
         rank: { type: Number, required: false },
         points: { type: Number, required: false, default: 0 }
       }
