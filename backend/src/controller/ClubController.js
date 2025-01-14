@@ -49,12 +49,25 @@ exports.getClubs = async (req, res) => {
 exports.updateClub = async (req, res) => {
     try {
         const { id } = req.query;
-        const updates = req.body;
+        const { memberIds, studentMemberIds, ...updates } = req.body; 
         updates.lastUpdated = Date.now();
 
-        const updatedClub = await ClubModel.findByIdAndUpdate(id, updates, { new: false }).populate("coordinator1 coordinator2 members studentMembers");
-        if (!updatedClub) return res.status(404).json({ message: "Club not found", isError: true, club: null });
-        res.status(200).json({ message: "Club updated successfully", club: updatedClub, isError: false });
+        const club = await ClubModel.findById(id);
+        if (!club) return res.status(404).json({ message: "Club not found", isError: true, club: null });
+        if (memberIds && Array.isArray(memberIds)) {
+            club.members = [...new Set([...club.members, ...memberIds])]; // Ensure no duplicates
+        }
+        // Add new student members to the club
+        if (studentMemberIds && Array.isArray(studentMemberIds)) {
+            club.studentMembers = [...new Set([...club.studentMembers, ...studentMemberIds])]; // Ensure no duplicates
+        }
+
+        Object.assign(club, updates);
+
+        // Save the updated club
+        const updatedClub = await club.save();
+        const populatedClub = await updatedClub.populate("coordinator1 coordinator2 members studentMembers");
+        res.status(200).json({ message: "Club updated successfully", club: populatedClub, isError: false });
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).json({ message: "Internal Server Error", isError: true, club: null });
