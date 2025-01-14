@@ -53,11 +53,16 @@ exports.login = async (req, res) => {
             if (!club) {
                 return res.status(404).json({ message: "Club not found" });
             } else if (!club.hasFirebaseId) {
+                
+                // const updateData = {
+                //     name:fullName,
+                //     image:photo,
+                //     lastUpdated: Date.now()
+                // }
                 const updateData = {
-                    name:fullName,
-                    image:photo,
                     lastUpdated: Date.now()
                 }
+
                 club = await ClubModel.findOneAndUpdate({ email: email }, updateData, { new: false })
             }
 
