@@ -126,7 +126,7 @@ function ViewUsers() {
                             </td>
                             <td className="border p-2 truncate">{user.fullName}</td>
                             <td className="border p-2 truncate">{user.email}</td>
-                            <td className="border p-2">{user.roles ? user.roles.join(", ") : "N/A"}</td>
+                            <td className="border p-2">{user.role}</td>
                             <td className="border p-2">{user.batchCode || "N/A"}</td>
                             <td className="border p-2">{user.studentId || "N/A"}</td>
                         </tr>

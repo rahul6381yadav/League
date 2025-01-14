@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from 'jwt-decode';
+import ViewUsers from "../club_page/ViewUsers";
+import AddMembers from "../club_page/Addmember";
 
 function MyClub() {
     const [clubDetails, setClubDetails] = useState(null); // Default to null
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const token = localStorage.getItem("authToken");
     const email = localStorage.getItem("emailCont");
     const decodedToken = jwtDecode(token);
@@ -151,7 +154,11 @@ function MyClub() {
                     </button>
                     <button
                         className="bg-green-500 dark:bg-green-600 text-white px-4 py-2 rounded hover:bg-green-600 dark:hover:bg-green-700"
-                        onClick={() => console.log("Add member clicked")}
+                        onClick={() => {
+                            setIsModalOpen(true);
+                            console.log("Add member clicked")
+                        }
+                            }
                     >
                         Add Member
                     </button>
@@ -168,6 +175,28 @@ function MyClub() {
                         Add Student Member
                     </button>
                 </div>
+
+                {
+                    isModalOpen && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50">
+                            {/* Background Overlay */}
+                            <div
+                                className="bg-black opacity-50 absolute inset-0"
+                                onClick={() => setIsModalOpen(false)}
+                            ></div>
+
+                            {/* Modal Container */}
+                            <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
+                                <AddMembers
+                                    onClose={() => {
+                                        setIsModalOpen(false);
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                    )
+                }
             </div>
         </div>
     );
