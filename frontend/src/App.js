@@ -27,6 +27,7 @@ import EventPage from './components/manageEvents/EventPage';
 import StudentMyProfile from './components/Home/StudentMyProfile';
 import { EmailProvider } from './context/EmailContext';
 import { DarkModeProvider } from './context/DarkModeContext';
+import MyClub from './components/Club_coordinators/MyClub';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { roles, setRole } = useRole();
@@ -122,6 +123,7 @@ function UserRoutes() {
       <Route path="/ClubPages" element={<ProtectedRoute requiredRole="student"><Layout><ClubPages /></Layout></ProtectedRoute>} />
       <Route path="/Clubs/ClubMember" element={<ProtectedRoute requiredRole="student"><Layout><ClubMembers /></Layout></ProtectedRoute>} />
       <Route path="/ViewUsers" element={<ProtectedRoute requiredRole="student"><Layout><ViewUsers /></Layout></ProtectedRoute>} />
+      <Route path="/my-club" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><MyClub/></LayoutCoordinator></ProtectedRoute>}/>
       <Route path="/createclub" element={<ProtectedRoute requiredRole="cosa"><Createclub /></ProtectedRoute>} />
       <Route path="/home_club" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><Home_club /></LayoutCoordinator></ProtectedRoute>} />
       <Route path="/manage-events" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><EventPage /></LayoutCoordinator></ProtectedRoute>} />
