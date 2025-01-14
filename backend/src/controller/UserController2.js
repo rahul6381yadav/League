@@ -25,8 +25,6 @@ exports.createUser = [
 ];
 
 exports.getUsers = [
-    verifyToken, // Replaced authenticate with verifyToken
-    authorize("admin", "coordinator", "student"), // Accessible to all roles
     async (req, res) => {
         try {
             const { search, roles, batchCode, limit, skip, id, studentId } = req.query;
