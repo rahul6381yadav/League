@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { jwtDecode } from 'jwt-decode';
+import ViewUsers from "../club_page/ViewUsers";
+import AddMembers from "../club_page/Addmember";
 
 function MyClub() {
     const [clubDetails, setClubDetails] = useState(null); // Default to null
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const token = localStorage.getItem("authToken");
     const email = localStorage.getItem("emailCont");
+    const decodedToken = jwtDecode(token);
 
     const fetchClubDetails = async () => {
         try {
@@ -11,8 +16,9 @@ function MyClub() {
                 console.error("No auth token found. Please log in.");
                 return;
             }
+            console.log(decodedToken.clubId);
             const response = await fetch(
-                `http://localhost:4000/api/v1/club?email=${email}`,
+                `http://localhost:4000/api/v1/club?id=${decodedToken.clubId}`,
                 {
                     method: "GET",
                     headers: {
@@ -23,7 +29,7 @@ function MyClub() {
             const result = await response.json();
 
             if (response.ok) {
-                setClubDetails(result.clubs[0]); // Assume result.clubs is an array, pick the first club
+                setClubDetails(result.club); // Assume result.clubs is an array, pick the first club
             } else {
                 console.log("Error in response");
             }
@@ -80,8 +86,8 @@ function MyClub() {
                             Coordinators
                         </h3>
                         <ul className="list-disc ml-6 text-gray-700 dark:text-gray-300">
-                            <li>{clubDetails.coordinator1 || "Coordinator 1 not assigned"}</li>
-                            <li>{clubDetails.coordinator2 || "Coordinator 2 not assigned"}</li>
+                            <li>{(clubDetails.coordinator1 && clubDetails.coordinator1.email) || "Coordinator 1 not assigned"}</li>
+                            <li>{(clubDetails.coordinator2 && clubDetails.coordinator2.email) || "Coordinator 2 not assigned"}</li>
                         </ul>
                     </div>
 
@@ -148,9 +154,19 @@ function MyClub() {
                     </button>
                     <button
                         className="bg-green-500 dark:bg-green-600 text-white px-4 py-2 rounded hover:bg-green-600 dark:hover:bg-green-700"
-                        onClick={() => console.log("Add member clicked")}
+                        onClick={() => {
+                            setIsModalOpen(true);
+                            console.log("Add member clicked")
+                        }
+                            }
                     >
                         Add Member
+                    </button>
+                    <button
+                        className="bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded hover:bg-red-600 dark:hover:bg-red-700"
+                        onClick={() => console.log("Add student member clicked")}
+                    >
+                        Add Student Member
                     </button>
                     <button
                         className="bg-purple-500 dark:bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-600 dark:hover:bg-purple-700"
@@ -159,6 +175,28 @@ function MyClub() {
                         Add Student Member
                     </button>
                 </div>
+
+                {
+                    isModalOpen && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50">
+                            {/* Background Overlay */}
+                            <div
+                                className="bg-black opacity-50 absolute inset-0"
+                                onClick={() => setIsModalOpen(false)}
+                            ></div>
+
+                            {/* Modal Container */}
+                            <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
+                                <AddMembers
+                                    onClose={() => {
+                                        setIsModalOpen(false);
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                    )
+                }
             </div>
         </div>
     );
