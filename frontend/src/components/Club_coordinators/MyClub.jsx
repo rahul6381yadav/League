@@ -9,6 +9,7 @@ function MyClub() {
     const token = localStorage.getItem("authToken");
     const email = localStorage.getItem("emailCont");
     const decodedToken = jwtDecode(token);
+    const [memberIds, setMemberIds] = useState([]);
 
     const fetchClubDetails = async () => {
         try {
@@ -30,6 +31,10 @@ function MyClub() {
 
             if (response.ok) {
                 setClubDetails(result.club); // Assume result.clubs is an array, pick the first club
+                if (result.club && result.club.members && result.club.members.length > 0) {
+                    const ids = result.club.members.map((member) => member._id);
+                    setMemberIds(ids);
+                }
             } else {
                 console.log("Error in response");
             }
@@ -41,6 +46,8 @@ function MyClub() {
     useEffect(() => {
         fetchClubDetails();
     }, []);
+
+
 
     if (!clubDetails) {
         // Show a loading or empty state when clubDetails is null
@@ -118,7 +125,7 @@ function MyClub() {
                     {clubDetails.members && clubDetails.members.length > 0 ? (
                         <ul className="list-disc ml-6 text-gray-700 dark:text-gray-300">
                             {clubDetails.members.map((member) => (
-                                <li key={member}>{member}</li>
+                                <li key={member._id}>{member.email}</li>
                             ))}
                         </ul>
                     ) : (
@@ -166,7 +173,7 @@ function MyClub() {
                         className="bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded hover:bg-red-600 dark:hover:bg-red-700"
                         onClick={() => console.log("Add student member clicked")}
                     >
-                        Add Student Member
+                        Delete Member
                     </button>
                     <button
                         className="bg-purple-500 dark:bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-600 dark:hover:bg-purple-700"
@@ -188,6 +195,7 @@ function MyClub() {
                             {/* Modal Container */}
                             <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
                                 <AddMembers
+                                    alreadyMemberIds={memberIds}
                                     onClose={() => {
                                         setIsModalOpen(false);
                                     }}

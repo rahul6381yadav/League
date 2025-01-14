@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { jwtDecode } from "jwt-decode";
 function AddMembers({ alreadyMemberIds = [] }) {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -11,7 +11,7 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const email = localStorage.getItem("emailCont");
     const token = localStorage.getItem("authToken");
-
+    const decodedToken = jwtDecode(token);
     const fetchAllUsers = async () => {
         try {
             const response = await fetch(
@@ -68,6 +68,35 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
+    const handleSubmit = async (selectedUsers) => {
+        try {
+            // Assuming you're sending the selected user IDs to be added to the club.
+            const response = await fetch(`http://localhost:4000/api/v1/club?id=${decodedToken.clubId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    memberIds: selectedUsers, // Send the selected users' IDs
+                }),
+            });
+            console.log(selectedUsers);
+            const data = await response.json();
+
+            if (!data.isError) {
+                // Handle success, for example by updating the club members state.
+                alert("Members added successfully!");
+            } else {
+                // Handle failure, show an error message.
+                alert("Error adding members: " + data.message);
+            }
+        } catch (error) {
+            console.error("Error submitting data:", error);
+            alert("An error occurred while adding members.");
+        }
+    };
+
 
     useEffect(() => {
         fetchAllUsers();
@@ -111,7 +140,6 @@ function AddMembers({ alreadyMemberIds = [] }) {
                 <thead>
                     <tr>
                         <th className="border p-2">Select</th>
-                        <th className="border p-2">Photo</th>
                         <th className="border p-2 w-1/6">Full Name</th>
                         <th className="border p-2 w-1/6">Email</th>
                         <th className="border p-2">Role</th>
@@ -127,13 +155,6 @@ function AddMembers({ alreadyMemberIds = [] }) {
                                     type="checkbox"
                                     checked={selectedUsers.includes(user._id)}
                                     onChange={() => handleCheckboxChange(user._id)}
-                                />
-                            </td>
-                            <td className="border p-2">
-                                <img
-                                    src={`http://localhost:4000/uploads/${user.photo}`}
-                                    alt="Profile"
-                                    className="w-10 h-10 rounded-full"
                                 />
                             </td>
                             <td className="border p-2 truncate">{user.fullName}</td>
@@ -161,6 +182,10 @@ function AddMembers({ alreadyMemberIds = [] }) {
                 className={`mt-6 px-6 py-2 rounded ${selectedUsers.length > 0 ? "bg-green-500 text-white" : "bg-gray-300 text-black"
                     }`}
                 disabled={selectedUsers.length === 0}
+                onClick={() => {
+                    console.log(selectedUsers)
+                    handleSubmit(selectedUsers)
+                }}
             >
                 Add Member
             </button>
