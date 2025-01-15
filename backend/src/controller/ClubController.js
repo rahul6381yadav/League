@@ -49,7 +49,7 @@ exports.getClubs = async (req, res) => {
 exports.updateClub = async (req, res) => {
     try {
         const { id } = req.query;
-        const { memberIds, studentMemberIds, ...updates } = req.body; 
+        const { memberIds, studentMemberIds,removeMemberIds, removeStudentMemberIds, ...updates } = req.body; 
         updates.lastUpdated = Date.now();
 
         const club = await ClubModel.findById(id);
@@ -60,6 +60,16 @@ exports.updateClub = async (req, res) => {
         // Add new student members to the club
         if (studentMemberIds && Array.isArray(studentMemberIds)) {
             club.studentMembers = [...new Set([...club.studentMembers, ...studentMemberIds])]; // Ensure no duplicates
+        }
+
+        // Remove members from the club
+        if (removeMemberIds && Array.isArray(removeMemberIds)) {
+            club.members = club.members.filter(member => !removeMemberIds.includes(String(member._id)));
+        }
+
+        // Remove student members from the club
+        if (removeStudentMemberIds && Array.isArray(removeStudentMemberIds)) {
+            club.studentMembers = club.studentMembers.filter(studentId => !removeStudentMemberIds.includes(studentId)); // Remove specified student members
         }
 
         Object.assign(club, updates);

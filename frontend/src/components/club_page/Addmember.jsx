@@ -129,7 +129,6 @@ function AddMembers({ alreadyMemberIds = [] }) {
                     onChange={handleRoleFilterChange}
                     className="p-2 border rounded w-1/4"
                 >
-                    <option value="">All Roles</option>
                     <option value="student">Student</option>
                     <option value="coordinator">Coordinator</option>
                     <option value="faculty">Faculty</option>

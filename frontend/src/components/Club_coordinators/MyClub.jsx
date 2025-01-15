@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import { jwtDecode } from 'jwt-decode';
 import ViewUsers from "../club_page/ViewUsers";
 import AddMembers from "../club_page/Addmember";
+import DeleteMembers from "../club_page/Deletemember";
 
 function MyClub() {
     const [clubDetails, setClubDetails] = useState(null); // Default to null
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const token = localStorage.getItem("authToken");
     const email = localStorage.getItem("emailCont");
     const decodedToken = jwtDecode(token);
+    const [memberandCoordinatorIds, setMemberAndCoordinatorIds] = useState([]);
     const [memberIds, setMemberIds] = useState([]);
+
 
     const fetchClubDetails = async () => {
         try {
@@ -30,11 +34,23 @@ function MyClub() {
             const result = await response.json();
 
             if (response.ok) {
-                setClubDetails(result.club); // Assume result.clubs is an array, pick the first club
+                setClubDetails(result.club);// Assume result.clubs is an array, pick the first club
+                let ids = [];
                 if (result.club && result.club.members && result.club.members.length > 0) {
-                    const ids = result.club.members.map((member) => member._id);
+                    ids = result.club.members.map((member) => member._id);
                     setMemberIds(ids);
                 }
+                console.log("members ids ",ids);
+                let ids2 = [];
+                if (result.club && result.club.coordinator1) {
+                    ids2.push(result.club.coordinator1._id);
+                }
+                if (result.club && result.club.coordinator2) {
+                    ids2.push(result.club.coordinator2._id);
+                }
+                setMemberAndCoordinatorIds([...ids, ...ids2]);
+                console.log("coordinator ids ", ids2);
+                
             } else {
                 console.log("Error in response");
             }
@@ -171,7 +187,7 @@ function MyClub() {
                     </button>
                     <button
                         className="bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded hover:bg-red-600 dark:hover:bg-red-700"
-                        onClick={() => console.log("Add student member clicked")}
+                        onClick={() => setIsDeleteModalOpen(true)} 
                     >
                         Delete Member
                     </button>
@@ -195,9 +211,10 @@ function MyClub() {
                             {/* Modal Container */}
                             <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
                                 <AddMembers
-                                    alreadyMemberIds={memberIds}
+                                    alreadyMemberIds={memberandCoordinatorIds}
                                     onClose={() => {
                                         setIsModalOpen(false);
+                                        fetchClubDetails();
                                     }}
                                 />
                             </div>
@@ -205,6 +222,25 @@ function MyClub() {
 
                     )
                 }
+                {/* Delete Member Modal */}
+                {isDeleteModalOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div
+                            className="bg-black opacity-50 absolute inset-0"
+                            onClick={() => setIsDeleteModalOpen(false)}
+                        ></div>
+                        <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
+                            <DeleteMembers
+                                members={clubDetails.members}
+                                onClose={() => {
+                                    setIsDeleteModalOpen(false);
+                                    fetchClubDetails(); // Refresh club details
+                                }}
+                            />
+                          
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
