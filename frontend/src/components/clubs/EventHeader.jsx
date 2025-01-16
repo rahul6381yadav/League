@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEvent } from "../../context/EventContext";
 
 // function formatDateTime(isoString) {
 //   const date = new Date(isoString);
@@ -27,23 +27,8 @@ function getEventStatus(eventDate, duration) {
   return "Completed";
 }
 
-const EventHeader = ({ id }) => {
-  const [event, setEvent] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:4000/api/v1/club/events?id=${id}`
-        );
-        setEvent(response.data.event);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    };
-
-    fetchData();
-  }, [id]);
+const EventHeader = () => {
+  const {event} = useEvent();
 
   const eventStatus = getEventStatus(event.date, event.duration);
 

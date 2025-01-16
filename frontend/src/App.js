@@ -127,6 +127,7 @@ function UserRoutes() {
       <Route path="/createclub" element={<ProtectedRoute requiredRole="cosa"><Createclub /></ProtectedRoute>} />
       <Route path="/home_club" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><Home_club /></LayoutCoordinator></ProtectedRoute>} />
       <Route path="/manage-events" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><EventPage /></LayoutCoordinator></ProtectedRoute>} />
+      <Route path="/events/:id" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><ManageParticipants /></LayoutCoordinator></ProtectedRoute>} />
       <Route path="/adminPanel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
       <Route path="/" element={<Login />} />
       <Route path="/admin" element={<AdminLogin />} />

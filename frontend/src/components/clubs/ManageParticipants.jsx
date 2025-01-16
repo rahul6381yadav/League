@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Winners from "./Winners";
 import ParticipationCard from "./Participants";
 import EventHeader from "./EventHeader";
-import { useParams } from "react-router-dom";
+import { EventProvider } from "../../context/EventContext";
+import axios from "axios";
 
 const ManageParticipants = () => {
-  const {id} = useParams();
-
   return (
     <>
-    <EventHeader id ={id}/>
-      <div className=" flex flex-col p-6 w-full space-y-5 items-center bg-gray-200 dark:bg-gray-900">
-        <Winners />
-        <ParticipationCard id={id}/>
-      </div>
+      <EventProvider>
+        <EventHeader />
+        <div className=" flex flex-col p-6 w-full space-y-5 items-center bg-gray-200 dark:bg-gray-900">
+          <Winners />
+          <ParticipationCard />
+        </div>
+      </EventProvider>
     </>
   );
 };

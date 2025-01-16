@@ -8,7 +8,7 @@ exports.participate = async (req, res) => {
         const newParticipation = new AttendanceModel({
             studentId,
             eventId
-        }).populate("studentId eventId");
+        });
 
         await newParticipation.save();
         console.log(newParticipation);
