@@ -25,11 +25,9 @@ exports.createUser = [
 ];
 
 exports.getUsers = [
-    verifyToken, // Replaced authenticate with verifyToken
-    authorize("admin", "coordinator", "student"), // Accessible to all roles
     async (req, res) => {
         try {
-            const { search, roles, batchCode, limit, skip, id, studentId } = req.query;
+            const { search, role, batchCode, limit, skip, id, studentId } = req.query;
 
             if (id) {
                 const user = await User.findById(id);
@@ -40,7 +38,7 @@ exports.getUsers = [
             let filter = {};
             if (search) filter.fullName = { $regex: search, $options: "i" };
             if (studentId) filter.studentId = {$regex:studentId, $option:"i"}; // Search by studentId
-            if (roles) filter.roles = { $in: roles.split(",") };
+            if (role) filter.role = { $in: role };
             if (batchCode) filter.batchCode = batchCode;
 
             const users = await User.find(filter)
