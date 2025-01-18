@@ -1475,3 +1475,11 @@
 2025-01-18 10:37:04 info: GET | /api/v1/club?search=&ratingMin=0&ratingMax=5 | 304
 2025-01-18 10:37:05 info: GET | /api/v1/club/events?clubId=67727ff87cdc7b181091e996 | 304
 2025-01-18 10:37:06 info: GET | /api/v1/club/attendance?studentId=67868e7ee97e0aeff70275a7&eventId=67851d0d3e7c8feb008be23d | 200
+2025-01-18 10:59:51 info: Server running on port 4000
+2025-01-18 11:00:14 info: POST | /user/login | 200
+2025-01-18 11:00:16 info: GET | /api/v1/club?search=&ratingMin=0&ratingMax=5 | 304
+2025-01-18 11:00:17 info: GET | /api/v1/club/events?clubId=67727ff87cdc7b181091e996 | 304
+2025-01-18 11:00:19 info: GET | /api/v1/club/attendance?studentId=67868e7ee97e0aeff70275a7&eventId=67851d0d3e7c8feb008be23d | 304
+2025-01-18 11:00:20 info: GET | /api/v1/club/attendance?studentId=67868e7ee97e0aeff70275a7&eventId=678934fa272b85852be66270 | 200
+2025-01-18 11:00:22 info: POST | /api/v1/club/attendance | 201
+2025-01-18 11:02:17 info: Server running on port 4000
