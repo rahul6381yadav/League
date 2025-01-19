@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 
 function ForgotPassword() {
     const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ function ForgotPassword() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:4000/user/forgot-password", { email });
+            const response = await axios.post("http://localhost:4000/user/forgot-password", {email});
 
             if (response.status === 200) {
                 setMessage(response.data.message);

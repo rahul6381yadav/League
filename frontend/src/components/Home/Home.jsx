@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import Dashboard from "./dashboard"; // Adjust the path as needed
+
 const HomePage = () => {
     return (
-            <p>Home Page</p>
+        <div>
+            <Dashboard/>
+        </div>
     );
 };
 

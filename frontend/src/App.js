@@ -1,154 +1,70 @@
 import './App.css';
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Login from './components/auth/Login';
-import { useNavigate } from 'react-router-dom';
-import Forget from './components/auth/Forget';
-import VerifyOTP from './components/auth/otp';
-import NewPassword from './components/auth/newPassword';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {AuthProvider} from './context/AuthContext';
+import {RoleProvider} from './context/RoleContext';
+import {EmailProvider} from './context/EmailContext';
+import {DarkModeProvider} from './context/ThemeContext';
+
+import Login from './pages/auth/Login';
+import ForgetPassword from './pages/auth/Forget';
+import AdminLogin from './pages/auth/adminLogin';
+
 import Home from './components/Home/Home';
-import { useEffect } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
 import Clubs from './components/Home/Clubs';
-import { RoleProvider, useRole } from './context/RoleContext';
-import Createclub from './components/Home/createclub';
-import AdminLogin from './components/auth/adminLogin';
-import AdminPanel from './components/admin/adminPanel';
-import ClubMembers from './components/club_page/ClubMember';
-import ViewUsers from './components/club_page/ViewUsers';
-import ClubPages from './components/clubs/ClubPages';
-import Loader from './components/loader/loader';
+import ClubEventsPage from './components/clubs/ClubPages';
+import CreateClub from './components/Home/createclub';
+import AdminPanel from './pages/admin/adminPanel';
+import CoordinatorDashboard from './components/Club_coordinators/home_club';
 import ManageParticipants from './components/clubs/ManageParticipants';
-
-import Layout from './components/Home/LayoutStudent';
-import Home_club from './components/Club_coordinators/home_club';
-import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
 import EventPage from './components/manageEvents/EventPage';
-import StudentMyProfile from './components/Home/StudentMyProfile';
-import { EmailProvider } from './context/EmailContext';
-import { DarkModeProvider } from './context/DarkModeContext';
+import MyClub from './components/Club_coordinators/MyClub';
+import EventSignUp from './components/manageEvents/EventSignUp';
+import Layout from './components/Home/LayoutStudent';
+import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
+import ProtectedRoute from './utils/ProtectedRoute';
 
-const ProtectedRoute = ({ children, requiredRole }) => {
-  const { roles, setRole } = useRole();
-  const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
-  const token = localStorage.getItem("authToken");
-  console.log("protected routes");
-  useEffect(() => {
-    console.log(token);
-    console.log(isAuthenticated);
-    const timeout = setTimeout(() => {
-      if (!token) {
-        setIsAuthenticated(false);
-        navigate('/');
-      }
-      if (isAuthenticated === false && roles!=='admin') {
-        navigate('/');
-      }
-      if (isAuthenticated === true && requiredRole!==roles && roles === 'coordinator') {
-        navigate('/home_club');
-      }
-      if (isAuthenticated === true && requiredRole!==roles && roles === 'admin') {
-        navigate('/AdminPanel');
-      }
-    }, 10);
-    return () => clearTimeout(timeout);
-  }, [isAuthenticated, navigate, token, setIsAuthenticated]);
+function AppRoutes() {
+    return (
+        <Routes>
+            <Route path="/" element={<Login/>}/>
+            <Route path="/admin" element={<AdminLogin/>}/>
+            <Route path="/forget-password" element={<ForgetPassword/>}/>
+            <Route path="/event-signup/:id" element={<EventSignUp/>}/>
 
-  return children;
-};
+            {/* Student Routes */}
+            <Route path="/home" element={<Layout><Home/></Layout>}/>
+            <Route path="/clubs" element={<Layout><Clubs/></Layout>}/>
+            <Route path="/club-events" element={<Layout><ClubEventsPage/></Layout>}/>
 
-const CoordinatorRoute = ({ children }) => {
-  const { roles } = useRole();
-  const navigate = useNavigate();
-  const { isAuthenticated,setIsAuthenticated} = useAuth();
-  const token = localStorage.getItem("authToken");
+            {/* Coordinator Routes */}
+            <Route path="/dashboard" element={<LayoutCoordinator><CoordinatorDashboard/></LayoutCoordinator>}/>
+            <Route path="/manage-events" element={<LayoutCoordinator><EventPage/></LayoutCoordinator>}/>
+            <Route path="/events/:id" element={<LayoutCoordinator><ManageParticipants/></LayoutCoordinator>}/>
+            <Route path="/my-club" element={<LayoutCoordinator><MyClub/></LayoutCoordinator>}/>
 
-  useEffect(() => {
-    if (!token || !isAuthenticated || roles !== 'coordinator') {
-      setIsAuthenticated(false);
-      navigate('/'); // Redirect to login or appropriate page
-    }
-  }, [isAuthenticated, roles, navigate]);
+            {/* Admin Routes */}
+            <Route path="/admin-panel" element={<ProtectedRoute requiredRole="admin"><AdminPanel/></ProtectedRoute>}/>
 
-  return children;
-};
-
-const AdminRoutes = ({ children }) => {
-  console.log("admin Routes");
-  const { roles } = useRole();
-  const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
-  const token = localStorage.getItem("authToken");
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!token || roles !== 'admin') {
-        setIsAuthenticated(false);
-        navigate('/admin'); // Redirect to admin login
-      }
-      else {
-        navigate('/AdminPanel');
-      }
-    };
-    checkAdmin();
-  }, [isAuthenticated, roles, navigate, token, setIsAuthenticated]);
-
-  return children;
-};
-
-const PrivateRoutes = ({ children, requiredRole }) => {
-  console.log("private routes");
-  const { roles } = useRole();
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/'); // Redirect to admin login
-    } else if (requiredRole && roles !== requiredRole) {
-      navigate('/home'); // Redirect to home for unauthorized roles
-    }
-  }, [isAuthenticated, roles, navigate, requiredRole]);
-
-  return children;
-};
-
-function UserRoutes() {
-  return(
-    <Routes>
-      <Route path="/home" element={<ProtectedRoute requiredRole="student"><Layout><Home /></Layout></ProtectedRoute>} />
-      <Route path="/Clubs" element={<ProtectedRoute requiredRole="student"><Layout><Clubs /></Layout></ProtectedRoute>} />
-      <Route path="/ClubPages" element={<ProtectedRoute requiredRole="student"><Layout><ClubPages /></Layout></ProtectedRoute>} />
-      <Route path="/Clubs/ClubMember" element={<ProtectedRoute requiredRole="student"><Layout><ClubMembers /></Layout></ProtectedRoute>} />
-      <Route path="/ViewUsers" element={<ProtectedRoute requiredRole="student"><Layout><ViewUsers /></Layout></ProtectedRoute>} />
-      <Route path="/createclub" element={<ProtectedRoute requiredRole="cosa"><Createclub /></ProtectedRoute>} />
-      <Route path="/home_club" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><Home_club /></LayoutCoordinator></ProtectedRoute>} />
-      <Route path="/manage-events" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><EventPage /></LayoutCoordinator></ProtectedRoute>} />
-      <Route path="/adminPanel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
-      <Route path="/" element={<Login />} />
-      <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/forget" element={<Forget />} />
-      <Route path="/VerifyOTP" element={<VerifyOTP />} />
-      <Route path="/newPassword" element={<NewPassword />} />
-    </Routes>
-  );
+            {/* CoSA Routes */}
+            <Route path="/create-club" element={<ProtectedRoute requiredRole="cosa"><CreateClub/></ProtectedRoute>}/>
+        </Routes>
+    );
 }
 
 function App() {
-  return (
-    <AuthProvider>
-      <RoleProvider>
-        <EmailProvider>
-          <Router>
-            <DarkModeProvider>
-              <UserRoutes />
-            </DarkModeProvider>
-          </Router>
-        </EmailProvider>
-      </RoleProvider>
-    </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <RoleProvider>
+                <EmailProvider>
+                    <Router>
+                        <DarkModeProvider>
+                            <AppRoutes/>
+                        </DarkModeProvider>
+                    </Router>
+                </EmailProvider>
+            </RoleProvider>
+        </AuthProvider>
+    );
 }
 
 export default App;

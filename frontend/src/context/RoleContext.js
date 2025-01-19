@@ -1,18 +1,22 @@
-import React, { createContext, useState,useContext} from 'react';
+import React, {createContext, useContext, useState} from 'react';
 
 const RoleContext = createContext();
+
 export const useRole = () => useContext(RoleContext);
-export const RoleProvider = ({ children }) => {
-    // const [roles, setRole] = useState("student"); // Default role is null
-    const [roles, setRole] = useState(() => {
-        return localStorage.getItem('roles') || 'student'; // Default role is "student"
+
+export const RoleProvider = ({children}) => {
+
+    const [role, setRole] = useState(() => {
+        return localStorage.getItem('role') || 'student';
     });
-    const updateRole = (roles) => {
-        setRole(roles);
-        localStorage.setItem('roles', roles);
+
+    const updateRole = (role) => {
+        setRole(role);
+        localStorage.setItem('role', role);
     };
+
     return (
-        <RoleContext.Provider value={{ roles, setRole:updateRole }}>
+        <RoleContext.Provider value={{role, setRole: updateRole}}>
             {children}
         </RoleContext.Provider>
     );

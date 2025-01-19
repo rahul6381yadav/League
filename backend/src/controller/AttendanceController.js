@@ -1,6 +1,7 @@
 const { AttendanceModel } = require("../model/ClubModel");
 const User = require("../model/UserModel");
 
+
 exports.participate = async (req, res) => {
     try {
         const { participations } = req.body; // Array of objects: [{ studentId, eventId, pointsGiven, status }]
@@ -59,28 +60,29 @@ exports.participate = async (req, res) => {
             attendanceRecords: populatedParticipations,
             isError: false,
         });
+
     } catch (error) {
-        console.error("Error:", error.message);
-        res.status(500).json({ message: "Internal Server Error", isError: true });
+        console.error("Error in participate:", error.message);
+        res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
 
 
 
 // Get attendance records with optional filters
-exports.getPartcipation = async (req, res) => {
+exports.getParticipation = async (req, res) => {
     try {
-        const { studentId, eventId, status, limit, skip, pointsGreaterThan, pointsLessThan } = req.query;
+        const {studentId, eventId, status, limit, skip, pointsGreaterThan, pointsLessThan} = req.query;
 
         let filter = {};
-        if (studentId) filter.studentId = studentId;
+        if (studentId) filter.studentId = mongoose.Types.ObjectId.isValid(studentId) ? new mongoose.Types.ObjectId(studentId) : studentId;
         if (eventId) filter.eventId = eventId;
         if (status) filter.status = status;
         if (pointsGreaterThan) {
-            filter.pointsGiven = { $gte: pointsGreaterThan };
+            filter.pointsGiven = {$gte: pointsGreaterThan};
         }
         if (pointsLessThan) {
-            filter.pointsGiven = { ...(filter.pointsGiven || {}), $lte: pointsLessThan };
+            filter.pointsGiven = {...(filter.pointsGiven || {}), $lte: pointsLessThan};
         }
 
         const records = await AttendanceModel.find(filter)
@@ -88,12 +90,13 @@ exports.getPartcipation = async (req, res) => {
             .limit(limit ? parseInt(limit) : 30)
             .skip(skip ? parseInt(skip) : 0);
 
-        res.status(200).json({ message: "Attendance records fetched successfully", records, isError: false });
+        res.status(200).json({message: "Attendance records fetched successfully", records, isError: false});
     } catch (error) {
-        console.error("Error:", error.message);
-        res.status(500).json({ message: "Internal Server Error", isError: true });
+        console.error("Error in getParticipation:", error.message);
+        res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
+
 
 // Update attendance for multiple students
 exports.updateAttendance = async (req, res) => {
@@ -124,23 +127,24 @@ exports.updateAttendance = async (req, res) => {
         }
 
         res.status(200).json({ message: "Attendance updated successfully", isError: false });
+
     } catch (error) {
         console.error("Error:", error.message);
-        res.status(500).json({ message: "Internal Server Error", isError: true });
+        res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
 
 // Delete attendance record by ID
 exports.deleteAttendance = async (req, res) => {
     try {
-        const { id } = req.query;
+        const {id} = req.query;
 
         const deletedAttendance = await AttendanceModel.findByIdAndDelete(id);
-        if (!deletedAttendance) return res.status(404).json({ message: "Attendance not found", isError: true });
+        if (!deletedAttendance) return res.status(404).json({message: "Attendance not found", isError: true});
 
-        res.status(200).json({ message: "Attendance deleted successfully", isError: false });
+        res.status(200).json({message: "Attendance deleted successfully", isError: false});
     } catch (error) {
         console.error("Error:", error.message);
-        res.status(500).json({ message: "Internal Server Error", isError: true });
+        res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };

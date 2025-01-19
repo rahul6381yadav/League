@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import {useEvent} from "../../context/EventContext";
 
 // function formatDateTime(isoString) {
 //   const date = new Date(isoString);
@@ -16,91 +15,78 @@ import axios from "axios";
 // }
 
 function getEventStatus(eventDate, duration) {
-  if (!eventDate || !duration) return "Status TBD";
+    if (!eventDate || !duration) return "Status TBD";
 
-  const startTime = new Date(eventDate);
-  const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
-  const now = new Date();
+    const startTime = new Date(eventDate);
+    const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
+    const now = new Date();
 
-  if (now < startTime) return "Upcoming";
-  if (now >= startTime && now <= endTime) return "Ongoing";
-  return "Completed";
+    if (now < startTime) return "Upcoming";
+    if (now >= startTime && now <= endTime) return "Ongoing";
+    return "Completed";
 }
 
-const EventHeader = ({ id }) => {
-  const [event, setEvent] = useState({});
+const EventHeader = () => {
+    const {event} = useEvent();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:4000/api/v1/club/events?id=${id}`
-        );
-        setEvent(response.data.event);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    };
+    const eventStatus = getEventStatus(event.date, event.duration);
 
-    fetchData();
-  }, [id]);
+    return (
+        <div
+            className="w-full bg-blue-500 text-white p-8 shadow-xl flex items-center justify-between dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-900">
+            {/* Left Section: Event Details */}
+            <div className="flex items-center space-x-6">
+                {/* Event Image */}
+                <div
+                    className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white dark:border-gray-700">
+                    <img
+                        src={"https://via.placeholder.com/150"}
+                        alt={event.eventName}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                {/* Event Name and Description */}
+                <div className="flex flex-col">
+                    <h1 className="text-2xl font-extrabold leading-tight dark:text-white">
+                        {event.eventName}
+                    </h1>
+                    <p className="text-sm text-gray-200 mt-1 dark:text-gray-400">
+                        {event.description || "Description not available"}
+                    </p>
+                </div>
+            </div>
 
-  const eventStatus = getEventStatus(event.date, event.duration);
-
-  return (
-    <div className="w-full bg-blue-500 text-white p-8 shadow-xl flex items-center justify-between dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-900">
-      {/* Left Section: Event Details */}
-      <div className="flex items-center space-x-6">
-        {/* Event Image */}
-        <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white dark:border-gray-700">
-          <img
-            src={"https://via.placeholder.com/150"}
-            alt={event.eventName}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        {/* Event Name and Description */}
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-extrabold leading-tight dark:text-white">
-            {event.eventName}
-          </h1>
-          <p className="text-sm text-gray-200 mt-1 dark:text-gray-400">
-            {event.description || "Description not available"}
-          </p>
-        </div>
-      </div>
-
-      {/* Right Section: Event Info */}
-      <div className="flex flex-col items-end space-y-2">
-        {/* Venue */}
-        <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold dark:text-white">📍</span>
-          <span className="text-sm dark:text-gray-400">
+            {/* Right Section: Event Info */}
+            <div className="flex flex-col items-end space-y-2">
+                {/* Venue */}
+                <div className="flex items-center space-x-2">
+                    <span className="text-xl font-bold dark:text-white">📍</span>
+                    <span className="text-sm dark:text-gray-400">
             {event.venue || "Venue TBD"}
           </span>
-        </div>
-        {/* Date */}
-        <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold dark:text-white">📅</span>
-          <span className="text-sm dark:text-gray-400">
+                </div>
+                {/* Date */}
+                <div className="flex items-center space-x-2">
+                    <span className="text-xl font-bold dark:text-white">📅</span>
+                    <span className="text-sm dark:text-gray-400">
             {event.date || "Date TBD"}
           </span>
-        </div>
-        {/* Duration */}
-        <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold dark:text-white">⏰</span>
-          <span className="text-sm dark:text-gray-400">
+                </div>
+                {/* Duration */}
+                <div className="flex items-center space-x-2">
+                    <span className="text-xl font-bold dark:text-white">⏰</span>
+                    <span className="text-sm dark:text-gray-400">
             {event.duration || "Duration TBD"}
           </span>
+                </div>
+                {/* Status */}
+                <div className="flex items-center space-x-2">
+                    <span className="text-xl font-bold dark:text-white">📌</span>
+                    <span className="text-sm dark:text-gray-400">{eventStatus}</span>
+                </div>
+            </div>
         </div>
-        {/* Status */}
-        <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold dark:text-white">📌</span>
-          <span className="text-sm dark:text-gray-400">{eventStatus}</span>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default EventHeader;

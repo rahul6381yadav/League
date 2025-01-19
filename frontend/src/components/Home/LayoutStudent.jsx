@@ -1,42 +1,60 @@
 import Sidebar from "./StudentSidebar";
-import { useState } from "react";
-import { useDarkMode } from '../../context/DarkModeContext'; // Import the dark mode context
+import {useState} from "react";
+import {useDarkMode} from '../../context/ThemeContext';
+import {FaBell, FaMoon, FaSun, FaUser} from "react-icons/fa";
+import ProtectedRoute from "../../utils/ProtectedRoute";
 
-const Layout = ({ children }) => {
+const Layout = ({children}) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const { isDarkMode, toggleDarkMode } = useDarkMode(); // Access dark mode state and toggle function
+    const {isDarkMode, toggleDarkMode} = useDarkMode();
 
     const handleSidebarToggle = (collapsed) => {
         setIsCollapsed(collapsed);
     };
 
+    const renderIcon = (currentTheme) => {
+        if (currentTheme === 'dark') {
+            return <FaSun/>;
+        }
+        return <FaMoon className="text-gray-800"/>;
+    };
+
     return (
         <div className={`flex ${isDarkMode ? "dark" : ""}`}>
-            <Sidebar onToggle={handleSidebarToggle} />
+            <Sidebar onToggle={handleSidebarToggle}/>
             <main
-                className={`transition-all duration-300 ${isCollapsed ? "ml-16" : "ml-64"
-                    } p-4 flex-1  dark:bg-gray-900 text-gray-800 dark:text-gray-100`}
-            >
+                className={`transition-all duration-300 ml-0 ${isCollapsed ? "md:ml-16 lg:ml-16" : "md:ml-64 lg:ml-64"
+                } flex-1 dark:bg-gray-900 text-gray-800 dark:text-gray-100`}>
                 {/* Top bar with Dark Mode Toggle */}
-                <div className="flex justify-end items-center mb-4">
-                    <label
-                        htmlFor="darkModeToggle"
-                        className="relative inline-block h-8 w-14 cursor-pointer rounded-full bg-gray-300 transition peer-checked:bg-green-500"
-                    >
-                        <input
-                            type="checkbox"
-                            id="darkModeToggle"
-                            className="peer sr-only"
-                            checked={isDarkMode}
-                            onChange={toggleDarkMode}
-                        />
-                        <span
-                            className="absolute inset-y-0 start-0 m-1 w-6 h-6 rounded-full bg-white transition-all peer-checked:start-6"
-                        ></span>
-                    </label>
-                </div>
+                <header className=" w-full bg-gray-100  dark:bg-gray-800 shadow-md">
+                    <div className="flex items-center justify-between px-4 py-3 md:px-6">
+                        <div className="flex items-center gap-4">
+                        </div>
 
-                {children}
+                        <div className="flex items-center gap-8">
+
+                            <button
+                                onClick={() => {
+                                    toggleDarkMode()
+                                }}
+                                className="bg-transparent flex items-center justify-center"
+                            >
+                                {renderIcon(isDarkMode ? "dark" : 'light')}
+                            </button>
+
+                            <a href={"/notifications"}>
+                                <FaBell className="text-gray-800 dark:text-gray-100 cursor-pointer text-xl"/>
+                            </a>
+
+                            <a href={"/profile"}>
+                                <FaUser className="text-gray-800 dark:text-gray-100 cursor-pointer text-xl"/>
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+                <ProtectedRoute requiredRole="student">{children}</ProtectedRoute>
+
             </main>
         </div>
     );

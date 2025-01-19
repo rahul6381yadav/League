@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
+
 function Createclub() {
     const [Error, setError] = useState("");
     const [Success, setSuccess] = useState("");
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -14,7 +15,7 @@ function Createclub() {
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -173,4 +174,5 @@ function Createclub() {
         </div>
     );
 }
+
 export default Createclub;

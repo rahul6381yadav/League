@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 
-function CreateEvents({ primaryClubId, primaryClubName }) {
+function CreateEvents({primaryClubId, primaryClubName}) {
     const [collateralClubs, setCollateralClubs] = useState([]);
     const [selectedCollateralClubs, setSelectedCollateralClubs] = useState([]);
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const [eventData, setEventData] = useState({
         eventName: '',
         description: '',
@@ -34,9 +34,9 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
         fetchClubs();
     }, [primaryClubId]);
 
-    
+
     const handleInputChange = (e) => {
-        setEventData({ ...eventData, [e.target.name]: e.target.value });
+        setEventData({...eventData, [e.target.name]: e.target.value});
     };
 
     const handleCheckboxChange = (clubId) => {
@@ -52,7 +52,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
         e.preventDefault();
 
         const clubIds = [primaryClubId, ...selectedCollateralClubs];
-        const newEvent = { ...eventData, clubIds };
+        const newEvent = {...eventData, clubIds};
         try {
             const response = await fetch('http://localhost:4000/api/v1/club/events', {
                 method: 'POST',
@@ -122,7 +122,7 @@ function CreateEvents({ primaryClubId, primaryClubName }) {
                 <input
                     type="text"
                     name="eventName"
-                    placeholder ="Enter event name"
+                    placeholder="Enter event name"
                     value={eventData.eventName}
                     onChange={handleInputChange}
                     className="w-full mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-100"

@@ -1,68 +1,60 @@
-// src/context/AuthContext.js
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+"use client";
 
-// Create a context to hold authentication state
-const AuthContext = createContext();
+import React, {createContext, useContext, useEffect, useState} from "react";
+import {getIdTokenResult, onAuthStateChanged, signOut} from "firebase/auth";
+import {auth} from "../firebase";
 
-// Custom hook to access the AuthContext
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext(null);
 
-// AuthProvider component to wrap the app with the authentication context
-export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const [forgotPasswordState, setForgotPasswordState] = useState(false);
-    const [isOTPVerified, setisOTPVerified] = useState(false);
-    const [userId, setUserId] = useState(null);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+};
 
-    // Check if the user is authenticated on initial load
+export const AuthProvider = ({children}) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        console.log("auth Context");
-        const token = localStorage.getItem("authToken");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                setUserId(decoded.userId);
-                const currentTime = Date.now() / 1000; // Current time in seconds
-                if (decoded.exp > currentTime) {
-                    // Token is valid
-                    setIsAuthenticated(true);
-                } else {
-                    // Token is expired
-                    localStorage.removeItem("authToken");
-                    setIsAuthenticated(false);
-                }
-            } catch (error) {
-                // If the token is invalid or there's an error decoding it
-                localStorage.removeItem("authToken");
-                setIsAuthenticated(false);
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
+            if (currentUser) {
+                checkTokenExpiry(currentUser);
             }
-       
-        } else {
-         
-            setIsAuthenticated(false); // No token found
-        }
-    }, []); // Empty dependency array to run this effect only once (on mount)
+        });
 
-    const logout = () => {
-        localStorage.removeItem("authToken");
-        setIsAuthenticated(false);
+        return () => unsubscribe();
+    }, []);
+
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            setUser(null);
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
     };
 
     return (
-        <AuthContext.Provider
-            value={{
-                isAuthenticated,
-                setIsAuthenticated,
-                logout,
-                forgotPasswordState,
-                setForgotPasswordState,
-                isOTPVerified,
-                setisOTPVerified,
-                userId
-            }}
-        >
+        <AuthContext.Provider value={{user, loading, logout}}>
             {children}
         </AuthContext.Provider>
     );
+};
+
+const checkTokenExpiry = async (user) => {
+    const tokenResult = await getIdTokenResult(user);
+    const expirationTime = new Date(tokenResult.expirationTime).getTime();
+    const currentTime = new Date().getTime();
+    const timeLeft = expirationTime - currentTime;
+
+    console.log("Token expires in:", timeLeft, "ms");
+
+    if (timeLeft <= 0) {
+        await signOut(auth);
+    }
 };
