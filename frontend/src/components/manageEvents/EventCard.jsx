@@ -7,7 +7,7 @@ const EventCard = ({ event }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isParticipated, setIsParticipated] = useState(false);
   const { userId, isAuthenticated } = useAuth(); // Access userId and authentication status
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("jwtToken");
 
   useEffect(() => {
     if (isPopupOpen && isAuthenticated) {

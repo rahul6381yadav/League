@@ -8,7 +8,7 @@ function MyClub() {
     const [clubDetails, setClubDetails] = useState(null); // Default to null
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const email = localStorage.getItem("emailCont");
     const decodedToken = jwtDecode(token);
     const [memberandCoordinatorIds, setMemberAndCoordinatorIds] = useState([]);

@@ -28,7 +28,7 @@ const HomeClub = () => {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("jwtToken");
       if (!token) {
         console.error("No auth token found. Please log in.");
         return;
@@ -54,7 +54,7 @@ const HomeClub = () => {
 
   const fetchRating = async () => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("jwtToken");
       if (!token) {
         console.error("No auth token found. Please log in.");
         return;

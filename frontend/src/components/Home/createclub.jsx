@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 function Createclub() {
     const [Error, setError] = useState("");
     const [Success, setSuccess] = useState("");
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const [formData, setFormData] = useState({
         name: '',
         description: '',
