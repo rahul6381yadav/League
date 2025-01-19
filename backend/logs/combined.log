@@ -1468,3 +1468,9 @@
 2025-01-19 12:00:36 info: GET | /api/v1/club/events?id=67851d0d3e7c8feb008be23d | 304
 2025-01-19 12:00:36 info: GET | /api/v1/club/attendance?eventId=67851d0d3e7c8feb008be23d | 304
 2025-01-19 12:00:40 info: GET | /api/v1/club/events?clubId=67727ff87cdc7b181091e996 | 304
+2025-01-19 13:39:04 info: Server running on port 4000
+2025-01-19 13:39:54 info: POST | /user/login | 200
+2025-01-19 14:40:21 info: POST | /user/login | 200
+2025-01-19 15:06:17 info: Server running on port 4000
+2025-01-19 15:09:25 info: POST | /user/login | 200
+2025-01-19 16:10:12 info: POST | /user/login | 200
