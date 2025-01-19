@@ -19,7 +19,7 @@ const EventPage = () => {
   const email = localStorage.getItem('emailCont');
   const fetchClubDetails = async () => {
     try {
-      console.log("fetch club deatils api is called");
+      console.log("fetch club details api is called");
       if (!token) {
         console.error('no auth token found . please log in');
         return;
@@ -35,7 +35,7 @@ const EventPage = () => {
       console.log("result ",result);
       
       if (response.ok) {
-        console.log("api fecthed ");
+        console.log("api fetched ");
         setClubDetails(result.clubs);
         setPrimaryClubId(result.clubs[0]._id);
         setPrimaryClubName(result.clubs[0].name);
