@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 function CreateEvents({ primaryClubId, primaryClubName }) {
     const [collateralClubs, setCollateralClubs] = useState([]);
     const [selectedCollateralClubs, setSelectedCollateralClubs] = useState([]);
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const [eventData, setEventData] = useState({
         eventName: '',
         description: '',

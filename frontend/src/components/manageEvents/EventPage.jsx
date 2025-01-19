@@ -15,7 +15,7 @@ const EventPage = () => {
   const [primaryClubName, setPrimaryClubName] = useState('');
   const [currentEvent, setCurrentEvent] = useState(null); 
   const [clubDetails, setClubDetails] = useState([]);
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("jwtToken");
   const email = localStorage.getItem('emailCont');
   const fetchClubDetails = async () => {
     try {
@@ -52,7 +52,7 @@ const EventPage = () => {
   }
   const fetchEvents = async () => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("jwtToken");
       if (!token) {
         console.error('No auth token found. Please log in.');
         return;
@@ -95,7 +95,7 @@ const EventPage = () => {
 
   const handleDeleteEvent = async (eventId) => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("jwtToken");
       await axios.delete(`http://localhost:4000/api/v1/club/events/${eventId}`, {
         headers: {
           Authorization: `Bearer ${token}`,

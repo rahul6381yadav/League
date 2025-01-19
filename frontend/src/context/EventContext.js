@@ -13,7 +13,7 @@ export const EventProvider = ({ children }) => {
 
   const fetchEvent = async (id) => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("jwtToken");
       const response = await axios.get(
         `http://localhost:4000/api/v1/club/events?id=${id}`,
         {
@@ -34,7 +34,7 @@ export const EventProvider = ({ children }) => {
 
 const fetchParticipants = async (id) => {
     try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("jwtToken");
         const response = await axios.get(
             `http://localhost:4000/api/v1/club/attendance?eventId=${id}`,
             {
@@ -43,7 +43,20 @@ const fetchParticipants = async (id) => {
                 },
             }
         );
-        setAllParticipants(response.data.records.map(record => record.studentId));
+
+        console.log(response.data)
+        const data = response.data.records.map((record) => {
+          return {
+            id: record._id,
+            roll_no: record.studentId.studentId?? "",
+            name: record.studentId.fullName,
+            batch: record.studentId.batchCode?? "",
+            status:   record.status,
+            points: record.pointsGiven
+          }
+        });
+        console.log(data);
+        setAllParticipants(data);
         console.log(allParticipants);
     } catch (err) {
         setError(err.message);
