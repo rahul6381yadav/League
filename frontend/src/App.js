@@ -18,6 +18,7 @@ import CoordinatorDashboard from './components/Club_coordinators/home_club';
 import ManageParticipants from './components/clubs/ManageParticipants';
 import EventPage from './components/manageEvents/EventPage';
 import MyClub from './components/Club_coordinators/MyClub';
+import AllEvents from './components/club_page/AllEvents';
 
 import Layout from './components/Home/LayoutStudent';
 import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
@@ -26,7 +27,6 @@ import ProtectedRoute from './utils/ProtectedRoute';
 function AppRoutes() {
   return (
     <Routes>
-      {/* Auth Routes */}
       <Route path="/" element={<Login />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/forget-password" element={<ForgetPassword />} />

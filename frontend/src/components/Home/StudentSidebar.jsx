@@ -46,7 +46,7 @@ const Sidebar = ({ onToggle }) => {
         { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/home" },
         { icon: <UserGroupIcon className="h-6 w-6" />, label: "All Clubs", path: "/clubs" },
         { icon: <ClipboardCheckIcon className="h-6 w-6" />, label: "My Events", path: "/my-events" },
-        { icon: <ArchiveIcon className="h-6 w-6" />, label: "All Events", path: "/all-events" },
+        { icon: <ArchiveIcon className="h-6 w-6" />, label: "All Events", path: "/allEvents" },
         { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
         { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
         { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
