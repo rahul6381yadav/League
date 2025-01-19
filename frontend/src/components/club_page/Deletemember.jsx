@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
-function DeleteMembers({ members = [] }) {
+import React, {useEffect, useState} from "react";
+import {jwtDecode} from "jwt-decode";
+
+function DeleteMembers({members = []}) {
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(7);
@@ -11,9 +12,9 @@ function DeleteMembers({ members = [] }) {
         setSearch(event.target.value);
     };
     useEffect(() => {
-        
+
         console.log("members of the club ", members);
-    },[members]);
+    }, [members]);
 
     const handleCheckboxChange = (memberId) => {
         setSelectedMembers((prev) =>
@@ -84,41 +85,41 @@ function DeleteMembers({ members = [] }) {
             </div>
             <table className="w-full border-collapse border border-gray-300">
                 <thead>
-                    <tr>
-                        <th className="border p-2">Select</th>
-                        <th className="border p-2 w-1/3">Full Name</th>
-                        <th className="border p-2 w-1/3">Email</th>
-                        <th className="border p-2 w-1/4">Role</th>
-                        <th className="border p-2 w-1/4">Batch Code</th>
-                        <th className="border p-2 w-1/4">Student ID</th>
-                    </tr>
+                <tr>
+                    <th className="border p-2">Select</th>
+                    <th className="border p-2 w-1/3">Full Name</th>
+                    <th className="border p-2 w-1/3">Email</th>
+                    <th className="border p-2 w-1/4">Role</th>
+                    <th className="border p-2 w-1/4">Batch Code</th>
+                    <th className="border p-2 w-1/4">Student ID</th>
+                </tr>
                 </thead>
-      <tbody>
-    {currentItems.length === 0 ? (
-        <tr>
-            <td colSpan="3" className="text-center p-4">
-                No members found.
-            </td>
-        </tr>
-    ) : (
-        currentItems.map((member) => (
-            <tr key={member._id}>
-                <td className="border p-2 text-center">
-                    <input
-                        type="checkbox"
-                        checked={selectedMembers.includes(member._id)}
-                        onChange={() => handleCheckboxChange(member._id)}
-                    />
-                </td>
-                <td className="border p-2 truncate">{member.fullName || "N/A"}</td>
-                <td className="border p-2 truncate">{member.email || "N/A"}</td>
-                <td className="border p-2">{member.role || "N/A"}</td>
-                <td className="border p-2">{member.batchCode || "N/A"}</td>
-                <td className="border p-2">{member.studentId || "N/A"}</td>
-            </tr>
-        ))
-    )}
-</tbody>
+                <tbody>
+                {currentItems.length === 0 ? (
+                    <tr>
+                        <td colSpan="3" className="text-center p-4">
+                            No members found.
+                        </td>
+                    </tr>
+                ) : (
+                    currentItems.map((member) => (
+                        <tr key={member._id}>
+                            <td className="border p-2 text-center">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedMembers.includes(member._id)}
+                                    onChange={() => handleCheckboxChange(member._id)}
+                                />
+                            </td>
+                            <td className="border p-2 truncate">{member.fullName || "N/A"}</td>
+                            <td className="border p-2 truncate">{member.email || "N/A"}</td>
+                            <td className="border p-2">{member.role || "N/A"}</td>
+                            <td className="border p-2">{member.batchCode || "N/A"}</td>
+                            <td className="border p-2">{member.studentId || "N/A"}</td>
+                        </tr>
+                    ))
+                )}
+                </tbody>
 
             </table>
             <div className="mt-4 flex justify-center gap-4">
@@ -127,7 +128,7 @@ function DeleteMembers({ members = [] }) {
                         key={pageNumber}
                         onClick={() => setCurrentPage(pageNumber + 1)}
                         className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                            }`}
+                        }`}
                     >
                         {pageNumber + 1}
                     </button>
@@ -135,7 +136,7 @@ function DeleteMembers({ members = [] }) {
             </div>
             <button
                 className={`mt-6 px-6 py-2 rounded ${selectedMembers.length > 0 ? "bg-red-500 text-white" : "bg-gray-300 text-black"
-                    }`}
+                }`}
                 disabled={selectedMembers.length === 0}
                 onClick={handleDelete}
             >

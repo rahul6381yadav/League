@@ -1,24 +1,24 @@
 import {
-    HomeIcon,
+    ArchiveIcon,
     ChartSquareBarIcon,
-    SparklesIcon,
-    CogIcon,
-    LogoutIcon,
-    UserGroupIcon,
-    UserCircleIcon,
-    StarIcon,
     ClipboardCheckIcon,
-    ArchiveIcon
+    CogIcon,
+    HomeIcon,
+    LogoutIcon,
+    SparklesIcon,
+    StarIcon,
+    UserCircleIcon,
+    UserGroupIcon
 } from "@heroicons/react/outline";
-import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useAuth} from "../../context/AuthContext";
+import {useLocation, useNavigate} from "react-router-dom";
 import Tooltip from '../utils/Tooltip_sidebar';
-import {  FaTachometerAlt,  FaUser, FaUsers } from "react-icons/fa";
+import {FaTachometerAlt, FaUser, FaUsers} from "react-icons/fa";
 
-const Sidebar = ({ onToggle }) => {
+const Sidebar = ({onToggle}) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const { logout } = useAuth();
+    const {logout} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -43,14 +43,14 @@ const Sidebar = ({ onToggle }) => {
     };
 
     const menuItems = [
-        { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/home" },
-        { icon: <UserGroupIcon className="h-6 w-6" />, label: "All Clubs", path: "/clubs" },
-        { icon: <ClipboardCheckIcon className="h-6 w-6" />, label: "My Events", path: "/my-events" },
-        { icon: <ArchiveIcon className="h-6 w-6" />, label: "All Events", path: "/allEvents" },
-        { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
-        { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
-        { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
-        { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/profile" },
+        {icon: <HomeIcon className="h-6 w-6"/>, label: "Home", path: "/home"},
+        {icon: <UserGroupIcon className="h-6 w-6"/>, label: "All Clubs", path: "/clubs"},
+        {icon: <ClipboardCheckIcon className="h-6 w-6"/>, label: "My Events", path: "/my-events"},
+        {icon: <ArchiveIcon className="h-6 w-6"/>, label: "All Events", path: "/allEvents"},
+        {icon: <SparklesIcon className="h-6 w-6"/>, label: "My Batch Leaderboard", path: "/batch-leaderboard"},
+        {icon: <StarIcon className="h-6 w-6"/>, label: "Overall Leaderboard", path: "/overall-leaderboard"},
+        {icon: <ChartSquareBarIcon className="h-6 w-6"/>, label: "My Achievements", path: "/my-achievements"},
+        {icon: <UserCircleIcon className="h-6 w-6"/>, label: "My Profile", path: "/profile"},
     ];
 
     useEffect(() => {
@@ -80,17 +80,17 @@ const Sidebar = ({ onToggle }) => {
             <div className="z-100 fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
                     {[
-                        { name: "Home", icon: <FaTachometerAlt  className="h-6 w-6" />, href: "/home" },
-                        { name: "Clubs", icon: <FaUsers className="h-6 w-6" />, href: "/clubs" },
-                        { name: "Events", icon: <ArchiveIcon className="h-6 w-6" />, href: "/all-events" },
-                        { name: "My Events", icon: <ClipboardCheckIcon className="h-6 w-6" />, href: "/my-events" },
-                        { name: "Profile", icon: <FaUser className="h-6 w-6" />, href: "/profile" },
+                        {name: "Home", icon: <FaTachometerAlt className="h-6 w-6"/>, href: "/home"},
+                        {name: "Clubs", icon: <FaUsers className="h-6 w-6"/>, href: "/clubs"},
+                        {name: "Events", icon: <ArchiveIcon className="h-6 w-6"/>, href: "/all-events"},
+                        {name: "My Events", icon: <ClipboardCheckIcon className="h-6 w-6"/>, href: "/my-events"},
+                        {name: "Profile", icon: <FaUser className="h-6 w-6"/>, href: "/profile"},
                     ].map((item, index) => (
                         <a
                             key={index}
                             href={item.href}
                             className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                             >
+                        >
                             {item.icon}
                             <span className="text-xs">{item.name}</span>
                         </a>
@@ -104,7 +104,7 @@ const Sidebar = ({ onToggle }) => {
     function renderSidebar() {
         return (
             <div
-                className={`fixed ${isCollapsed? "w-16": "w-64"} top-0 left-0 h-screen dark:bg-gray-800 dark:text-white bg-gray-200 
+                className={`fixed ${isCollapsed ? "w-16" : "w-64"} top-0 left-0 h-screen dark:bg-gray-800 dark:text-white bg-gray-200 
             text-gray-800 transition-all duration-300 z-100`}>
                 {/* Sidebar Header */}
                 <div className="flex items-center justify-between p-4">
@@ -130,9 +130,9 @@ const Sidebar = ({ onToggle }) => {
                             key={idx}
                             className={`flex items-center space-x-4 p-2 rounded cursor-pointer
                             ${location.pathname === item.path
-                                    ? "bg-blue-600 text-white shadow-md" // Active style
-                                    : "hover:bg-gray-300 dark:hover:bg-gray-700"
-                                }`}
+                                ? "bg-blue-600 text-white shadow-md" // Active style
+                                : "hover:bg-gray-300 dark:hover:bg-gray-700"
+                            }`}
                             onClick={() => {
                                 navigate(item.path);
                             }}
@@ -150,25 +150,25 @@ const Sidebar = ({ onToggle }) => {
                     <ul className="space-y-2">
                         {[
                             {
-                                icon: <CogIcon className="h-6 w-6" />,
+                                icon: <CogIcon className="h-6 w-6"/>,
                                 label: "Settings",
                                 path: "/settings"
                             }].map((item, idx) => (
-                                <li
-                                    key={idx}
-                                    className={`flex items-center space-x-4 p-2 rounded cursor-pointer
+                            <li
+                                key={idx}
+                                className={`flex items-center space-x-4 p-2 rounded cursor-pointer
                                 ${location.pathname === item.path
-                                            ? "bg-blue-600 text-white shadow-md" // Active style
-                                            : "hover:bg-gray-300 dark:hover:bg-gray-700"
-                                        }`}
-                                    onClick={() => navigate(item.path)}
-                                >
-                                    <Tooltip text={item.label} show={isCollapsed}>
-                                        <span className="text-lg">{item.icon}</span>
-                                    </Tooltip>
-                                    {!isCollapsed && <span>{item.label}</span>}
-                                </li>
-                            ))}
+                                    ? "bg-blue-600 text-white shadow-md" // Active style
+                                    : "hover:bg-gray-300 dark:hover:bg-gray-700"
+                                }`}
+                                onClick={() => navigate(item.path)}
+                            >
+                                <Tooltip text={item.label} show={isCollapsed}>
+                                    <span className="text-lg">{item.icon}</span>
+                                </Tooltip>
+                                {!isCollapsed && <span>{item.label}</span>}
+                            </li>
+                        ))}
                     </ul>
                     <div className="flex items-center mt-4 p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded">
                         <div className="h-8 w-8 bg-gray-500 rounded-full"></div>
@@ -187,7 +187,7 @@ const Sidebar = ({ onToggle }) => {
                         onClick={handleLogout}
                     >
                         <Tooltip text="Log Out" show={isCollapsed}>
-                            <LogoutIcon className="h-6 w-6" />
+                            <LogoutIcon className="h-6 w-6"/>
                         </ Tooltip>
                         {!isCollapsed && <span className="ml-5">Log Out</span>}
                     </div>

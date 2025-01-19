@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {useAuth} from '../../context/AuthContext';
 
 function NewPassword() {
-    const { isOTPVerified } = useAuth();
+    const {isOTPVerified} = useAuth();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
-    const { email } = location.state || {};
+    const {email} = location.state || {};
 
     useEffect(() => {
         if (!email) {
@@ -37,7 +37,7 @@ function NewPassword() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email: email, newPassword: newPassword }),
+                body: JSON.stringify({email: email, newPassword: newPassword}),
             });
 
             let result = await response.json();

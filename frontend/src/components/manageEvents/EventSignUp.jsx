@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../../context/AuthContext";
-import { FaCalendarAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa"; // Import icons
-import { Mail, Trophy } from "lucide-react";
+import {useAuth} from "../../context/AuthContext";
+import {FaCalendarAlt, FaClock, FaMapMarkerAlt} from "react-icons/fa"; // Import icons
+import {Mail, Trophy} from "lucide-react";
 
 const getTrophyStyle = (index) => {
     switch (index) {
@@ -34,19 +34,19 @@ const getTrophyStyle = (index) => {
 };
 
 const EventSignUp = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const [event, setEvent] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [isParticipated, setIsParticipated] = useState(false);
-    const { userId, isAuthenticated } = useAuth();
+    const {userId, isAuthenticated} = useAuth();
     const token = localStorage.getItem("authToken");
 
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/api/v1/club/events`, {
-                    params: { id },
-                    headers: { Authorization: `Bearer ${token}` },
+                    params: {id},
+                    headers: {Authorization: `Bearer ${token}`},
                 });
                 setEvent(response.data.event);
                 console.log("Event details:", response.data.event);
@@ -58,9 +58,10 @@ const EventSignUp = () => {
         const getParticipants = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    params: { eventId: id },
+                    headers: {Authorization: `Bearer ${token}`},
+                    params: {eventId: id},
                 });
+                console.log("Participants:", response.data.records);
                 const sortedParticipants = response.data.records.sort((a, b) => b.pointsGiven - a.pointsGiven);
                 setParticipants(sortedParticipants);
             } catch (error) {
@@ -71,8 +72,8 @@ const EventSignUp = () => {
         const checkParticipation = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    params: { studentId: userId, eventId: id },
+                    headers: {Authorization: `Bearer ${token}`},
+                    params: {studentId: userId, eventId: id},
                 });
                 const records = Array.isArray(response.data.records) ? response.data.records : [];
                 setIsParticipated(records.length > 0);
@@ -101,13 +102,13 @@ const EventSignUp = () => {
                         isWinner: false,
                     },
                     {
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: {Authorization: `Bearer ${token}`},
                     }
                 );
                 setIsParticipated(true);
                 const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    params: { eventId: id },
+                    headers: {Authorization: `Bearer ${token}`},
+                    params: {eventId: id},
                 });
                 const sortedParticipants = response.data.records.sort((a, b) => b.pointsGiven - a.pointsGiven);
                 setParticipants(sortedParticipants);
@@ -124,8 +125,9 @@ const EventSignUp = () => {
             <div className="h-full w-full grid grid-cols-1 md:grid-cols-[1fr,auto] gap-8 p-8">
                 {/* Event Details Card - Left Side */}
                 <div className="h-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-md">
-                    <div className="relative w-full" style={{ paddingBottom: '42.8571%' }}>
-                        <div className="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                    <div className="relative w-full" style={{paddingBottom: '42.8571%'}}>
+                        <div
+                            className="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center">
                             <span className="text-gray-500">Banner Placeholder</span>
                         </div>
                     </div>
@@ -137,17 +139,17 @@ const EventSignUp = () => {
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <div className="flex items-center text-gray-600 dark:text-white text-sm">
-                                                <FaCalendarAlt className="mr-2 text-purple-500" />
+                                                <FaCalendarAlt className="mr-2 text-purple-500"/>
                                                 <span className="mr-2">Date:</span>
                                                 {new Date(event.date).toLocaleDateString()}
                                             </div>
                                             <div className="flex items-center text-gray-600 dark:text-white text-sm">
-                                                <FaMapMarkerAlt className="mr-2 text-red-500" />
+                                                <FaMapMarkerAlt className="mr-2 text-red-500"/>
                                                 <span className="mr-2">Venue:</span>
                                                 {event.venue}
                                             </div>
                                             <div className="flex items-center text-gray-600 dark:text-white text-sm">
-                                                <FaClock className="mr-2 text-green-500" />
+                                                <FaClock className="mr-2 text-green-500"/>
                                                 <span className="mr-2">Duration:</span>
                                                 {event.duration}
                                             </div>
@@ -155,7 +157,8 @@ const EventSignUp = () => {
                                         {/* Collaborating Clubs Section */}
                                         {event.clubIds && event.clubIds.length > 0 && (
                                             <div className="mt-4">
-                                                <h4 className="text-sm font-semibold text-gray-700 dark:text-white mb-2">Collaborating Clubs:</h4>
+                                                <h4 className="text-sm font-semibold text-gray-700 dark:text-white mb-2">Collaborating
+                                                    Clubs:</h4>
                                                 <div className="flex flex-wrap gap-4">
                                                     {event.clubIds.map((club) => (
                                                         <div key={club._id} className="text-center">
@@ -189,11 +192,13 @@ const EventSignUp = () => {
                 </div>
 
                 {/* Participants Card - Right Side */}
-                <div className="h-full w-full md:w-fit md:min-w-[320px] md:max-w-lg flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <div
+                    className="h-full w-full md:w-fit md:min-w-[320px] md:max-w-lg flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-md">
                     <div className="p-6 border-b">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold text-purple-700 dark:text-purple-300">Participants</h2>
-                            <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-sm font-medium px-3 py-1 rounded-full">
+                            <span
+                                className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-sm font-medium px-3 py-1 rounded-full">
                                 {participants.length} Registered
                             </span>
                         </div>
@@ -266,7 +271,8 @@ const EventSignUp = () => {
                                     })}
                                 </div>
                             ) : (
-                                <p className="text-gray-500 text-center py-4">No participants yet. Be the first to sign up!</p>
+                                <p className="text-gray-500 text-center py-4">No participants yet. Be the first to sign
+                                    up!</p>
                             )}
                         </div>
                     </div>

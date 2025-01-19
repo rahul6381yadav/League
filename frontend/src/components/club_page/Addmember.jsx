@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-function AddMembers({ alreadyMemberIds = [] }) {
+import React, {useEffect, useState} from "react";
+import {jwtDecode} from "jwt-decode";
+
+function AddMembers({alreadyMemberIds = []}) {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [roleFilter, setRoleFilter] = useState("");
@@ -12,7 +13,7 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const email = localStorage.getItem("emailCont");
     const token = localStorage.getItem("jwtToken");
     const decodedToken = jwtDecode(token);
-    
+
     const fetchAllUsers = async () => {
         try {
             const response = await fetch(
@@ -57,7 +58,7 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const applyFilters = () => {
         const filtered = users.filter((user) => {
             return (
-                (roleFilter === "" || (user.role===roleFilter)) &&
+                (roleFilter === "" || (user.role === roleFilter)) &&
                 (search === "" || (user.fullName && user.fullName.toLowerCase().includes(search.toLowerCase()))) &&
                 (batchFilter === "" || (user.batchCode && user.batchCode.toString() === batchFilter.toString())) &&
                 !alreadyMemberIds.includes(user._id) // Exclude already members
@@ -138,32 +139,32 @@ function AddMembers({ alreadyMemberIds = [] }) {
             </div>
             <table className="w-full border-collapse border border-gray-300">
                 <thead>
-                    <tr>
-                        <th className="border p-2">Select</th>
-                        <th className="border p-2 w-1/6">Full Name</th>
-                        <th className="border p-2 w-1/6">Email</th>
-                        <th className="border p-2">Role</th>
-                        <th className="border p-2 w-1/12">Batch Code</th>
-                        <th className="border p-2">Student ID</th>
-                    </tr>
+                <tr>
+                    <th className="border p-2">Select</th>
+                    <th className="border p-2 w-1/6">Full Name</th>
+                    <th className="border p-2 w-1/6">Email</th>
+                    <th className="border p-2">Role</th>
+                    <th className="border p-2 w-1/12">Batch Code</th>
+                    <th className="border p-2">Student ID</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {currentItems.map((user) => (
-                        <tr key={user._id}>
-                            <td className="border p-2 text-center">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedUsers.includes(user._id)}
-                                    onChange={() => handleCheckboxChange(user._id)}
-                                />
-                            </td>
-                            <td className="border p-2 truncate">{user.fullName}</td>
-                            <td className="border p-2 truncate">{user.email}</td>
-                            <td className="border p-2">{user.role}</td>
-                            <td className="border p-2">{user.batchCode || "N/A"}</td>
-                            <td className="border p-2">{user.studentId || "N/A"}</td>
-                        </tr>
-                    ))}
+                {currentItems.map((user) => (
+                    <tr key={user._id}>
+                        <td className="border p-2 text-center">
+                            <input
+                                type="checkbox"
+                                checked={selectedUsers.includes(user._id)}
+                                onChange={() => handleCheckboxChange(user._id)}
+                            />
+                        </td>
+                        <td className="border p-2 truncate">{user.fullName}</td>
+                        <td className="border p-2 truncate">{user.email}</td>
+                        <td className="border p-2">{user.role}</td>
+                        <td className="border p-2">{user.batchCode || "N/A"}</td>
+                        <td className="border p-2">{user.studentId || "N/A"}</td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
             <div className="mt-4 flex justify-center gap-4">
@@ -172,7 +173,7 @@ function AddMembers({ alreadyMemberIds = [] }) {
                         key={pageNumber}
                         onClick={() => handlePageChange(pageNumber + 1)}
                         className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                            }`}
+                        }`}
                     >
                         {pageNumber + 1}
                     </button>
@@ -180,7 +181,7 @@ function AddMembers({ alreadyMemberIds = [] }) {
             </div>
             <button
                 className={`mt-6 px-6 py-2 rounded ${selectedUsers.length > 0 ? "bg-green-500 text-white" : "bg-gray-300 text-black"
-                    }`}
+                }`}
                 disabled={selectedUsers.length === 0}
                 onClick={() => {
                     console.log(selectedUsers)

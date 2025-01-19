@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Pagination from '../manageEvents/Pagination';
 import EventFilters from '../manageEvents/EventFilter';
 import EventCard from '../manageEvents/EventCard';
+
 function AllEvents() {
     const [allEvents, setAllEvents] = useState([]);
-    const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
-      const [filteredEvents, setFilteredEvents] = useState([]);
+    const [pagination, setPagination] = useState({limit: 6, skip: 0});
+    const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({});
     const token = localStorage.getItem("authToken");
@@ -31,18 +32,18 @@ function AllEvents() {
     useEffect(() => {
         fetchAllEvents();
     }, [pagination]);
-    
+
     useEffect(() => {
         const filtered = allEvents.filter(event => {
-          const matchesSearch = filters.search
-            ? event.eventName.toLowerCase().includes(filters.search.toLowerCase())
-            : true;
-    
-          const matchesDate = filters.date
-            ? new Date(event.date).toISOString().split('T')[0] === filters.date
-            : true;
-    
-          return matchesSearch && matchesDate;
+            const matchesSearch = filters.search
+                ? event.eventName.toLowerCase().includes(filters.search.toLowerCase())
+                : true;
+
+            const matchesDate = filters.date
+                ? new Date(event.date).toISOString().split('T')[0] === filters.date
+                : true;
+
+            return matchesSearch && matchesDate;
         });
         setFilteredEvents(filtered);
     }, [filters, allEvents]);
@@ -63,7 +64,7 @@ function AllEvents() {
             <div className="p-4 w-full flex-grow">
                 <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">Club Events</h1>
 
-                <EventFilters setFilters={setFilters} />
+                <EventFilters setFilters={setFilters}/>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                     {filteredEventsPaginated.length > 0 ? (
@@ -80,9 +81,10 @@ function AllEvents() {
                     )}
                 </div>
 
-                <Pagination pagination={pagination} setPagination={setPagination} />
+                <Pagination pagination={pagination} setPagination={setPagination}/>
             </div>
         </div>
     );
 }
+
 export default AllEvents;
