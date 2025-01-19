@@ -116,7 +116,8 @@ const eventSchema = new Schema({
 
   const attendanceSchema = new mongoose.Schema({
     studentId: {
-      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     eventId: {
