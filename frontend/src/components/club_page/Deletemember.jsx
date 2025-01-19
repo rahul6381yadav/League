@@ -5,7 +5,7 @@ function DeleteMembers({ members = [] }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(7);
     const [selectedMembers, setSelectedMembers] = useState([]);
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const decodedToken = jwtDecode(token);
     const handleSearchChange = (event) => {
         setSearch(event.target.value);

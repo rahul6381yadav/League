@@ -43,7 +43,7 @@ exports.UserSignup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, role,fullName,photo} = req.body;
+        const { email, role, fullName, photo} = req.body;
         if(!email || !role){
             return res.status(400).json({ message: "Email and role are required" });
         }

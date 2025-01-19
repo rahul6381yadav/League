@@ -5,7 +5,7 @@ import { useRole } from "../../context/RoleContext";  // Import the useRole hook
 
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
-  const { roles } = useRole();  // Access the user's role from context
+  const { roles } = useRole(); 
 
   const handleCardClick = () => {
     const route = roles === "coordinator" ? `/events/${event._id}` : `/event-signup/${event._id}`;

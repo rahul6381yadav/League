@@ -13,7 +13,7 @@ function ViewEvents(props) {
   const [filters, setFilters] = useState({});
   const [selectedEvent, setSelectedEvent] = useState(null); // Track the selected event
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Control the popup visibility
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("jwtToken");
   
 
   const fetchAllEvents = async () => {

@@ -8,7 +8,7 @@ function Clubs() {
   const [ratingMax, setRatingMax] = useState(5);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("jwtToken");
 
   const handleClubsDetails = async () => {
     const validatedMin = Math.max(0, Math.min(ratingMin, 5));
@@ -100,7 +100,7 @@ function Clubs() {
               key={club._id}
               className="relative flex flex-col justify-center items-center text-center bg-white dark:bg-gray-800 w-[calc(65vh/1.5)] h-[65vh] p-[3px] rounded-lg cursor-pointer transition-all group"
               onClick={() =>
-                navigate('/ClubPages', {
+                navigate('/club-events', {
                   state: { clubId: club._id, clubEmail: club.email, clubName: club.name },
                 })
               }

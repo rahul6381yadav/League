@@ -12,7 +12,7 @@ function ViewUsers() {
     const [itemsPerPage] = useState(7);
     const email = localStorage.getItem("emailCont");
     const location = useLocation();
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const { primaryClubId, primaryClubEmail } = location.state || {};
 
     const fetchAllUsers = async () => {
