@@ -1,8 +1,8 @@
-import React, { createContext, useState,useContext} from 'react';
+import React, {createContext, useContext, useState} from 'react';
 
 const EmailContext = createContext();
 export const useEmail = () => useContext(EmailContext);
-export const EmailProvider = ({ children }) => {
+export const EmailProvider = ({children}) => {
     // const [roles, setRole] = useState("student"); // Default role is null
     const [emailCont, setEmailCont] = useState(() => {
         return localStorage.getItem('emailCont') || ''; // Default role is "student"
@@ -12,7 +12,7 @@ export const EmailProvider = ({ children }) => {
         localStorage.setItem('emailCont', email);
     };
     return (
-        <EmailContext.Provider value={{ emailCont, setEmailCont:updateEmail }}>
+        <EmailContext.Provider value={{emailCont, setEmailCont: updateEmail}}>
             {children}
         </EmailContext.Provider>
     );

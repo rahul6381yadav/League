@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { jwtDecode } from 'jwt-decode';
-import ViewUsers from "../club_page/ViewUsers";
+import React, {useEffect, useState} from "react";
+import {jwtDecode} from 'jwt-decode';
 import AddMembers from "../club_page/Addmember";
 import DeleteMembers from "../club_page/Deletemember";
 
@@ -40,7 +39,7 @@ function MyClub() {
                     ids = result.club.members.map((member) => member._id);
                     setMemberIds(ids);
                 }
-                console.log("members ids ",ids);
+                console.log("members ids ", ids);
                 let ids2 = [];
                 if (result.club && result.club.coordinator1) {
                     ids2.push(result.club.coordinator1._id);
@@ -50,7 +49,7 @@ function MyClub() {
                 }
                 setMemberAndCoordinatorIds([...ids, ...ids2]);
                 console.log("coordinator ids ", ids2);
-                
+
             } else {
                 console.log("Error in response");
             }
@@ -62,7 +61,6 @@ function MyClub() {
     useEffect(() => {
         fetchClubDetails();
     }, []);
-
 
 
     if (!clubDetails) {
@@ -181,13 +179,13 @@ function MyClub() {
                             setIsModalOpen(true);
                             console.log("Add member clicked")
                         }
-                            }
+                        }
                     >
                         Add Member
                     </button>
                     <button
                         className="bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded hover:bg-red-600 dark:hover:bg-red-700"
-                        onClick={() => setIsDeleteModalOpen(true)} 
+                        onClick={() => setIsDeleteModalOpen(true)}
                     >
                         Delete Member
                     </button>
@@ -209,7 +207,8 @@ function MyClub() {
                             ></div>
 
                             {/* Modal Container */}
-                            <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
+                            <div
+                                className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
                                 <AddMembers
                                     alreadyMemberIds={memberandCoordinatorIds}
                                     onClose={() => {
@@ -229,7 +228,8 @@ function MyClub() {
                             className="bg-black opacity-50 absolute inset-0"
                             onClick={() => setIsDeleteModalOpen(false)}
                         ></div>
-                        <div className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
+                        <div
+                            className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
                             <DeleteMembers
                                 members={clubDetails.members}
                                 onClose={() => {
@@ -237,7 +237,7 @@ function MyClub() {
                                     fetchClubDetails(); // Refresh club details
                                 }}
                             />
-                          
+
                         </div>
                     </div>
                 )}

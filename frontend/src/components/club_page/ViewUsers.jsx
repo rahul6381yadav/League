@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useLocation} from "react-router-dom";
 
 function ViewUsers() {
     const [isCoordinator, setIsCoordinator] = useState(false);
@@ -13,7 +13,7 @@ function ViewUsers() {
     const email = localStorage.getItem("emailCont");
     const location = useLocation();
     const token = localStorage.getItem("jwtToken");
-    const { primaryClubId, primaryClubEmail } = location.state || {};
+    const {primaryClubId, primaryClubEmail} = location.state || {};
 
     const fetchAllUsers = async () => {
         try {
@@ -105,32 +105,32 @@ function ViewUsers() {
             </div>
             <table className="w-full border-collapse border border-gray-300">
                 <thead>
-                    <tr>
-                        <th className="border p-2">Photo</th>
-                        <th className="border p-2 w-1/6">Full Name</th>
-                        <th className="border p-2 w-1/6">Email</th>
-                        <th className="border p-2">Role</th>
-                        <th className="border p-2 w-1/12">Batch Code</th>
-                        <th className="border p-2">Student ID</th>
-                    </tr>
+                <tr>
+                    <th className="border p-2">Photo</th>
+                    <th className="border p-2 w-1/6">Full Name</th>
+                    <th className="border p-2 w-1/6">Email</th>
+                    <th className="border p-2">Role</th>
+                    <th className="border p-2 w-1/12">Batch Code</th>
+                    <th className="border p-2">Student ID</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {currentItems.map((user) => (
-                        <tr key={user._id}>
-                            <td className="border p-2">
-                                <img
-                                    src={`http://localhost:4000/uploads/${user.photo}`}
-                                    alt="Profile"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                            </td>
-                            <td className="border p-2 truncate">{user.fullName}</td>
-                            <td className="border p-2 truncate">{user.email}</td>
-                            <td className="border p-2">{user.role}</td>
-                            <td className="border p-2">{user.batchCode || "N/A"}</td>
-                            <td className="border p-2">{user.studentId || "N/A"}</td>
-                        </tr>
-                    ))}
+                {currentItems.map((user) => (
+                    <tr key={user._id}>
+                        <td className="border p-2">
+                            <img
+                                src={`http://localhost:4000/uploads/${user.photo}`}
+                                alt="Profile"
+                                className="w-10 h-10 rounded-full"
+                            />
+                        </td>
+                        <td className="border p-2 truncate">{user.fullName}</td>
+                        <td className="border p-2 truncate">{user.email}</td>
+                        <td className="border p-2">{user.role}</td>
+                        <td className="border p-2">{user.batchCode || "N/A"}</td>
+                        <td className="border p-2">{user.studentId || "N/A"}</td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
             <div className="mt-4 flex justify-center gap-2">
@@ -139,7 +139,7 @@ function ViewUsers() {
                         key={pageNumber}
                         onClick={() => handlePageChange(pageNumber + 1)}
                         className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                            }`}
+                        }`}
                     >
                         {pageNumber + 1}
                     </button>

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase";
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useAuth} from '../../context/AuthContext';
+import {sendPasswordResetEmail} from "firebase/auth";
+import {auth} from "../../firebase";
 
 function Forget() {
-    const { setForgotPasswordState } = useAuth();
+    const {setForgotPasswordState} = useAuth();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
@@ -15,14 +15,14 @@ function Forget() {
     const handleReset = async (e) => {
         e.preventDefault();
         try {
-          await sendPasswordResetEmail(auth, email);
-          setMessage("Password reset email sent! Check your inbox.");
-          setError("");
+            await sendPasswordResetEmail(auth, email);
+            setMessage("Password reset email sent! Check your inbox.");
+            setError("");
         } catch (err) {
-          setError(err.message);
-          setMessage("");
+            setError(err.message);
+            setMessage("");
         }
-      };
+    };
 
 
     useEffect(() => {
