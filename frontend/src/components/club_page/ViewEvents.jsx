@@ -77,7 +77,7 @@ function ViewEvents(props) {
   }
 
   if (allEvents.length === 0) {
-    return <div>No events available.</div>;
+    return <div className="text-black dark:text-white">No events available.</div>;
   }
 
   return (
