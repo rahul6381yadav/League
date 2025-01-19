@@ -19,7 +19,7 @@ import ViewUsers from './components/club_page/ViewUsers';
 import ClubPages from './components/clubs/ClubPages';
 import Loader from './components/loader/loader';
 import ManageParticipants from './components/clubs/ManageParticipants';
-
+import EventSignUp from './components/manageEvents/EventSignUp';
 import Layout from './components/Home/LayoutStudent';
 import Home_club from './components/Club_coordinators/home_club';
 import LayoutCoordinator from './components/Club_coordinators/LayoutCoordinator';
@@ -128,6 +128,7 @@ function UserRoutes() {
       <Route path="/home_club" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><Home_club /></LayoutCoordinator></ProtectedRoute>} />
       <Route path="/manage-events" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><EventPage /></LayoutCoordinator></ProtectedRoute>} />
       <Route path="/events/:id" element={<ProtectedRoute requiredRole="coordinator"><LayoutCoordinator><ManageParticipants /></LayoutCoordinator></ProtectedRoute>} />
+      <Route path="/event-signup/:id" element={<ProtectedRoute requiredRole="student"><Layout><EventSignUp /></Layout></ProtectedRoute>} />
       <Route path="/adminPanel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
       <Route path="/" element={<Login />} />
       <Route path="/admin" element={<AdminLogin />} />
