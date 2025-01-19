@@ -1,20 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const Dashboard = () => {
-  const scheduleTasks = [
-    { time: "08:00", task: "Online Interview with UI Candidate", color: "bg-green-200" },
-    { time: "09:00", task: "Replying email to applicants", color: "bg-blue-200" },
-    { time: "10:00", task: "Weekly meeting", color: "bg-orange-200" },
-    { time: "11:00", task: "Psychology test", color: "bg-purple-200" },
-  ];
-
-  const employees = [
-    { name: "3D design", department: "DEV-X ", job: "3D design" },
-    { name: "web HACKATHON", department: "CODESOC", job: "WEB DEV" },
-    { name: "3D dance", department: "3D club", job: "CULTURAL" },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [todaySchedule, setTodaySchedule] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { userId, isAuthenticated } = useAuth();
+  const token = localStorage.getItem("authToken");
 
   const pastParticipation = [
     { event: "Hackathon", date: "2024-11-15", points: 30 },
@@ -24,152 +20,107 @@ const Dashboard = () => {
 
   const totalPoints = 120;
 
-  // Map participation points to heatmap count, ensuring the format is correct for the calendar
   const heatmapData = pastParticipation.map((participation) => ({
     date: participation.date,
-    count: participation.points, // Using points as the count value
+    count: participation.points,
   }));
 
   const getColorForPoints = (points) => {
-    if (points >= 50) return "fill-green-200"; // Low points
-    if (points <= 50) return "fill-green-400"; // Medium points
-    return "fill-green-600"; // High points
+    if (points >= 50) return "bg-[#9649ff]";
+    if (points <= 50) return "bg-[#d0aeff]";
+    return "bg-[#4d148f]";
   };
 
-  const currentYear = new Date().getFullYear(); // Add this line to define currentYear
+  const currentYear = new Date().getFullYear();
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/v1/club/events`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUpcomingEvents(response.data.events);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load events");
+        setLoading(false);
+      }
+    };
+
+    const fetchTodaySchedule = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/v1/club/events`, {
+          params: { date: new Date().toISOString() },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTodaySchedule(response.data.events);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load today's schedule");
+        setLoading(false);
+      }
+    };
+
+    fetchUpcomingEvents();
+    fetchTodaySchedule();
+  }, [token]);
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="flex gap-6 justify-between">
-        {/* Student of the Year Section */}
-        <div className="p-4 w-1/6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-          <h2 className="text-lg font-bold mb-2 text-center">Student of the Year</h2>
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden border-4">
-              <img src="https://via.placeholder.com/150" alt="Student Photo" className="w-full h-full object-cover" />
+      <div className="min-h-screen p-8 bg-[#f9f4ff] dark:bg-[#38007a]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Today's Schedule */}
+          <div className="p-6 rounded-lg shadow-md bg-[#e4d2ff] dark:bg-[#4d148f]">
+            <h2 className="text-lg font-semibold mb-4 text-center text-[#4d148f] dark:text-[#f9f4ff]">
+              Today's Schedule
+            </h2>
+            <div className="flex overflow-x-auto space-x-4">
+              {loading ? (
+                  <p>Loading today's schedule...</p>
+              ) : error ? (
+                  <p className="text-[#b37bff]">{error}</p>
+              ) : (
+                  todaySchedule.map((task, index) => (
+                      <div
+                          key={index}
+                          className={`flex-shrink-0 p-4 rounded-lg shadow bg-[#f0e6ff] dark:bg-[#5c17b2] text-[#4d148f] dark:text-[#e4d2ff]`}
+                          style={{ minWidth: "200px" }}
+                      >
+                        <p className="text-sm font-medium mb-2 text-[#6b15db] dark:text-[#d0aeff]">
+                          {task.localStartTime} - {task.localEndTime}
+                        </p>
+                        <p className="text-m font-medium mb-3 text-[#4d148f] dark:text-[#e4d2ff]">
+                          {task.eventName}
+                        </p>
+                      </div>
+                  ))
+              )}
             </div>
-            <div className="text-center text-sm">
-              <p>Name: <span className="font-semibold">John Doe</span></p>
-              <p>Roll No: <span className="font-semibold">123456</span></p>
-              <p>Point: <span className="font-semibold">456</span></p>
+          </div>
+
+          {/* Participation Calendar */}
+          <div className="mt-6 p-6 rounded-lg shadow-md bg-[#e4d2ff] dark:bg-[#6b15db]">
+            <h3 className="text-lg font-semibold mb-4 text-[#4d148f] dark:text-[#f9f4ff]">
+              Participation Calendar
+            </h3>
+            <div className="flex justify-center">
+              <CalendarHeatmap
+                  startDate={new Date(`${currentYear}-01-01`)}
+                  endDate={new Date(`${currentYear}-12-31`)}
+                  values={heatmapData}
+                  classForValue={(value) =>
+                      value ? getColorForPoints(value.count) : "bg-[#f0e6ff] dark:bg-[#5c17b2]"
+                  }
+                  gutterSize={4}
+                  showMonthLabels={true}
+                  monthLabels={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]}
+                  weekdayLabels={["M", "T", "W", "T", "F", "S"]}
+                  cellSize={20}
+                  style={{ pointerEvents: "none" }}
+              />
             </div>
           </div>
         </div>
-
-        {/* Student of the Month Section */}
-        <div className="p-4 w-1/6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-          <h2 className="text-lg font-bold mb-2 text-center">Student of the Month</h2>
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden border-4">
-              <img src="https://via.placeholder.com/150" alt="Student Photo" className="w-full h-full object-cover" />
-            </div>
-            <div className="text-center text-sm">
-              <p>Name: <span className="font-semibold">Jane Smith</span></p>
-              <p>Roll No: <span className="font-semibold">654321</span></p>
-              <p>Point: <span className="font-semibold">123</span></p>
-            </div>
-          </div>
-        </div>
-
-        {/* Today's Schedule Section */}
-        <div className="p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-          <h2 className="text-lg font-semibold mb-4 text-center">Today's Schedule</h2>
-          <div className="flex overflow-x-auto space-x-4">
-            {scheduleTasks.map((task, index) => (
-              <div
-                key={index}
-                className={`flex-shrink-0 p-4 rounded-lg shadow ${task.color} dark:bg-gray-600`}
-                style={{ minWidth: "200px" }}
-              >
-                <p className="text-sm font-medium mb-2">{task.time}</p>
-                <p className="text-base font-semibold">{task.task}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
-
-      {/* Upcoming Events and Total Points Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        {/* Upcoming Events */}
-        <div className="p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-          <h2 className="text-lg font-semibold mb-4">Upcoming Events</h2>
-          <table className="table-auto w-full text-left border-collapse">
-            <thead>
-              <tr>
-                <th className="px-4 py-2">EVENTS</th>
-                <th className="px-4 py-2">Organisers</th>
-                <th className="px-4 py-2">Theme</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((employee, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-2">{employee.name}</td>
-                  <td className="px-4 py-2">{employee.department}</td>
-                  <td className="px-4 py-2">{employee.job}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Total Points */}
-        <div className="p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-          <h2 className="text-lg font-semibold mb-4 text-center">Total Points</h2>
-          <div className="flex items-center justify-center h-full">
-            <p className="text-4xl font-bold">{totalPoints}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Participation Calendar Section */}
-      <div className="mt-6 p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Participation Calendar</h3>
-        <div className="flex justify-center">
-          <CalendarHeatmap
-            startDate={new Date(`${currentYear}-01-01`)}  // Automatically use the first day of the current year
-            endDate={new Date(`${currentYear}-12-31`)}    // Automatically use the last day of the current year
-            values={heatmapData}
-            classForValue={(value) => {
-              return value ? getColorForPoints(value.count) : "fill-gray-200 dark:fill-gray-700";
-            }}
-            gutterSize={4} // Gap between day squares
-            showMonthLabels={true} // Display month labels
-            monthLabels={[
-              "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            ]}
-            weekdayLabels={["M", "T", "W", "T", "F", "S"]}
-            cellSize={20}
-            style={{ pointerEvents: "none" }} // Disables hover events
-          />
-        </div>
-      </div>
-
-      {/* Past Participation Section */}
-      <div className="mt-6 p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
-        <h2 className="text-lg font-semibold mb-4">Past Participation</h2>
-        <table className="table-auto w-full text-left border-collapse">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Event</th>
-              <th className="px-4 py-2">Date</th>
-              <th className="px-4 py-2">Points Credited</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pastParticipation.map((participation, index) => (
-              <tr key={index}>
-                <td className="px-4 py-2">{participation.event}</td>
-                <td className="px-4 py-2">{participation.date}</td>
-                <td className="px-4 py-2">{participation.points}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
   );
 };
 
