@@ -4,14 +4,15 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [roleFilter, setRoleFilter] = useState("");
-    const [batchFilter, setBatchFilter] = useState("");
+    const [batchFilter] = useState("");
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(7);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const email = localStorage.getItem("emailCont");
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("jwtToken");
     const decodedToken = jwtDecode(token);
+    
     const fetchAllUsers = async () => {
         try {
             const response = await fetch(

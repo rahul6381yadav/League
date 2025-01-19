@@ -13,7 +13,7 @@ export const EventProvider = ({ children }) => {
 
   const fetchEvent = async (id) => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("jwtToken");
       const response = await axios.get(
         `http://localhost:4000/api/v1/club/events?id=${id}`,
         {
@@ -34,7 +34,7 @@ export const EventProvider = ({ children }) => {
 
 const fetchParticipants = async (id) => {
     try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("jwtToken");
         const response = await axios.get(
             `http://localhost:4000/api/v1/club/attendance?eventId=${id}`,
             {
