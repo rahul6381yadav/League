@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {useRole} from '../../context/RoleContext';
 import {loginWithEmail, loginWithGoogle} from '../../utils/FirebaseAuthService';
 import {backendUrl} from '../../utils/routes';
-import Spinner from "../../components/common/circulaRIndicator"
+import Spinner from "../common/circularIndicator"
 
 function Login() {
     const [activeTab, setActiveTab] = useState('student');
