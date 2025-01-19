@@ -1,23 +1,71 @@
 const { AttendanceModel } = require("../model/ClubModel");
+const User = require("../model/UserModel");
 
-// Mark attendance
 exports.participate = async (req, res) => {
     try {
-        const { studentId, eventId, pointsGiven, status, isWinner } = req.body;
+        const { participations } = req.body; // Array of objects: [{ studentId, eventId, pointsGiven, status }]
+        if (!Array.isArray(participations) || participations.length === 0) {
+            return res.status(400).json({ message: "Participation data is required", isError: true });
+        }
 
-        const newParticipation = new AttendanceModel({
-            studentId,
-            eventId
+        const attendanceDocs = [];
+        const studentPointsUpdates = {};
+
+        for (const participation of participations) {
+            const { studentId, eventId, pointsGiven, status } = participation;
+
+            const existingAttendance = await AttendanceModel.findOne({ studentId, eventId });
+            if (existingAttendance) {
+                return res.status(400).json({
+                    message: `Student  has already attended the event`,
+                    isError: true,
+                });
+            }
+
+            // Prepare attendance record
+            const attendance = {
+                studentId,
+                eventId,
+                pointsGiven: status === "present" ? pointsGiven : 0,
+                status,
+            };
+            attendanceDocs.push(attendance);
+
+            // Aggregate points for each student if status is "present"
+            if (status === "present" && pointsGiven > 0) {
+                studentPointsUpdates[studentId] = (studentPointsUpdates[studentId] || 0) + pointsGiven;
+            }
+        }
+
+        // Save attendance records
+        const savedParticipations = await AttendanceModel.insertMany(attendanceDocs);
+
+        // Update TotalPoints for users
+        for (const [studentId, points] of Object.entries(studentPointsUpdates)) {
+            const student = await User.findById(studentId);
+            if (student) {
+                student.TotalPoints = (student.TotalPoints || 0) + points;
+                await student.save();
+            }
+        }
+
+        // Fetch and populate saved participation records
+        const populatedParticipations = await AttendanceModel.find({
+            _id: { $in: savedParticipations.map(p => p._id) },
         }).populate("studentId eventId");
 
-        await newParticipation.save();
-        console.log(newParticipation);
-        res.status(201).json({ message: "Partcipation successfull!!!", participation: newParticipation, isError: false });
+        res.status(201).json({
+            message: "Participation recorded successfully",
+            attendanceRecords: populatedParticipations,
+            isError: false,
+        });
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).json({ message: "Internal Server Error", isError: true });
     }
 };
+
+
 
 // Get attendance records with optional filters
 exports.getPartcipation = async (req, res) => {
@@ -47,16 +95,35 @@ exports.getPartcipation = async (req, res) => {
     }
 };
 
-// Update attendance by ID
+// Update attendance for multiple students
 exports.updateAttendance = async (req, res) => {
     try {
-        const { id } = req.query;
-        const updates = req.body;
+        const { updates } = req.body;
+        if (!Array.isArray(updates) || updates.length === 0) {
+            return res.status(400).json({ message: "Updates data is required", isError: true });
+        }
 
-        const updatedAttendance = await AttendanceModel.findByIdAndUpdate(id, updates, { new: false }).populate("studentId eventId");
-        if (!updatedAttendance) return res.status(404).json({ message: "Attendance not found", isError: true });
+        const bulkOps = updates.map(({ id, status, pointsGiven }) => ({
+            updateOne: {
+                filter: { _id: id },
+                update: { $set: { status, pointsGiven } }
+            }
+        }));
 
-        res.status(200).json({ message: "Attendance updated successfully", attendance: updatedAttendance, isError: false });
+        await AttendanceModel.bulkWrite(bulkOps);
+
+        // Optionally, update student points in a separate loop if needed
+        for (const update of updates) {
+            if (update.status === "present" && update.pointsGiven > 0) {
+                const student = await User.findById(update.studentId);
+                if (student) {
+                    student.TotalPoints = (student.TotalPoints || 0) + update.pointsGiven;
+                    await student.save();
+                }
+            }
+        }
+
+        res.status(200).json({ message: "Attendance updated successfully", isError: false });
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).json({ message: "Internal Server Error", isError: true });

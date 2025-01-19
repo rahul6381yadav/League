@@ -131,8 +131,8 @@ const eventSchema = new Schema({
     },
     status: {
       type: String,
-      enum: ['Present', 'Absent'], 
-      default: 'Absent',
+      enum: ['present', 'absent'], 
+      default: 'absent',
       required: true,
     },
     isWinner: {
