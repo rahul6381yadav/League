@@ -27,33 +27,9 @@ const ClubPages = () => {
         <div className="text-gray-900 min-h-screen flex flex-col w-full">
             <div className="p-4 flex-grow w-full">
                 <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">{clubName}</h1>
-                <div className="text-right mb-4">
-                    <a
-                        className="text-xl font-bold text-blue-600 bg-white cursor-pointer"
-                        onClick={handleViewMembers}
-                    >
-                        View all Club members
-                    </a>
-                </div>
-                {isCoordinator && (
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="mb-4 p-2 bg-green-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-green-600 transition"
-                    >
-                        <FaPlus />
-                        <span>Create Event</span>
-                    </button>
-                )}
                 <div className="flex flex-wrap gap-6">
                     <ViewEvents primaryClubId={clubId} />
                 </div>
-                {isCoordinator && (
-                    <>
-                        <CreateEvents primaryClubId={clubId} primaryClubName={clubName} />
-                        <AddMembers />
-                        <AddStudentMembers />
-                    </>
-                )}
             </div>
         </div>
     );

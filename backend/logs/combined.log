@@ -1665,6 +1665,7 @@
 2025-01-19 14:40:21 info: POST | /user/login | 200
 2025-01-19 15:06:17 info: Server running on port 4000
 2025-01-19 15:09:25 info: POST | /user/login | 200
+
 2025-01-19 16:10:12 info: POST | /user/login | 2002025-01-19 17:40:59 info: Server running on port 4000
 2025-01-19 17:41:23 info: POST | /user/login | 200
 2025-01-19 17:42:00 info: GET | /api/v1/club?search=&ratingMin=0&ratingMax=5 | 304
@@ -1801,3 +1802,5 @@
 2025-01-19 19:46:02 info: POST | /user/login | 200
 2025-01-19 19:46:02 info: GET | /api/v1/club/events | 304
 2025-01-19 19:46:02 info: GET | /api/v1/club/events?date=2025-01-19T14:16:02.557Z | 200
+=======
+2025-01-19 16:10:12 info: POST | /user/login | 2002025-01-19 18:00:06 info: Server running on port 40
