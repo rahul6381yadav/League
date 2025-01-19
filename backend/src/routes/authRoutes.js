@@ -20,7 +20,7 @@ router.post("/club/events", jwtMiddleware.verifyToken, eventController.createEve
 router.put("/club/events", jwtMiddleware.verifyToken, eventController.updateEvent);
 router.delete("/club/events", jwtMiddleware.verifyToken, eventController.deleteEvent);
 
-router.get("/club/attendance", jwtMiddleware.verifyToken, attendanceController.getPartcipation);
+router.get("/club/attendance", jwtMiddleware.verifyToken, attendanceController.getParticipation);
 router.post("/club/attendance", jwtMiddleware.verifyToken, attendanceController.participate);
 router.put("/club/attendance", jwtMiddleware.verifyToken, attendanceController.updateAttendance);
 router.delete("/club/attendance", jwtMiddleware.verifyToken, attendanceController.deleteAttendance);
