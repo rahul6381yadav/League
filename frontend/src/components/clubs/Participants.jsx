@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Pagination from "./Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -31,6 +31,7 @@ const RangeInput = ({ current, min, max, onChange }) => {
     <div className="relative mb-6 w-64">
       <input
         type="range"
+        step={5}
         value={current}
         min={0}
         max={event.maxPoints}
@@ -88,7 +89,7 @@ const ParticipantsTable = ({
               key={participant.roll_no}
               className="border-b last:border-none dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-[14px] dark:text-white"
             >
-              <td className="flex items-center px-2 py-4">
+              <td className="flex items-center px-2 py-3">
                 <div className="ml-4">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {participant.name}
@@ -136,43 +137,12 @@ const ParticipationCard = () => {
   const {allParticipants} = useEvent();
   
   const [participants, setParticipants] = useState(allParticipants)
-  // const [participants, setParticipants] = useState([
-  //   {
-  //     name: "John Doe",
-  //     roll_no: "21BCS001",
-  //     batch: "Batch A",
-  //     status: "Present",
-  //     points: 85,
-  //   },
-  //   {
-  //     name: "Jane Smith",
-  //     roll_no: "21BCS002",
-  //     batch: "Batch A",
-  //     status: "Absent",
-  //     points: 0,
-  //   },
-  //   {
-  //     name: "Michael Johnson",
-  //     roll_no: "21BCS003",
-  //     batch: "Batch B",
-  //     status: "Present",
-  //     points: 90,
-  //   },
-  //   {
-  //     name: "Emily Davis",
-  //     roll_no: "21BCS004",
-  //     batch: "Batch B",
-  //     status: "Present",
-  //     points: 78,
-  //   },
-  //   {
-  //     name: "Chris Lee",
-  //     roll_no: "21BCS005",
-  //     batch: "Batch C",
-  //     status: "Absent",
-  //     points: 0,
-  //   },
-  // ]);
+
+  useEffect(() => {
+    setParticipants(allParticipants);
+    setEditedPoints(allParticipants.map((p) => p.points));
+  }, [allParticipants]);
+  
 
   const [isEdit, setIsEdit] = useState(false);
   const [editedPoints, setEditedPoints] = useState(
