@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { AttendanceModel } = require("../model/ClubModel");
 
 // Mark attendance
@@ -7,25 +8,28 @@ exports.participate = async (req, res) => {
 
         const newParticipation = new AttendanceModel({
             studentId,
-            eventId
+            eventId,
+            pointsGiven,
+            status,
+            isWinner
         });
 
         await newParticipation.save();
         console.log(newParticipation);
-        res.status(201).json({ message: "Partcipation successfull!!!", participation: newParticipation, isError: false });
+        res.status(201).json({ message: "Participation successful!", participation: newParticipation, isError: false });
     } catch (error) {
-        console.error("Error:", error.message);
+        console.error("Error in participate:", error.message);
         res.status(500).json({ message: "Internal Server Error", isError: true });
     }
 };
 
 // Get attendance records with optional filters
-exports.getPartcipation = async (req, res) => {
+exports.getParticipation = async (req, res) => {
     try {
         const { studentId, eventId, status, limit, skip, pointsGreaterThan, pointsLessThan } = req.query;
 
         let filter = {};
-        if (studentId) filter.studentId = studentId;
+        if (studentId) filter.studentId = mongoose.Types.ObjectId.isValid(studentId) ? new mongoose.Types.ObjectId(studentId) : studentId;
         if (eventId) filter.eventId = eventId;
         if (status) filter.status = status;
         if (pointsGreaterThan) {
@@ -42,10 +46,11 @@ exports.getPartcipation = async (req, res) => {
 
         res.status(200).json({ message: "Attendance records fetched successfully", records, isError: false });
     } catch (error) {
-        console.error("Error:", error.message);
+        console.error("Error in getParticipation:", error.message);
         res.status(500).json({ message: "Internal Server Error", isError: true });
     }
 };
+
 
 // Update attendance by ID
 exports.updateAttendance = async (req, res) => {
