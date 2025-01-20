@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    TotalPoints: {
+        type: Number,
+        default: 0,
+        required: false,   
+    },
     joiningDate: {
         type: Date,
         default: Date.now()
@@ -51,6 +56,7 @@ const userSchema = new mongoose.Schema({
         enum: ["student", "admin", "cosa", "faculty"],
         default: "student"
     },
+
 });
 
 
@@ -74,5 +80,21 @@ userSchema.methods.comparePassword = async function (userPassword) {
         throw error;
     }
 };
+
+userSchema.methods.addPoints = function (points) {
+    this.TotalPoints += points;
+    return this.save(); // Save updated points to the database
+};
+
+userSchema.methods.subtractPoints = function (points) {
+    this.TotalPoints = Math.max(0, this.TotalPoints - points); // Ensure points don't go negative
+    return this.save();
+};
+
+userSchema.methods.resetPoints = function () {
+    this.TotalPoints = 0;
+    return this.save();
+};
+
 
 module.exports = mongoose.model("User", userSchema);
