@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import EventCard from './components/EventCard';
 import EventFilters from './components/EventFilter';
 import Pagination from './components/Pagination';
-import {FaPlus} from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import CreateEvents from '../../../coordinator/manageEvents/CreateEvent';
 
 const EventPage = () => {
     const [events, setEvents] = useState([]);
     const [filters, setFilters] = useState({});
-    const [pagination, setPagination] = useState({limit: 6, skip: 0});
+    const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [primaryClubId, setPrimaryClubId] = useState('');
     const [primaryClubName, setPrimaryClubName] = useState('');
@@ -17,11 +17,11 @@ const EventPage = () => {
     const [clubDetails, setClubDetails] = useState([]);
     const token = localStorage.getItem("jwtToken");
     const email = localStorage.getItem('emailCont');
+
     const fetchClubDetails = async () => {
         try {
-            console.log("fetch club details api is called");
             if (!token) {
-                console.error('no auth token found . please log in');
+                console.error('No auth token found. Please log in.');
                 return;
             }
             const response = await fetch(`http://localhost:4000/api/v1/club?email=${email}`, {
@@ -31,23 +31,17 @@ const EventPage = () => {
                 },
             });
             const result = await response.json();
-            console.log("response ", response);
-            console.log("result ", result);
 
             if (response.ok) {
-                console.log("api fetched ");
                 setClubDetails(result.clubs);
                 setPrimaryClubId(result.clubs[0]._id);
                 setPrimaryClubName(result.clubs[0].name);
-            } else {
-                console.log("error in response");
             }
-            console.log("club id ", primaryClubId);
-            console.log("club name ", primaryClubName);
         } catch (error) {
             console.log(error);
         }
     }
+
     const fetchEvents = async () => {
         try {
             const token = localStorage.getItem("jwtToken");
@@ -55,12 +49,12 @@ const EventPage = () => {
                 console.error('No auth token found. Please log in.');
                 return;
             }
-            const {limit, skip} = pagination;
+            const { limit, skip } = pagination;
             const response = await axios.get('http://localhost:4000/api/v1/club/events', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                params: {limit, skip},
+                params: { limit, skip },
             });
             if (response.data && response.data.events) {
                 setEvents(response.data.events);
@@ -72,9 +66,8 @@ const EventPage = () => {
 
     useEffect(() => {
         fetchClubDetails();
-        console.log(primaryClubId);
-        console.log(primaryClubName)
     }, [])
+
     useEffect(() => {
         fetchEvents();
     }, [pagination]);
@@ -111,18 +104,18 @@ const EventPage = () => {
     };
 
     return (
-        <div className="text-gray-900 max-h-screen flex flex-col">
-            <div className="container mx-auto p-4 flex-1">
-                <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">ALL EVENTS</h1>
-                <EventFilters setFilters={setFilters}/>
+        <div className="h-screen bg-mirage-50 dark:bg-mirage-800 flex flex-col">
+            <div className="flex-1 container mx-auto p-4">
+                <h1 className="text-3xl font-bold text-mirage-900 dark:text-mirage-50 text-center mb-4">ALL EVENTS</h1>
+                <EventFilters setFilters={setFilters} />
                 <button
                     onClick={() => {
                         setCurrentEvent(null);
                         setIsModalOpen(true);
                     }}
-                    className="mb-4 p-2 bg-green-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-green-600 transition"
+                    className="mb-4 p-2 bg-mirage-600 text-white rounded flex items-center space-x-2 shadow-md hover:bg-mirage-500 transition"
                 >
-                    <FaPlus/>
+                    <FaPlus />
                     <span>Create Event</span>
                 </button>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -136,13 +129,13 @@ const EventPage = () => {
                             />
                         ))
                     ) : (
-                        <p className="text-center text-gray-800 font-semibold dark:text-white">
+                        <p className="text-center text-mirage-800 font-semibold dark:text-mirage-50">
                             No events found for the selected filters.
                         </p>
                     )}
                 </div>
 
-                <Pagination pagination={pagination} setPagination={setPagination}/>
+                <Pagination pagination={pagination} setPagination={setPagination} />
             </div>
 
             {isModalOpen && (
@@ -155,7 +148,8 @@ const EventPage = () => {
 
                     {/* Modal Container */}
                     <div
-                        className="bg-white rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto">
+                        className="bg-mirage-50 dark:bg-mirage-800 rounded-lg shadow-lg z-10 p-3 w-3/4 max-w-4xl h-auto max-h-[90vh] overflow-y-auto"
+                    >
                         <CreateEvents
                             primaryClubId={primaryClubId}
                             primaryClubName={primaryClubName}
@@ -168,7 +162,6 @@ const EventPage = () => {
                         />
                     </div>
                 </div>
-
             )}
         </div>
     );

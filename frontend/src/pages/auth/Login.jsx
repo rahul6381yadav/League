@@ -43,7 +43,12 @@ function Login() {
                     localStorage.setItem("jwtToken", result.token);
                     localStorage.setItem("authToken", firebaseToken);
                     setRole(activeTab);
-                    navigate('/home');
+                    if (activeTab === 'student') {
+                        navigate('/home');
+                    }
+                    else if (activeTab === 'coordinator') {
+                        navigate('/dashboard');
+                    }
                 } else {
                     setError(result.message);
                 }
@@ -87,7 +92,12 @@ function Login() {
                     localStorage.setItem("jwtToken", result.token);
                     localStorage.setItem("authToken", firebaseToken);
                     setRole(activeTab);
+                    if (activeTab === 'student') {
                     navigate('/home');
+                    }
+                    else if (activeTab === 'coordinator') {
+                        navigate('/dashboard');
+                    }
                 } else {
                     setError(result.message);
                 }

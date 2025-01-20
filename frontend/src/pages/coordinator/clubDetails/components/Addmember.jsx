@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {jwtDecode} from "jwt-decode";
+import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
-function AddMembers({alreadyMemberIds = []}) {
+function AddMembers({ alreadyMemberIds = [] }) {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [roleFilter, setRoleFilter] = useState("");
@@ -70,9 +70,9 @@ function AddMembers({alreadyMemberIds = []}) {
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
+
     const handleSubmit = async (selectedUsers) => {
         try {
-            // Assuming you're sending the selected user IDs to be added to the club.
             const response = await fetch(`http://localhost:4000/api/v1/club?id=${decodedToken.clubId}`, {
                 method: "PUT",
                 headers: {
@@ -83,14 +83,11 @@ function AddMembers({alreadyMemberIds = []}) {
                     memberIds: selectedUsers, // Send the selected users' IDs
                 }),
             });
-            console.log(selectedUsers);
             const data = await response.json();
 
             if (!data.isError) {
-                // Handle success, for example by updating the club members state.
                 alert("Members added successfully!");
             } else {
-                // Handle failure, show an error message.
                 alert("Error adding members: " + data.message);
             }
         } catch (error) {
@@ -98,7 +95,6 @@ function AddMembers({alreadyMemberIds = []}) {
             alert("An error occurred while adding members.");
         }
     };
-
 
     useEffect(() => {
         fetchAllUsers();
@@ -117,19 +113,19 @@ function AddMembers({alreadyMemberIds = []}) {
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">View Users</h1>
+            <h1 className="text-2xl font-bold mb-4 text-mirage-700 dark:text-mirage-200">View Users</h1>
             <div className="flex items-center gap-4 mb-4">
                 <input
                     type="text"
                     placeholder="Search by name"
                     value={search}
                     onChange={handleSearchChange}
-                    className="p-2 border rounded w-1/3"
+                    className="p-2 border rounded w-1/3 bg-mirage-100 dark:bg-mirage-700 text-mirage-50 border-mirage-300 "
                 />
                 <select
                     value={roleFilter}
                     onChange={handleRoleFilterChange}
-                    className="p-2 border rounded w-1/4"
+                    className="p-2 border rounded w-1/4 bg-mirage-100 dark:bg-mirage-700 text-mirage-50 border-mirage-300"
                 >
                     <option value="student">Student</option>
                     <option value="coordinator">Coordinator</option>
@@ -137,7 +133,7 @@ function AddMembers({alreadyMemberIds = []}) {
                     <option value="cosa">COSA Member</option>
                 </select>
             </div>
-            <table className="w-full border-collapse border border-gray-300">
+            <table className="w-full border-collapse border border-mirage-300">
                 <thead>
                 <tr>
                     <th className="border p-2">Select</th>
@@ -156,6 +152,7 @@ function AddMembers({alreadyMemberIds = []}) {
                                 type="checkbox"
                                 checked={selectedUsers.includes(user._id)}
                                 onChange={() => handleCheckboxChange(user._id)}
+                                className="bg-mirage-100"
                             />
                         </td>
                         <td className="border p-2 truncate">{user.fullName}</td>
@@ -172,7 +169,7 @@ function AddMembers({alreadyMemberIds = []}) {
                     <button
                         key={pageNumber}
                         onClick={() => handlePageChange(pageNumber + 1)}
-                        className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+                        className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-mirage-500 text-white" : "bg-mirage-200 text-black"
                         }`}
                     >
                         {pageNumber + 1}
@@ -180,7 +177,7 @@ function AddMembers({alreadyMemberIds = []}) {
                 ))}
             </div>
             <button
-                className={`mt-6 px-6 py-2 rounded ${selectedUsers.length > 0 ? "bg-green-500 text-white" : "bg-gray-300 text-black"
+                className={`mt-6 px-6 py-2 rounded ${selectedUsers.length > 0 ? "bg-mirage-600 text-white" : "bg-mirage-300 text-black"
                 }`}
                 disabled={selectedUsers.length === 0}
                 onClick={() => {

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {jwtDecode} from "jwt-decode";
+import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
-function DeleteMembers({members = []}) {
+function DeleteMembers({ members = [] }) {
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(7);
@@ -11,8 +11,8 @@ function DeleteMembers({members = []}) {
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
     };
-    useEffect(() => {
 
+    useEffect(() => {
         console.log("members of the club ", members);
     }, [members]);
 
@@ -26,7 +26,6 @@ function DeleteMembers({members = []}) {
 
     const handleDelete = async () => {
         try {
-            // Assuming you're sending the selected user IDs to be added to the club.
             const response = await fetch(`http://localhost:4000/api/v1/club?id=${decodedToken.clubId}`, {
                 method: "PUT",
                 headers: {
@@ -41,10 +40,8 @@ function DeleteMembers({members = []}) {
             const data = await response.json();
             console.log(data);
             if (!data.isError) {
-                // Handle success, for example by updating the club members state.
                 alert("Members deleted successfully!");
             } else {
-                // Handle failure, show an error message.
                 alert("Error deleting members: " + data.message);
             }
         } catch (error) {
@@ -53,37 +50,31 @@ function DeleteMembers({members = []}) {
         }
     };
 
-    // Apply search filter
     const filteredMembers = members.filter((member) => {
-        // If fullName is null or empty, include the member without applying search
         if (!member.fullName) {
             return true;
         }
-        // Apply search filter only when fullName is present
         return member.fullName.toLowerCase().includes(search.toLowerCase());
     });
 
-
-    // Pagination calculations
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredMembers.slice(indexOfFirstItem, indexOfLastItem);
-
     const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Delete Members</h1>
+            <h1 className="text-2xl font-bold mb-4 text-mirage-700">Delete Members</h1>
             <div className="flex items-center gap-4 mb-4">
                 <input
                     type="text"
                     placeholder="Search by name"
                     value={search}
                     onChange={handleSearchChange}
-                    className="p-2 border rounded w-1/3"
+                    className="p-2 border rounded w-1/3 bg-mirage-100 dark:bg-mirage-700 text-mirage-50 border-mirage-300"
                 />
             </div>
-            <table className="w-full border-collapse border border-gray-300">
+            <table className="w-full border-collapse border border-mirage-300">
                 <thead>
                 <tr>
                     <th className="border p-2">Select</th>
@@ -109,6 +100,7 @@ function DeleteMembers({members = []}) {
                                     type="checkbox"
                                     checked={selectedMembers.includes(member._id)}
                                     onChange={() => handleCheckboxChange(member._id)}
+                                    className="bg-mirage-100"
                                 />
                             </td>
                             <td className="border p-2 truncate">{member.fullName || "N/A"}</td>
@@ -120,23 +112,20 @@ function DeleteMembers({members = []}) {
                     ))
                 )}
                 </tbody>
-
             </table>
             <div className="mt-4 flex justify-center gap-4">
                 {[...Array(totalPages).keys()].map((pageNumber) => (
                     <button
                         key={pageNumber}
                         onClick={() => setCurrentPage(pageNumber + 1)}
-                        className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                        }`}
+                        className={`px-4 py-2 rounded ${currentPage === pageNumber + 1 ? "bg-mirage-500 text-white" : "bg-mirage-200 text-black"}`}
                     >
                         {pageNumber + 1}
                     </button>
                 ))}
             </div>
             <button
-                className={`mt-6 px-6 py-2 rounded ${selectedMembers.length > 0 ? "bg-red-500 text-white" : "bg-gray-300 text-black"
-                }`}
+                className={`mt-6 px-6 py-2 rounded ${selectedMembers.length > 0 ? "bg-mirage-600 text-white" : "bg-mirage-300 text-black"}`}
                 disabled={selectedMembers.length === 0}
                 onClick={handleDelete}
             >

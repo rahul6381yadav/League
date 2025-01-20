@@ -97,7 +97,7 @@ exports.login = async (req, res) => {
                 role: role,
                 email: user.email,
                 fullName: user.fullName
-            }, process.env.JWT_SECRET, {expiresIn: '1h'});
+            }, process.env.JWT_SECRET, {expiresIn: '365d'});
             res.status(200).json({message: "Login successful", token, role: user.role, email: user.email});
         }
 

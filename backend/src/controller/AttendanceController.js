@@ -1,10 +1,11 @@
 const { AttendanceModel } = require("../model/ClubModel");
 const User = require("../model/UserModel");
+const {Types} = require("mongoose");
 
 
 exports.participate = async (req, res) => {
     try {
-        const { participations } = req.body; // Array of objects: [{ studentId, eventId, pointsGiven, status }]
+        const { participations } = req.body; // Array of objects: [{ studentId, eventId, pointsGiven, status, isWinner }]
         if (!Array.isArray(participations) || participations.length === 0) {
             return res.status(400).json({ message: "Participation data is required", isError: true });
         }
@@ -75,7 +76,7 @@ exports.getParticipation = async (req, res) => {
         const {studentId, eventId, status, limit, skip, pointsGreaterThan, pointsLessThan} = req.query;
 
         let filter = {};
-        if (studentId) filter.studentId = mongoose.Types.ObjectId.isValid(studentId) ? new mongoose.Types.ObjectId(studentId) : studentId;
+        if (studentId) filter.studentId = Types.ObjectId.isValid(studentId) ? new Types.ObjectId(studentId) : studentId;
         if (eventId) filter.eventId = eventId;
         if (status) filter.status = status;
         if (pointsGreaterThan) {

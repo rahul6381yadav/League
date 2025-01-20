@@ -6,14 +6,14 @@ import {
     UserCircleIcon,
     UserGroupIcon,
 } from "@heroicons/react/outline";
-import {useEffect, useState} from "react";
-import {useAuth} from "../../context/AuthContext";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 import Tooltip from '../common/Tooltip_sidebar';
 
-const CoordinatorSidebar = ({onToggle}) => {
+const CoordinatorSidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const {logout} = useAuth();
+    const { logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,7 +29,7 @@ const CoordinatorSidebar = ({onToggle}) => {
                 localStorage.removeItem("authToken");
                 localStorage.removeItem("jwtToken");
 
-                await logout()
+                await logout();
                 console.log("User logged out successfully");
             }
         } catch (error) {
@@ -39,27 +39,27 @@ const CoordinatorSidebar = ({onToggle}) => {
 
     const menuItems = [
         {
-            icon: <HomeIcon className="h-6 w-6"/>,
+            icon: <HomeIcon className="h-6 w-6" />,
             label: "Home",
             path: "/dashboard"
         },
         {
-            icon: <UserGroupIcon className="h-6 w-6"/>,
+            icon: <UserGroupIcon className="h-6 w-6" />,
             label: "Club Details",
             path: "/my-club",
         },
         {
-            icon: <ClipboardListIcon className="h-6 w-6"/>,
+            icon: <ClipboardListIcon className="h-6 w-6" />,
             label: "Manage Events",
             path: "/manage-events",
         },
         {
-            icon: <BellIcon className="h-6 w-6"/>,
+            icon: <BellIcon className="h-6 w-6" />,
             label: "Notifications",
             path: "/notifications",
         },
         {
-            icon: <UserCircleIcon className="h-6 w-6"/>,
+            icon: <UserCircleIcon className="h-6 w-6" />,
             label: "Members",
             path: "/members",
         },
@@ -85,24 +85,23 @@ const CoordinatorSidebar = ({onToggle}) => {
 
     return (
         <>
-            <div className={`hidden md:block bg-white bg-gray-200 dark:bg-gray-800 shadow-md fixed h-full`}>
+            <div className={`hidden md:block bg-mirage-50 dark:bg-mirage-800 shadow-md fixed h-full`}>
                 {renderSidebar()}
             </div>
 
             {/* Mobile Bottom NavBar */}
-            <div className="z-100 fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md md:hidden lg:hidden">
+            <div className="z-100 fixed bottom-0 left-0 w-full bg-mirage-50 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
                     {menuItems.map((item, index) => (
                         <a
                             key={index}
                             href={item.path}
-                            className="flex flex-col items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                            className="flex flex-col items-center text-mirage-900 dark:text-mirage-200 hover:text-mirage-600 dark:hover:text-mirage-400"
                         >
                             {item.icon}
                             <span className="text-xs">{item.label}</span>
                         </a>
                     ))}
-
                 </div>
             </div>
         </>
@@ -111,13 +110,14 @@ const CoordinatorSidebar = ({onToggle}) => {
     function renderSidebar() {
         return (
             <div
-                className={`fixed ${isCollapsed ? "w-16" : "w-64"} top-0 left-0 h-screen dark:bg-gray-800 dark:text-white bg-gray-200 
-                text-gray-800 transition-all duration-300 z-100`}>
+                className={`fixed ${isCollapsed ? "w-16" : "w-64"} top-0 left-0 h-screen dark:bg-mirage-800 dark:text-mirage-50 bg-mirage-200 
+                text-mirage-900 transition-all duration-300 z-100`}
+            >
                 {/* Sidebar Header */}
                 <div className="flex items-center justify-between p-4">
                     {!isCollapsed && <span className="text-lg font-bold">Welcome, User!</span>}
                     <button
-                        className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700"
+                        className="p-2 rounded hover:bg-mirage-300 dark:hover:bg-mirage-700"
                         onClick={toggleSidebar}
                     >
                         <span className="material-icons">
@@ -133,8 +133,8 @@ const CoordinatorSidebar = ({onToggle}) => {
                             key={idx}
                             className={`flex items-center space-x-4 p-2 rounded cursor-pointer
                             ${location.pathname === item.path
-                                ? "bg-blue-600 text-white shadow-md" // Active style
-                                : "hover:bg-gray-300 dark:hover:bg-gray-700"
+                                ? "bg-mirage-600 text-white shadow-md" // Active style
+                                : "hover:bg-mirage-200 dark:hover:bg-mirage-700"
                             }`}
                             onClick={() => navigate(item.path)}
                         >
@@ -148,16 +148,16 @@ const CoordinatorSidebar = ({onToggle}) => {
 
                 {/* Log Out Button */}
                 <div
-                    className="absolute bottom-4 ml-3 flex items-center p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded cursor-pointer"
+                    className="absolute bottom-4 ml-3 flex items-center p-2 hover:bg-mirage-200 dark:hover:bg-mirage-700 rounded cursor-pointer"
                     onClick={handleLogout}
                 >
                     <Tooltip text="Log Out" show={isCollapsed}>
-                        <LogoutIcon className="h-6 w-6"/>
+                        <LogoutIcon className="h-6 w-6" />
                     </Tooltip>
                     {!isCollapsed && <span className="ml-4">Log Out</span>}
                 </div>
             </div>
-        )
+        );
     }
 };
 
