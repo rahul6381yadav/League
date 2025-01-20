@@ -7,7 +7,7 @@ const attendanceController = require("../controller/AttendanceController")
 
 // Protected route requiring token verification
 router.get("/protected", jwtMiddleware.verifyToken, (req, res) => {
-    res.status(200).json({ message: "You are authorized!", userId: req.user });
+    res.status(200).json({message: "You are authorized!", userId: req.user});
 });
 
 router.get("/club", jwtMiddleware.verifyToken, clubController.getClubs);

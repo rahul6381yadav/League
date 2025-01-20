@@ -3,7 +3,7 @@ const router = express.Router()
 const jwtMiddleware = require("../middleware/jwtMiddleware");
 const usersController = require("../controller/UserController");
 const usersController2 = require("../controller/UserController2");
-const { verifyToken, authorize } = require("../middleware/jwtMiddleware");
+const {verifyToken, authorize} = require("../middleware/jwtMiddleware");
 
 
 router.post("/signup", usersController.UserSignup);

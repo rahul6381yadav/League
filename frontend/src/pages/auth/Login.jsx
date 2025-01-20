@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useRole } from '../../context/RoleContext';
-import { loginWithEmail, loginWithGoogle } from '../../utils/FirebaseAuthService';
-import { backendUrl } from '../../utils/routes';
-import Spinner from "../../components/common/circulaRIndicator"
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useRole} from '../../context/RoleContext';
+import {loginWithEmail, loginWithGoogle} from '../../utils/FirebaseAuthService';
+import {backendUrl} from '../../utils/routes';
+import Spinner from "../common/circularIndicator"
 
 function Login() {
     const [activeTab, setActiveTab] = useState('student');
@@ -12,7 +12,7 @@ function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { setRole } = useRole();
+    const {setRole} = useRole();
     const navigate = useNavigate();
 
     const handleEmailLogin = async (e) => {
@@ -36,14 +36,19 @@ function Login() {
                     },
                     body: JSON.stringify(reqBody),
                 });
-    
+
                 const result = await res.json();
                 if (res.ok) {
                     setError(null);
                     localStorage.setItem("jwtToken", result.token);
                     localStorage.setItem("authToken", firebaseToken);
                     setRole(activeTab);
-                    navigate('/home');
+                    if (activeTab === 'student') {
+                        navigate('/home');
+                    }
+                    else if (activeTab === 'coordinator') {
+                        navigate('/dashboard');
+                    }
                 } else {
                     setError(result.message);
                 }
@@ -59,7 +64,7 @@ function Login() {
         }
     };
 
-    const handleGoogleLogin  = async () => {
+    const handleGoogleLogin = async () => {
         setLoading(true);
         const response = await loginWithGoogle();
         if (response.success) {
@@ -80,14 +85,19 @@ function Login() {
                     },
                     body: JSON.stringify(reqBody),
                 });
-    
+
                 const result = await res.json();
                 if (res.ok) {
                     setError(null);
                     localStorage.setItem("jwtToken", result.token);
                     localStorage.setItem("authToken", firebaseToken);
                     setRole(activeTab);
+                    if (activeTab === 'student') {
                     navigate('/home');
+                    }
+                    else if (activeTab === 'coordinator') {
+                        navigate('/dashboard');
+                    }
                 } else {
                     setError(result.message);
                 }
@@ -112,96 +122,96 @@ function Login() {
 
     return (
         <>
-        <iframe
-        src="./background.html" 
-        style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100vh",
-            border: "none",
-            zIndex: -1, 
-        }}
-        title="Background Design"
-    />
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="w-full max-w-md rounded-lg shadow-lg">
-                <div className="flex border-b">
-                    {['student', 'cosa', 'coordinator', 'faculty'].map((tab) => (
+            <iframe
+                src="./background.html"
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100vh",
+                    border: "none",
+                    zIndex: -1,
+                }}
+                title="Background Design"
+            />
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <div className="w-full max-w-md rounded-lg shadow-lg">
+                    <div className="flex border-b">
+                        {['student', 'cosa', 'coordinator', 'faculty'].map((tab) => (
+                            <button
+                                key={tab}
+                                className={`flex-1 p-3 text-center ${activeTab === tab ? 'bg-blue-500 text-white' : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {Tabs[tab]}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="p-6 space-y-4">
+                        <h2 className="text-2xl font-bold text-center text-black">{`Login as ${activeTab}`}</h2>
+
+                        <form onSubmit={handleEmailLogin} className="space-y-4">
+                            {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
+                                Login
+                            </button>
+                        </form>
+
                         <button
-                            key={tab}
-                            className={`flex-1 p-3 text-center ${activeTab === tab ? 'bg-blue-500 text-white' : ''}`}
-                            onClick={() => setActiveTab(tab)}
+                            onClick={handleGoogleLogin}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:shadow-md"
                         >
-                            {Tabs[tab]}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="p-6 space-y-4">
-                    <h2 className="text-2xl font-bold text-center text-black">{`Login as ${activeTab}`}</h2>
-
-                    <form onSubmit={handleEmailLogin} className="space-y-4">
-                        {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                            <img
+                                src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+                                alt="Google Logo"
+                                className="w-5 h-5"
                             />
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                        >
-                            Login
+                            <span className="text-sm font-medium">Sign in with Google</span>
                         </button>
-                    </form>
-
-                    <button
-                        onClick={handleGoogleLogin}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:shadow-md"
-                    >
-                        <img
-                            src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-                            alt="Google Logo"
-                            className="w-5 h-5"
-                        />
-                        <span className="text-sm font-medium">Sign in with Google</span>
-                    </button>
+                    </div>
                 </div>
+                {loading && (
+                    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+                        <Spinner className="h-10 w-10 border-blue-500"/>
+                    </div>
+                )}
             </div>
-            {loading && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                    <Spinner className="h-10 w-10 border-blue-500" />
-                </div>
-            )}
-        </div>
         </>
     );
 }
