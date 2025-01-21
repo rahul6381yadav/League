@@ -22,6 +22,8 @@ import LayoutCoordinator from './pages/coordinator/Layout';
 import ProtectedRoute from './utils/ProtectedRoute';
 import HomePage from './pages/student/home/Home';
 import Clubs from './pages/student/clubs/Clubs';
+import AllEvents from "./pages/student/allEvents/AllEvents";
+import MyEvents from "./pages/student/myEvents/MyEvents";
 
 function AppRoutes() {
     return (
@@ -35,6 +37,8 @@ function AppRoutes() {
             <Route path="/home" element={<Layout><HomePage/></Layout>}/>
             <Route path="/clubs" element={<Layout><Clubs/></Layout>}/>
             <Route path="/club-events" element={<Layout><ClubEventsPage/></Layout>}/>
+            <Route path="/all-events" element={<Layout><AllEvents/></Layout>}/>
+            <Route path="/my-events" element={<Layout><MyEvents/></Layout>}/>
 
             {/* Coordinator Routes */}
             <Route path="/dashboard" element={<LayoutCoordinator><CoordinatorDashboard/></LayoutCoordinator>}/>
