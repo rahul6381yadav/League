@@ -101,3 +101,28 @@ exports.deleteEvent = async (req, res) => {
         res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
+exports.getAllEvents = async (req, res) => {
+    try {
+        const { ids } = req.body;
+
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ message: "Event IDs are required in an array", isError: true });
+        }
+
+        // Fetch the event details for the given array of IDs
+        const events = await EventModel.find({ _id: { $in: ids } }).populate("clubIds winners");
+
+        if (!events || events.length === 0) {
+            return res.status(404).json({ message: "No events found for the given IDs", isError: true });
+        }
+
+        res.status(200).json({
+            message: "Events fetched successfully",
+            events,
+            isError: false
+        });
+    } catch (error) {
+        console.error("Error:", error.message);
+        res.status(500).json({ message: "Internal Server Error", isError: true });
+    }
+};
