@@ -78,10 +78,13 @@ exports.login = async (req, res) => {
             if (!user) {
                 return res.status(404).json({message: "User not found"});
             } else if (!user.hasFirebaseId) {
+                // const updateData = {
+                //     role,
+                //     fullName,
+                //     photo,
+                //     lastUpdated: Date.now()
+                // }
                 const updateData = {
-                    role,
-                    fullName,
-                    photo,
                     lastUpdated: Date.now()
                 }
                 user = await User.findOneAndUpdate({email: email}, updateData, {new: false})

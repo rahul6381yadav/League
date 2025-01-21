@@ -50,7 +50,7 @@ const Sidebar = ({ onToggle }) => {
         { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
         { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
         { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
-        { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/profile" },
+        { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/myProfile" },
     ];
 
     useEffect(() => {
@@ -83,7 +83,7 @@ const Sidebar = ({ onToggle }) => {
                         { name: "Clubs", icon: <FaUsers className="h-6 w-6" />, href: "/clubs" },
                         { name: "Events", icon: <ArchiveIcon className="h-6 w-6" />, href: "/all-events" },
                         { name: "My Events", icon: <ClipboardCheckIcon className="h-6 w-6" />, href: "/my-events" },
-                        { name: "Profile", icon: <FaUser className="h-6 w-6" />, href: "/profile" }]
+                        { name: "Profile", icon: <FaUser className="h-6 w-6" />, href: "/myProfile" }]
                         .map((item, index) => (
                             <a
                                 key={index}
