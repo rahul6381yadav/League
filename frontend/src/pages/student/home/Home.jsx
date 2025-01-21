@@ -293,9 +293,9 @@ const HomePage = () => {
                                         className="w-full h-full object-cover" />
                                 </div>
                                 <div className="text-center text-sm text-mirage-900 dark:text-mirage-50">
-                                    <p>Name: <span className="font-semibold">John Doe</span></p>
-                                    <p>Roll No: <span className="font-semibold">123456</span></p>
-                                    <p>Point: <span className="font-semibold">456</span></p>
+                                    <p>Name: <span className="font-semibold">Shaurya Yadav</span></p>
+                                    <p>Roll No: <span className="font-semibold">CS22B1050</span></p>
+                                    <p>Point: <span className="font-semibold">6969</span></p>
                                 </div>
                             </div>
                         </div>
@@ -312,9 +312,9 @@ const HomePage = () => {
                                         className="w-full h-full object-cover" />
                                 </div>
                                 <div className="text-center text-sm text-mirage-900 dark:text-mirage-50">
-                                    <p>Name: <span className="font-semibold">Jane Smith</span></p>
-                                    <p>Roll No: <span className="font-semibold">654321</span></p>
-                                    <p>Point: <span className="font-semibold">123</span></p>
+                                    <p>Name: <span className="font-semibold">Prathu Chotu</span></p>
+                                    <p>Roll No: <span className="font-semibold">CS22B1041</span></p>
+                                    <p>Point: <span className="font-semibold">0.1</span></p>
                                 </div>
                             </div>
                         </div>

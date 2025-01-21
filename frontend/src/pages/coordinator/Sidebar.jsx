@@ -9,11 +9,14 @@ import {
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useDarkMode } from "../../context/ThemeContext";
 import Tooltip from '../common/Tooltip_sidebar';
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const CoordinatorSidebar = ({ onToggle }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const { logout } = useAuth();
+    const { isDarkMode, toggleDarkMode } = useDarkMode();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -38,34 +41,13 @@ const CoordinatorSidebar = ({ onToggle }) => {
     };
 
     const menuItems = [
-        {
-            icon: <HomeIcon className="h-6 w-6" />,
-            label: "Home",
-            path: "/dashboard"
-        },
-        {
-            icon: <UserGroupIcon className="h-6 w-6" />,
-            label: "Club Details",
-            path: "/my-club",
-        },
-        {
-            icon: <ClipboardListIcon className="h-6 w-6" />,
-            label: "Manage Events",
-            path: "/manage-events",
-        },
-        {
-            icon: <BellIcon className="h-6 w-6" />,
-            label: "Notifications",
-            path: "/notifications",
-        },
-        {
-            icon: <UserCircleIcon className="h-6 w-6" />,
-            label: "Members",
-            path: "/members",
-        },
+        { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/dashboard" },
+        { icon: <UserGroupIcon className="h-6 w-6" />, label: "Club Details", path: "/my-club" },
+        { icon: <ClipboardListIcon className="h-6 w-6" />, label: "Manage Events", path: "/manage-events" },
+        { icon: <BellIcon className="h-6 w-6" />, label: "Notifications", path: "/notifications" },
+        { icon: <UserCircleIcon className="h-6 w-6" />, label: "Members", path: "/members" },
     ];
 
-    // Handle window resize to collapse sidebar on small screens
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 820) {
@@ -76,7 +58,7 @@ const CoordinatorSidebar = ({ onToggle }) => {
         };
 
         window.addEventListener("resize", handleResize);
-        handleResize(); // Call on mount to set initial state
+        handleResize();
 
         return () => {
             window.removeEventListener("resize", handleResize);
@@ -89,7 +71,6 @@ const CoordinatorSidebar = ({ onToggle }) => {
                 {renderSidebar()}
             </div>
 
-            {/* Mobile Bottom NavBar */}
             <div className="z-100 fixed bottom-0 left-0 w-full bg-mirage-50 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
                     {menuItems.map((item, index) => (
@@ -113,7 +94,6 @@ const CoordinatorSidebar = ({ onToggle }) => {
                 className={`fixed ${isCollapsed ? "w-16" : "w-64"} top-0 left-0 h-screen dark:bg-mirage-800 dark:text-mirage-50 bg-mirage-200 
                 text-mirage-900 transition-all duration-300 z-100`}
             >
-                {/* Sidebar Header */}
                 <div className="flex items-center justify-between p-4">
                     {!isCollapsed && <span className="text-lg font-bold">Welcome, User!</span>}
                     <button
@@ -126,14 +106,13 @@ const CoordinatorSidebar = ({ onToggle }) => {
                     </button>
                 </div>
 
-                {/* Sidebar Menu */}
                 <ul className="mt-6 ml-3 space-y-2">
                     {menuItems.map((item, idx) => (
                         <li
                             key={idx}
                             className={`flex items-center space-x-4 p-2 rounded cursor-pointer
                             ${location.pathname === item.path
-                                ? "bg-mirage-600 text-white shadow-md" // Active style
+                                ? "bg-mirage-600 text-white shadow-md"
                                 : "hover:bg-mirage-200 dark:hover:bg-mirage-700"
                             }`}
                             onClick={() => navigate(item.path)}
@@ -146,15 +125,33 @@ const CoordinatorSidebar = ({ onToggle }) => {
                     ))}
                 </ul>
 
-                {/* Log Out Button */}
-                <div
-                    className="absolute bottom-4 ml-3 flex items-center p-2 hover:bg-mirage-200 dark:hover:bg-mirage-700 rounded cursor-pointer"
-                    onClick={handleLogout}
-                >
-                    <Tooltip text="Log Out" show={isCollapsed}>
-                        <LogoutIcon className="h-6 w-6" />
-                    </Tooltip>
-                    {!isCollapsed && <span className="ml-4">Log Out</span>}
+                <div className="absolute bottom-0 left-0 w-full">
+                    <div
+                        className="ml-3 flex items-center p-2 mb-2 hover:bg-mirage-200 dark:hover:bg-mirage-700 rounded cursor-pointer"
+                        onClick={toggleDarkMode}
+                    >
+                        <Tooltip text={isDarkMode ? "Dark Mode" : "Light Mode"} show={isCollapsed}>
+                            {isDarkMode ? (
+                                    <FaMoon className="h-6 w-6 text-mirage-50" />
+
+                            ) : (
+                                <FaSun className="h-6 w-6" />
+                            )}
+                        </Tooltip>
+                        {!isCollapsed && (
+                            <span className="ml-4">{isDarkMode ? "Dark Mode" : "Light Mode"}</span>
+                        )}
+                    </div>
+
+                    <div
+                        className="ml-3 flex items-center p-2 mb-4 hover:bg-mirage-200 dark:hover:bg-mirage-700 rounded cursor-pointer"
+                        onClick={handleLogout}
+                    >
+                        <Tooltip text="Log Out" show={isCollapsed}>
+                            <LogoutIcon className="h-6 w-6" />
+                        </Tooltip>
+                        {!isCollapsed && <span className="ml-4">Log Out</span>}
+                    </div>
                 </div>
             </div>
         );

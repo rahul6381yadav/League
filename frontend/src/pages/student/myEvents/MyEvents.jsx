@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Pagination from '../clubs/events/components/Pagination';
 import EventFilters from '../clubs/events/components/EventFilter';
 import EventCard from '../clubs/events/components/EventCard';
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -18,7 +18,7 @@ if (token) {
 
 const MyEvents = () => {
     const [myEvents, setMyEvents] = useState([]);
-    const [pagination, setPagination] = useState({limit: 6, skip: 0});
+    const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({});
@@ -43,33 +43,20 @@ const MyEvents = () => {
             if (records.length > 0) {
                 // Extract event IDs as strings
                 const eventIds = records.map(record => record.eventId._id.toString()); // Ensure they are strings
-                const events = [];
-
-                for (const eventId of eventIds) {
-                    try {
-                        const eventResponse = await axios.get(
-                            'http://localhost:4000/api/v1/club/events',
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                                params: {
-                                    id: eventId, // Fetch one event at a time
-                                },
-                            }
-                        );
-
-                        if (eventResponse.data.event && eventResponse.status === 200) {
-                            events.push(eventResponse.data.event); // Append fetched events to the list
-
+                // Send the array of event IDs to the new backend endpoint
+                const eventResponse = await axios.post(
+                    'http://localhost:4000/api/v1/club/all-events',
+                    { "ids": eventIds },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
                         }
-                    } catch (eventError) {
-                        console.error(`Error fetching event with ID ${eventId}:`, eventError.message);
                     }
+                );
+                if (eventResponse.data.events && eventResponse.status === 200) {
+                    setMyEvents(eventResponse.data.events);
+                    setFilteredEvents(eventResponse.data.events);
                 }
-
-                setMyEvents(events);
-                setFilteredEvents(events);
             } else {
                 // No attendance records
                 console.warn("No attendance records found.");
@@ -82,10 +69,6 @@ const MyEvents = () => {
             setLoading(false);
         }
     };
-
-
-
-
 
     useEffect(() => {
         fetchMyEvents();
@@ -121,7 +104,7 @@ const MyEvents = () => {
             <div className="h-full w-full flex flex-col p-8">
                 <h1 className="text-3xl font-bold text-mirage-700 dark:text-mirage-100 mb-6 text-center">My Events</h1>
 
-                <EventFilters setFilters={setFilters}/>
+                <EventFilters setFilters={setFilters} />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredEventsPaginated.length > 0 ? (
@@ -147,7 +130,6 @@ const MyEvents = () => {
             </div>
         </div>
     );
-}
-
+};
 
 export default MyEvents;
