@@ -55,16 +55,10 @@ exports.getUsers = [
 
 
 exports.updateUser = [
-    verifyToken, // Replaced authenticate with verifyToken
     async (req, res) => {
         try {
             const {id} = req.query;
             const updates = req.body;
-
-            // Allow only the user or an admin to update
-            if (req.user._id.toString() !== id && !req.user.roles.includes("admin")) {
-                return res.status(403).json({message: "Access denied", isError: true});
-            }
 
             const updatedUser = await User.findByIdAndUpdate(id, updates, {new: true});
             if (!updatedUser) return res.status(404).json({message: "User not found", isError: true});
@@ -76,6 +70,8 @@ exports.updateUser = [
         }
     },
 ];
+
+
 
 exports.deleteUser = [
     verifyToken, // Replaced authenticate with verifyToken

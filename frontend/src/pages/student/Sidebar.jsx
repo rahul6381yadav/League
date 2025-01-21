@@ -45,14 +45,14 @@ const Sidebar = ({onToggle}) => {
     };
 
     const menuItems = [
-        {icon: <HomeIcon className="h-6 w-6"/>, label: "Home", path: "/home"},
-        {icon: <UserGroupIcon className="h-6 w-6"/>, label: "All Clubs", path: "/clubs"},
-        {icon: <ClipboardCheckIcon className="h-6 w-6"/>, label: "My Events", path: "/my-events"},
-        {icon: <ArchiveIcon className="h-6 w-6"/>, label: "All Events", path: "/all-events"},
-        {icon: <SparklesIcon className="h-6 w-6"/>, label: "My Batch Leaderboard", path: "/batch-leaderboard"},
-        {icon: <StarIcon className="h-6 w-6"/>, label: "Overall Leaderboard", path: "/overall-leaderboard"},
-        {icon: <ChartSquareBarIcon className="h-6 w-6"/>, label: "My Achievements", path: "/my-achievements"},
-        {icon: <UserCircleIcon className="h-6 w-6"/>, label: "My Profile", path: "/profile"},
+        { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/home" },
+        { icon: <UserGroupIcon className="h-6 w-6" />, label: "All Clubs", path: "/clubs" },
+        { icon: <ClipboardCheckIcon className="h-6 w-6" />, label: "My Events", path: "/my-events" },
+        { icon: <ArchiveIcon className="h-6 w-6" />, label: "All Events", path: "/all-events" },
+        { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
+        { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
+        { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
+        { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/myProfile" },
     ];
 
     useEffect(() => {
@@ -82,11 +82,11 @@ const Sidebar = ({onToggle}) => {
             <div
                 className="z-100 fixed bottom-0 left-0 w-full bg-mirage-100 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
-                    {[{name: "Home", icon: <FaTachometerAlt className="h-6 w-6"/>, href: "/home"},
-                        {name: "Clubs", icon: <FaUsers className="h-6 w-6"/>, href: "/clubs"},
-                        {name: "Events", icon: <ArchiveIcon className="h-6 w-6"/>, href: "/all-events"},
-                        {name: "My Events", icon: <ClipboardCheckIcon className="h-6 w-6"/>, href: "/my-events"},
-                        {name: "Profile", icon: <FaUser className="h-6 w-6"/>, href: "/profile"}]
+                    {[{ name: "Home", icon: <FaTachometerAlt className="h-6 w-6" />, href: "/home" },
+                        { name: "Clubs", icon: <FaUsers className="h-6 w-6" />, href: "/clubs" },
+                        { name: "Events", icon: <ArchiveIcon className="h-6 w-6" />, href: "/all-events" },
+                        { name: "My Events", icon: <ClipboardCheckIcon className="h-6 w-6" />, href: "/my-events" },
+                        { name: "Profile", icon: <FaUser className="h-6 w-6" />, href: "/myProfile" }]
                         .map((item, index) => (
                             <a
                                 key={index}
