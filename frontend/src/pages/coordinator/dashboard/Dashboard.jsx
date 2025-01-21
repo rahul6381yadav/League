@@ -187,10 +187,10 @@ const HomeClub = () => {
     };
 
     return (
-        <div className="min-h-screen p-5 bg-mirage-900">
+        <div className="min-h-screen p-5 dark:bg-mirage-900 bg-mirage-50">
             <div className="flex flex-col lg:flex-row gap-6 h-full">
                 {/* Calendar Section */}
-                <div className="bg-mirage-50 dark:bg-mirage-800 shadow-lg rounded-lg p-6 flex-1 overflow-y-auto">
+                <div className="bg-mirage-100 dark:bg-mirage-800 shadow-lg rounded-lg p-6 flex-1 overflow-y-auto">
                     {renderHeader()}
                     {renderDays()}
                     {renderCells()}
@@ -198,12 +198,12 @@ const HomeClub = () => {
                 </div>
 
                 {/* Club Rating Section */}
-                <div className="bg-mirage-50 dark:bg-mirage-800 shadow-lg rounded-lg p-6 w-full lg:w-1/3">
+                <div className="bg-mirage-100 dark:bg-mirage-800 shadow-lg rounded-lg p-6 w-full lg:w-1/3">
                     <h3 className="text-lg font-bold mb-3 dark:text-white">Club Rating</h3>
                     {rating !== null ? (
-                        <p className="text-2xl font-bold text-mirage-100">{rating}</p>
+                        <p className="text-2xl font-bold text-mirage-800 dark:text-mirage-100">{rating}</p>
                     ) : (
-                        <p className="text-mirage-500">Loading rating...</p>
+                        <p className="text-mirage-800 dark:text-mirage-100">Loading rating...</p>
                     )}
                 </div>
             </div>
