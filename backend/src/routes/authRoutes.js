@@ -16,6 +16,7 @@ router.put("/club", jwtMiddleware.verifyToken, clubController.updateClub);
 router.delete("/club", jwtMiddleware.verifyToken, clubController.deleteClub);
 
 router.get("/club/events", eventController.getEvents);
+router.get("/club/Allevents", eventController.getAllEvents);
 router.post("/club/events", jwtMiddleware.verifyToken, eventController.createEvent);
 router.put("/club/events", jwtMiddleware.verifyToken, eventController.updateEvent);
 router.delete("/club/events", jwtMiddleware.verifyToken, eventController.deleteEvent);
