@@ -2,7 +2,7 @@ const {EventModel} = require("../model/ClubModel");
 
 exports.createEvent = async (req, res) => {
     try {
-        const {clubIds, eventName, description, venue, duration, maxPoints, date, status} = req.body;
+        const {clubIds, eventName, description, venue, duration, maxPoints, date, status,totalWinner} = req.body;
 
         if (!Array.isArray(clubIds) || clubIds.length === 0) {
             return res.status(400).json({message: "At least one club is required", isError: true});
@@ -26,6 +26,7 @@ exports.createEvent = async (req, res) => {
             maxPoints,
             date: new Date(date),
             status: status || null,
+            totalWinner,
         });
 
         await newEvent.save();
