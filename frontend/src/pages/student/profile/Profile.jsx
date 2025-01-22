@@ -10,14 +10,12 @@ const MyProfile = () => {
         studentId: "",
         TotalPoints: 0,
         photo: "",
-        contact: {
-            linkedin: "",
-            email: "",
-            phone: "",
-            twitter: "",
-            instagram: "",
-            github: "",
-        },
+        linkedin: "",
+        email: "",
+        phone: "",
+        twitter: "",
+        instagram: "",
+        github: "",
     });
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const token = localStorage.getItem("jwtToken");
@@ -54,14 +52,12 @@ const MyProfile = () => {
                     studentId: result.user.studentId,
                     TotalPoints: result.user.TotalPoints,
                     photo: result.user.photo,
-                    contact: {
-                        linkedin: "https://www.linkedin.com/in/sarthakjain",
-                        email: result.user.email,
-                        phone: "+91 123 456 7890",
-                        twitter: "https://twitter.com/sarthakjain",
-                        instagram: "https://www.instagram.com/sarthakjain",
-                        github: "https://github.com/sarthakjain",
-                    },
+                    linkedin: result.user.linkedin,
+                    email: result.user.email,
+                    phone: result.user.phone,
+                    twitter: result.user.twitter,
+                    instagram: result.user.instagram,
+                    github: result.user.github,
                 });
             } else {
                 console.error("Failed to fetch profile details");
@@ -88,7 +84,12 @@ const MyProfile = () => {
                     },
                     body: JSON.stringify({
                         fullName: updatedProfile.name,
-                        photo: updatedProfile.photo
+                        photo: updatedProfile.photo,
+                        linkedin: updatedProfile.linkedin,
+                        phone:updatedProfile.phone,
+                        twitter: updatedProfile.twitter,
+                        instagram: updatedProfile.instagram,
+                        github: updatedProfile.github,
                     }),
                 }
             );
@@ -112,6 +113,7 @@ const MyProfile = () => {
     };
 
     const handleSaveProfile = (updatedProfile) => {
+        console.log("updated profile : ",updatedProfile);
         setProfile(updatedProfile);
         updateProfileDetails(updatedProfile);
     };
@@ -160,37 +162,37 @@ const MyProfile = () => {
                         <ContactItem
                             icon={<FaLinkedin />}
                             label="LinkedIn"
-                            value={profile.contact.linkedin}
+                            value={profile.linkedin}
                             isLink
                         />
                         <ContactItem
                             icon={<FaEnvelope />}
                             label="Email"
-                            value={profile.contact.email}
+                            value={profile.email}
                             isEmail
                         />
                         <ContactItem
                             icon={<FaPhone />}
                             label="Phone"
-                            value={profile.contact.phone}
+                            value={profile.phone}
                             isPhone
                         />
                         <ContactItem
                             icon={<FaTwitter />}
                             label="Twitter"
-                            value={profile.contact.twitter}
+                            value={profile.twitter}
                             isLink
                         />
                         <ContactItem
                             icon={<FaInstagram />}
                             label="Instagram"
-                            value={profile.contact.instagram}
+                            value={profile.instagram}
                             isLink
                         />
                         <ContactItem
                             icon={<FaGithub />}
                             label="GitHub"
-                            value={profile.contact.github}
+                            value={profile.github}
                             isLink
                         />
                     </div>
@@ -208,9 +210,26 @@ const MyProfile = () => {
     );
 };
 
-// Helper component for contact items
 const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
-    const href = isEmail ? `mailto:${value}` : isPhone ? `tel:${value}` : value;
+    if (!value) return null; // Skip if value is not available
+
+    let href = value;
+    if (isEmail) {
+        href = `mailto:${value}`;
+    } else if (isPhone) {
+        href = `tel:${value}`;
+    } else if (isLink) {
+        // Generate the appropriate URLs based on the platform
+        if (label === "LinkedIn") {
+            href = `https://www.linkedin.com/in/${value}`;
+        } else if (label === "Twitter") {
+            href = `https://twitter.com/${value}`;
+        } else if (label === "Instagram") {
+            href = `https://www.instagram.com/${value}`;
+        } else if (label === "GitHub") {
+            href = `https://github.com/${value}`;
+        }
+    }
 
     return (
         <div className="flex items-center gap-4 p-3 rounded-lg bg-mirage-200 dark:bg-mirage-800">
@@ -220,8 +239,8 @@ const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
             {isLink || isEmail || isPhone ? (
                 <a
                     href={href}
-                    target={isLink ? "_blank" : undefined}
-                    rel={isLink ? "noopener noreferrer" : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-mirage-900 dark:text-mirage-50 hover:text-mirage-700 dark:hover:text-mirage-200 transition-colors"
                 >
                     {value}
@@ -232,5 +251,6 @@ const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
         </div>
     );
 };
+
 
 export default MyProfile;
