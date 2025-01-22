@@ -116,6 +116,10 @@ const eventSchema = new Schema({
         type: [String],
         default: [],
     },
+    totalWinner:{
+        type:Number,
+        default: 0,
+    }
 });
 
 const attendanceSchema = new mongoose.Schema({
