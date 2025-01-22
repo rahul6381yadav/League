@@ -113,7 +113,7 @@ const CoordinatorSidebar = ({ onToggle }) => {
                             className={`flex items-center space-x-4 p-2 rounded cursor-pointer
                             ${location.pathname === item.path
                                 ? "bg-mirage-600 text-white shadow-md"
-                                : "hover:bg-mirage-200 dark:hover:bg-mirage-700"
+                                : "hover:bg-mirage-300 dark:hover:bg-mirage-700"
                             }`}
                             onClick={() => navigate(item.path)}
                         >
@@ -127,7 +127,7 @@ const CoordinatorSidebar = ({ onToggle }) => {
 
                 <div className="absolute bottom-0 left-0 w-full">
                     <div
-                        className="ml-3 flex items-center p-2 mb-2 hover:bg-mirage-200 dark:hover:bg-mirage-700 rounded cursor-pointer"
+                        className="ml-3 flex items-center p-2 mb-2 hover:bg-mirage-300 dark:hover:bg-mirage-700 rounded cursor-pointer"
                         onClick={toggleDarkMode}
                     >
                         <Tooltip text={isDarkMode ? "Dark Mode" : "Light Mode"} show={isCollapsed}>
@@ -144,7 +144,7 @@ const CoordinatorSidebar = ({ onToggle }) => {
                     </div>
 
                     <div
-                        className="ml-3 flex items-center p-2 mb-4 hover:bg-mirage-200 dark:hover:bg-mirage-700 rounded cursor-pointer"
+                        className="ml-3 flex items-center p-2 mb-4 hover:bg-mirage-300 dark:hover:bg-mirage-700 rounded cursor-pointer"
                         onClick={handleLogout}
                     >
                         <Tooltip text="Log Out" show={isCollapsed}>

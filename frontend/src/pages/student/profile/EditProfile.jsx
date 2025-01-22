@@ -17,39 +17,77 @@ const EditProfile = ({ profile, onSave, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 shadow-lg w-96">
-                <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
-                <div className="flex flex-col gap-4">
-                    <input
-                        type="text"
-                        name="name"
-                        value={updatedProfile.name || ""}
-                        onChange={handleInputChange}
-                        placeholder="Full Name"
-                        className="border p-2 rounded"
-                    />
-                    <input 
-                        type="text"
-                        name="photo"
-                        value={updatedProfile.photo || ""}
-                        onChange={handleInputChange}
-                        placeholder="Your photo link"
-                        className="border p-2 rounded"
-                    />
+        <div className="fixed inset-0 bg-mirage-950/50 dark:bg-mirage-950/80 flex items-center justify-center z-50 backdrop-blur-sm">
+            <div className="bg-mirage-100 dark:bg-mirage-800 rounded-lg shadow-lg w-96 transition-all">
+                {/* Header */}
+                <div className="p-6 border-b border-mirage-200 dark:border-mirage-700">
+                    <h2 className="text-xl font-bold text-mirage-900 dark:text-mirage-50">Edit Profile</h2>
                 </div>
-                <div className="mt-6 flex justify-between">
+
+                {/* Form Content */}
+                <div className="p-6">
+                    <div className="flex flex-col gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={updatedProfile.name || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter your full name"
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Photo URL
+                            </label>
+                            <input
+                                type="text"
+                                name="photo"
+                                value={updatedProfile.photo || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter photo URL"
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer with Actions */}
+                <div className="p-6 border-t border-mirage-200 dark:border-mirage-700 flex justify-end space-x-4">
                     <button
                         onClick={onClose}
-                        className="bg-gray-500 text-white px-4 py-2 rounded"
+                        className="px-4 py-2 rounded-lg
+                                 bg-mirage-200 dark:bg-mirage-700
+                                 text-mirage-900 dark:text-mirage-50
+                                 hover:bg-mirage-300 dark:hover:bg-mirage-600
+                                 transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                        className="px-4 py-2 rounded-lg
+                                 bg-mirage-100 dark:bg-mirage-900
+                                 text-mirage-900 dark:text-mirage-50
+                                 hover:bg-mirage-200 dark:hover:bg-mirage-800
+                                 transition-colors"
                     >
-                        Save
+                        Save Changes
                     </button>
                 </div>
             </div>
