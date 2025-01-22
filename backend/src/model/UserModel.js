@@ -38,6 +38,26 @@ const userSchema = new mongoose.Schema({
         required: false,
         enum: batchCodeEnum,
     },
+    linkedin: {
+        type: String,
+        required: false,
+    },
+    twitter: {
+        type: String,
+        required: false,
+    },
+    phone: {
+        type: String,
+        required: false,
+    },
+    instagram: {
+        type: String,
+        required: false,
+    },
+    github: {
+        type: String,
+        required: false,
+    },
     resetOtp: {
         type: String,
         required: false,

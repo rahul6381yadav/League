@@ -11,7 +11,17 @@ const EditProfile = ({ profile, onSave, onClose }) => {
         }));
     };
 
+
     const handleSave = () => {
+        // Add phone number validation
+        if (updatedProfile.phone && !/^\d{10}$/.test(updatedProfile.phone)) {
+            alert("Phone number must be exactly 10 digits.");
+            return;
+        }
+
+        // Construct valid URLs for social media links
+
+
         onSave(updatedProfile);
         onClose();
     };
@@ -64,6 +74,99 @@ const EditProfile = ({ profile, onSave, onClose }) => {
                                          transition-colors"
                             />
                         </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Linkedin Username
+                            </label>
+                            <input
+                                type="text"
+                                name="linkedin"
+                                value={updatedProfile.linkedin || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter Linkedin Username"
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Phone Number
+                            </label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={updatedProfile.phone || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter Phone Number(10 digits) "
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Twitter Username
+                            </label>
+                            <input
+                                type="text"
+                                name="twitter"
+                                value={updatedProfile.twitter || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter Twitter Username "
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Instagram Username
+                            </label>
+                            <input
+                                type="text"
+                                name="instagram"
+                                value={updatedProfile.instagram || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter Instagram Username "
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                Github Username
+                            </label>
+                            <input
+                                type="text"
+                                name="github"
+                                value={updatedProfile.github || ""}
+                                onChange={handleInputChange}
+                                placeholder="Enter Github Username "
+                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                         bg-mirage-50 dark:bg-mirage-900
+                                         text-mirage-900 dark:text-mirage-50
+                                         placeholder-mirage-400 dark:placeholder-mirage-500
+                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                         transition-colors"
+                            />
+                        </div>
+
+
+
                     </div>
                 </div>
 
