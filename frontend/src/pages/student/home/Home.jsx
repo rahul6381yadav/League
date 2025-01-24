@@ -92,27 +92,53 @@ const HomePage = () => {
 
         const fetchTotalPoints = async () => {
             try {
+                let sumPoints = 0;
+                const studentId = decodedToken.userId;
+                const response = await fetch(`http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                // Check if result.records is an array
+                if (Array.isArray(result.records)) {
+                    // Iterate over the records and sum up pointsgiven
+                    result.records.forEach(record => {
+                        sumPoints += record.pointsGiven || 0;// Default to 0 if pointsgiven is undefined
+                    });
+
+                    setTotalPoints(sumPoints);
+                    updateTotalPoints(sumPoints);
+                } else {
+                    console.log("No records found or result.records is not an array");
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        };
+
+        const updateTotalPoints = async (sumPoints) => {
+            try {
                 // Extract the studentId from the decoded JWT token
                 const studentId = decodedToken.userId; // Assuming decodedToken contains the userId
 
                 // Make a GET request to the backend to fetch the user's profile, passing studentId
-                const response = await axios.get('http://localhost:4000/user/profile', {
+                const response = await fetch(`http://localhost:4000/user/profile?id=${studentId}`, {
+                    method: "PUT",
                     headers: {
-                        'Authorization': `Bearer ${token}` // Add JWT token for authentication
+                        'Authorization': `Bearer ${token}`,
+                        "Content-Type": "application/json",
                     },
-                    params: {
-                        id: studentId // Pass studentId as a query parameter
-                    }
+                    body: JSON.stringify({
+                        TotalPoints: sumPoints,
+                    }),
                 });
-
-
+                const result = await  response.json();
                 // Check if the request was successful
                 if (response.status === 200) {
-                    const user = response.data.user;
-                    const totalPoints = user.TotalPoints;
-                    setTotalPoints(totalPoints);
                     setLoading(false);  // Add this line
-                    return totalPoints;
                 }
             } catch (error) {
                 console.error('Error fetching total points:', error);
