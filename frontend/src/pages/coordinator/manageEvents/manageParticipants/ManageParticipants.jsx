@@ -303,9 +303,16 @@ const ManageParticipants = () => {
                 <div className="flex flex-col md:flex-row gap-8 flex-1">
                     <div className="flex flex-col bg-white dark:bg-mirage-800 rounded-lg shadow-md flex-1">
                         <div className="relative w-full rounded-t-lg" style={{paddingBottom: '42.8571%'}}>
-                            <div
-                                className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                                <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
+                            <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
+                                {event&&event.photo ? (
+                                    <img
+                                        src={event.photo}
+                                        alt="Event Banner"
+                                        className="w-full h-full object-cover rounded-t-lg"
+                                    />
+                                ) : (
+                                    <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
+                                )}
                             </div>
                         </div>
                         <div className="p-6 flex-1 flex flex-col">
