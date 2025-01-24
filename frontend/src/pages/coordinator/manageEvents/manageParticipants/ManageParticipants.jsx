@@ -123,7 +123,6 @@ const ManageParticipants = () => {
             [name]: name === "points" ? parseInt(value, 10) : value, // Parse points as integer
         }));
     };
-
     const handleEditParticipant = async () => {
         if (editedParticipant) {
             try {
@@ -133,27 +132,28 @@ const ManageParticipants = () => {
                             id: editedParticipant._id,
                             status: editedParticipant.status,
                             pointsGiven: editedParticipant.points,
+                            studentId: editedParticipant.studentId
                         },
                     ],
                 }, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-
+                
                 if (response.status === 200) {
                     setParticipants((prev) =>
                         prev.map((participant) =>
                             participant._id === editedParticipant._id ? editedParticipant : participant
-                        )
-                    );
-                }
-            } catch (error) {
-                console.error("Error modifying participant:", error.response?.data || error.message);
-            } finally {
-                setEditModalOpen(false);
-                setEditedParticipant(null);
-            }
+                )
+            );
         }
-    };
+    } catch (error) {
+        console.error("Error modifying participant:", error.response?.data || error.message);
+    } finally {
+        setEditModalOpen(false);
+        setEditedParticipant(null);
+    }
+}
+};
 
     // Handler for viewing all participants
     const handleViewAllClick = () => {

@@ -1,212 +1,182 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-    addDays,
-    addMonths,
-    endOfMonth,
-    endOfWeek,
-    format,
-    isSameDay,
-    isSameMonth,
-    startOfMonth,
-    startOfWeek,
-} from "date-fns";
-import { jwtDecode } from "jwt-decode";
 
 const HomeClub = () => {
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(null);
     const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [rating, setRating] = useState(null);
+    const [allEvents, setAllEvents] = useState({});
+    const token = localStorage.getItem("jwtToken");
+
+    const daysInMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0
+    ).getDate();
+    const firstDay = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+    ).getDay();
+
+    const formattedDate = (date) => date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
     useEffect(() => {
+        // Fetch all events from the API when the component mounts
+        const fetchEvents = async () => {
+            try {
+                const response = await fetch("http://localhost:4000/api/v1/club/events", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    params: {
+                        dateAfter: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+                        dateBefore: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0),
+                    },
+                });
+                const eventsData = {};
+                const result = await response.json();
+                console.log(result);
+                result.events.forEach((event) => {
+                    const eventDate = formattedDate(new Date(event.date));
+                    if (!eventsData[eventDate]) {
+                        eventsData[eventDate] = [];
+                    }
+                    eventsData[eventDate].push(event);
+                });
+                setAllEvents(eventsData);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        };
+
         fetchEvents();
-        fetchRating();
-    }, [currentMonth]);
+    }, [currentDate]);
 
-    const fetchEvents = async () => {
-        setLoading(true);
-        try {
-            const token = localStorage.getItem("jwtToken");
-            if (!token) {
-                console.error("No auth token found. Please log in.");
-                return;
-            }
-
-            const response = await axios.get("http://localhost:4000/api/v1/club/events", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data?.events) {
-                const formattedEvents = response.data.events.map((event) => ({
-                    ...event,
-                    date: new Date(event.date).toISOString().split("T")[0],
-                }));
-                setEvents(formattedEvents);
-            }
-        } catch (err) {
-            console.error("Error fetching events:", err.response || err.message);
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        if (selectedDate) {
+            setEvents(allEvents[formattedDate(selectedDate)] || []);
         }
-    };
+    }, [selectedDate, allEvents]);
 
-    const fetchRating = async () => {
-        try {
-            const token = localStorage.getItem("jwtToken");
-            if (!token) {
-                console.error("No auth token found. Please log in.");
-                return;
-            }
-
-            const decoded = jwtDecode(token);
-            const { clubId } = decoded;
-
-            const response = await axios.get(`http://localhost:4000/api/v1/club?id=${clubId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data?.club.overallRating !== undefined) {
-                setRating(response.data.club.overallRating);
-            }
-        } catch (err) {
-            console.error("Error fetching rating:", err.response || err.message);
-        }
-    };
-
-    const getEventsForDate = (date) => {
-        const formattedDate = format(date, "yyyy-MM-dd");
-        return events.filter((event) => event.date === formattedDate);
-    };
-
-    const renderHeader = () => (
-        <div className="flex justify-between items-center mb-5 dark:text-white">
-            <button
-                className="bg-mirage-500 text-white px-3 py-1 rounded hover:bg-mirage-600"
-                onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
-            >
-                {"<"}
-            </button>
-            <h3 className="text-xl font-bold">{format(currentMonth, "MMMM yyyy")}</h3>
-            <button
-                className="bg-mirage-500 text-white px-3 py-1 rounded hover:bg-mirage-600"
-                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            >
-                {">"}
-            </button>
-        </div>
-    );
-
-    const renderDays = () => {
-        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        return (
-            <div className="grid grid-cols-7 text-center font-bold mb-2 dark:text-mirage-200">
-                {days.map((day, index) => (
-                    <div key={index} className="py-2">
-                        {day}
-                    </div>
-                ))}
-            </div>
+    const changeMonth = (direction) => {
+        const newDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + direction,
+            1
         );
+        setCurrentDate(newDate);
     };
 
-    const renderCells = () => {
-        const monthStart = startOfMonth(currentMonth);
-        const monthEnd = endOfMonth(monthStart);
-        const startDate = startOfWeek(monthStart);
-        const endDate = endOfWeek(monthEnd);
-
-        const rows = [];
-        let days = [];
-        let currentDay = new Date(startDate);
-
-        while (currentDay <= endDate) {
-            for (let i = 0; i < 7; i++) {
-                const isOutsideMonth = !isSameMonth(currentDay, currentMonth);
-                const eventsForDay = getEventsForDate(currentDay);
-
-                days.push(
-                    <div
-                        key={currentDay}
-                        className={`h-16 flex flex-col justify-center items-center rounded-lg transition transform hover:scale-110 cursor-pointer ${
-                            isSameDay(currentDay, selectedDate)
-                                ? "bg-mirage-600 text-white dark:bg-mirage-700"
-                                : ""
-                        } ${isOutsideMonth ? "text-mirage-400 dark:text-mirage-200 hover:bg-mirage-100 dark:hover:bg-mirage-700" : "hover:bg-mirage-200 dark:hover:bg-mirage-900"}`}
-                        onClick={() => {
-                            if (!isOutsideMonth) {
-                                setSelectedDate(new Date(currentDay));
-                            }
-                        }}
-                    >
-                        <span>{format(currentDay, "d")}</span>
-                        {eventsForDay.length > 0 && (
-                            <span className="block mt-1 w-2 h-2 rounded-full bg-red-500"></span>
-                        )}
-                    </div>
-                );
-                currentDay = addDays(currentDay, 1);
-            }
-
-            rows.push(
-                <div className="grid grid-cols-7 gap-2 mb-2" key={currentDay}>
-                    {days}
-                </div>
-            );
-            days = [];
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "Cancelled":
+                return "bg-red-500 text-white";
+            case "Upcoming":
+                return "bg-green-500 text-white";
+            case "Active":
+                return "bg-blue-500 text-white";
+            case "Past":
+                return "bg-gray-500 text-white";
+            case "Scheduled":
+                return "bg-yellow-500 text-black";
+            default:
+                return "bg-gray-300 text-black";
         }
-        return <div>{rows}</div>;
-    };
-
-    const renderSidePanel = () => {
-        if (!selectedDate) return null;
-
-        const eventsForDay = getEventsForDate(selectedDate);
-
-        return (
-            <div className="bg-mirage-50 text-black dark:bg-mirage-900 dark:text-white rounded-lg p-5 shadow-md">
-                <h3 className="font-bold mb-3">
-                    Events for {format(selectedDate, "MMMM dd, yyyy")}
-                </h3>
-                <ul className="list-disc pl-5">
-                    {eventsForDay.length > 0 ? (
-                        eventsForDay.map((event, index) => <li key={index}>{event.name}</li>)
-                    ) : (
-                        <li>No events scheduled.</li>
-                    )}
-                </ul>
-                <button
-                    className="mt-4 bg-mirage-500 text-white px-4 py-2 rounded hover:bg-mirage-600 w-full"
-                    onClick={() => setSelectedDate(null)}
-                >
-                    Close
-                </button>
-            </div>
-        );
     };
 
     return (
-        <div className="min-h-screen p-5 dark:bg-mirage-900 bg-mirage-50">
-            <div className="flex flex-col lg:flex-row gap-6 h-full">
-                {/* Calendar Section */}
-                <div className="bg-mirage-100 dark:bg-mirage-800 shadow-lg rounded-lg p-6 flex-1 overflow-y-auto">
-                    {renderHeader()}
-                    {renderDays()}
-                    {renderCells()}
-                    {selectedDate && renderSidePanel()}
-                </div>
+        <div className="max-w-4xl mx-auto p-4 dark:bg-gray-900 dark:text-white">
+            <div className="flex justify-between items-center mb-4">
+                <button
+                    className="p-2 rounded bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
+                    onClick={() => changeMonth(-1)}
+                >
+                    Previous
+                </button>
+                <h2 className="text-lg font-semibold">
+                    {currentDate.toLocaleString("default", { month: "long" })}{" "}
+                    {currentDate.getFullYear()}
+                </h2>
+                <button
+                    className="p-2 rounded bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
+                    onClick={() => changeMonth(1)}
+                >
+                    Next
+                </button>
+            </div>
 
-                {/* Club Rating Section */}
-                <div className="bg-mirage-100 dark:bg-mirage-800 shadow-lg rounded-lg p-6 w-full lg:w-1/3">
-                    <h3 className="text-lg font-bold mb-3 dark:text-white">Club Rating</h3>
-                    {rating !== null ? (
-                        <p className="text-2xl font-bold text-mirage-800 dark:text-mirage-100">{rating}</p>
+            <div className="grid grid-cols-7 gap-2 text-center border border-gray-300 dark:border-gray-700 p-2 rounded">
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className="font-semibold">
+                        {day}
+                    </div>
+                ))}
+                {Array.from({ length: firstDay }).map((_, i) => (
+                    <div key={`empty-${i}`} />
+                ))}
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                    const day = i + 1;
+                    const date = new Date(
+                        currentDate.getFullYear(),
+                        currentDate.getMonth(),
+                        day
+                    );
+                    const isToday = formattedDate(new Date()) === formattedDate(date);
+                    const hasEvent = allEvents[formattedDate(date)];
+
+                    return (
+                        <button
+                            key={day}
+                            className={`p-2 rounded ${isToday
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 dark:bg-gray-700"
+                                } ${hasEvent ? "border-2 border-blue-500" : ""
+                                } hover:bg-blue-300 dark:hover:bg-blue-600`}
+                            onClick={() => setSelectedDate(date)}
+                        >
+                            {day}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {selectedDate && (
+                <div className="mt-4 p-4 bg-gray-200 dark:bg-gray-800 rounded">
+                    <h3 className="font-semibold text-lg">
+                        Events on {selectedDate.toDateString()}
+                    </h3>
+                    {events.length > 0 ? (
+                        <ul>
+                            {events.map((event, index) => (
+                                <li key={index} className="mt-2 p-2 border rounded bg-gray-100 dark:bg-gray-700">
+                                    <span className="font-bold">{event.eventName}</span> -{" "}
+                                    <span>{event.duration}</span>
+                                    <div className={`mt-2 px-2 py-1 rounded inline-block ${getStatusColor(event.status)}`}>
+                                        {event.status}
+                                    </div>
+                                    <p className="mt-1">
+                                        Venue: {event.venue}
+                                    </p>
+                                    {event.endDate && (
+                                        <p className="mt-1">
+                                            End Date: {new Date(event.endDate).toDateString()}
+                                        </p>
+                                    )}
+                                    {event.clubIds && event.clubIds.length > 0 && (
+                                        <p className="mt-1">
+                                            Clubs: {event.clubIds.map((club) => club.name).join(", ")}
+                                        </p>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
                     ) : (
-                        <p className="text-mirage-800 dark:text-mirage-100">Loading rating...</p>
+                        <p>No events scheduled for this date.</p>
                     )}
                 </div>
-            </div>
+            )}
         </div>
     );
 };
