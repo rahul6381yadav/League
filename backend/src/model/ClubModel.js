@@ -68,6 +68,10 @@ const eventSchema = new Schema({
         type: String,
         required: true,
     },
+    photo: {
+        type: String,
+        default:"",
+    },
     description: {
         type: String,
         default: null,

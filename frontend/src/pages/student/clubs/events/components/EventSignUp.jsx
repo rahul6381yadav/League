@@ -216,9 +216,18 @@ const EventSignUp = () => {
                     {/* Fixed Banner Section */}
                     <div className="relative w-full rounded-t-lg" style={{ paddingBottom: '42.8571%' }}>
                         <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                            <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
+                            {(event&&event.photo) ? (
+                                <img
+                                    src={event.photo}
+                                    alt="Event Banner"
+                                    className="w-full h-full object-cover rounded-t-lg"
+                                />
+                            ) : (
+                                <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
+                            )}
                         </div>
                     </div>
+
                     {/* Scrollable Content Section */}
                     <div className="flex-1 min-h-0">
                         <div className="h-full overflow-y-auto">

@@ -2,7 +2,7 @@ const {EventModel} = require("../model/ClubModel");
 
 exports.createEvent = async (req, res) => {
     try {
-        const {clubIds, eventName, description, venue, duration, maxPoints, date, status,totalWinner} = req.body;
+        const {clubIds, eventName, description,photo,endDate, venue, duration, maxPoints, date, status,totalWinner} = req.body;
 
         if (!Array.isArray(clubIds) || clubIds.length === 0) {
             return res.status(400).json({message: "At least one club is required", isError: true});
@@ -16,15 +16,17 @@ exports.createEvent = async (req, res) => {
         if (existingEvent) {
             return res.status(400).json({message: "Event with the same name and date already exists", isError: true});
         }
-
+        console.log("")
         const newEvent = new EventModel({
             clubIds,
             eventName,
+            photo,
             description: description || null,
             venue,
             duration,
             maxPoints,
             date: new Date(date),
+            endDate: new Date(endDate),
             status: status || null,
             totalWinner,
         });
@@ -32,7 +34,7 @@ exports.createEvent = async (req, res) => {
         await newEvent.save();
         res.status(201).json({message: "Event created successfully", event: newEvent, isError: false});
     } catch (error) {
-        console.error("Error:", error.message);
+        console.error("Error: ", error.message);
         res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
