@@ -75,7 +75,8 @@ function CreateEvents() {
         e.preventDefault();
         const clubIds = [primaryClubId, ...selectedCollateralClubs];
         const newEvent = { ...eventData, clubIds };
-
+        console.log("club Events ",clubIds); 
+        console.log("new Events ", newEvent);
         try {
             const response = await fetch('http://localhost:4000/api/v1/club/events', {
                 method: 'POST',

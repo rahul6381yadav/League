@@ -49,7 +49,13 @@ const HomePage = () => {
         // Fetch upcoming events from the backend API
         const fetchUpcomingEvents = async () => {
             try {
+                const currentDate = new Date();
+                const dateAfter = new Date(currentDate.setHours(23, 59, 59, 999));
+                const params = {
+                    dateAfter
+                };
                 const response = await axios.get("http://localhost:4000/api/v1/club/events", {
+                    params:params,
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUpcomingEvents(response.data.events); // Assuming response.data.events contains the list of events
@@ -63,8 +69,16 @@ const HomePage = () => {
         // Fetch today's schedule from the backend API
         const fetchTodaySchedule = async () => {
             try {
+                const currentDate = new Date();
+                const dateAfter = new Date(currentDate.setHours(0, 0, 0, 0)); // Start of today
+                const dateBefore = new Date(currentDate.setHours(23, 59, 59, 999)); // End of today
+                const params = {
+                    dateAfter,
+                    dateBefore
+                };
+       
                 const response = await axios.get("http://localhost:4000/api/v1/club/events", {
-                    params: { date: new Date().toISOString() },
+                    params: params,
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setTodaySchedule(response.data.events); // Assuming response.data.schedule contains the today's schedule
