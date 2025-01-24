@@ -4,6 +4,7 @@ import "react-calendar-heatmap/dist/styles.css";
 import { useAuth } from "../../../context/AuthContext";
 import axios from "axios"; // Import axios for making API requests
 import {jwtDecode} from "jwt-decode";
+import PastParticipants from "./PastParticipants";
 
 const HomePage = () => {
     const [upcomingEvents, setUpcomingEvents] = useState([]); // State to hold upcoming events
@@ -371,7 +372,7 @@ const HomePage = () => {
                     </div>
 
                     {/* Past Participation */}
-                    <div className="mt-6 p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
+                    {/* <div className="mt-6 p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
                         <h2 className="text-lg font-semibold mb-4 text-mirage-900 dark:text-mirage-50">Past
                             Participation</h2>
                         <table className="table-auto w-full text-left border-collapse">
@@ -392,7 +393,8 @@ const HomePage = () => {
                             ))}
                             </tbody>
                         </table>
-                    </div>
+                    </div> */}
+                    <PastParticipants/>
                 </div>
             </div>
         </div>
