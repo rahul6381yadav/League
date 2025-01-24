@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
-const PastParticipants = () => {
+const PastParticipants = (props) => {
     const [attendanceData, setAttendanceData] = useState([]);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const eventsPerPage = 2;
-
+    const studentId = props.studentId;
     useEffect(() => {
         const fetchAttendanceData = async () => {
             const token = localStorage.getItem("jwtToken");
@@ -26,7 +26,6 @@ const PastParticipants = () => {
             }
 
             try {
-                const studentId = decodedToken.userId;
                 const response = await fetch(
                     `http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`,
                     {

@@ -53,6 +53,7 @@ const Sidebar = ({onToggle}) => {
         { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
         { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
         { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/myProfile" },
+        { icon: <FaUsers className="h-6 w-6" />, label: "Friends", path: "/friends" },
     ];
 
     useEffect(() => {

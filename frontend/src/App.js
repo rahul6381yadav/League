@@ -26,6 +26,8 @@ import AllEvents from "./pages/student/allEvents/AllEvents";
 import MyEvents from "./pages/student/myEvents/MyEvents";
 import MyProfile from './pages/student/profile/Profile';
 import CreateEvents from "./pages/coordinator/manageEvents/CreateEvent";
+import AllMember from './pages/student/friends/allMember';
+import OtherMembers from './pages/student/friends/otherMember';
 
 function AppRoutes() {
     return (
@@ -41,7 +43,9 @@ function AppRoutes() {
             <Route path="/club-events" element={<Layout><ClubEventsPage/></Layout>}/>
             <Route path="/all-events" element={<Layout><AllEvents/></Layout>}/>
             <Route path="/my-events" element={<Layout><MyEvents /></Layout>} />
-            <Route path="/myProfile" element={<Layout><MyProfile/></Layout>}/>
+            <Route path="/myProfile" element={<Layout><MyProfile /></Layout>} />
+            <Route path="/friends" element={<Layout><AllMember /></Layout>} />
+            <Route path="/friends/:id" element={<Layout><OtherMembers/></Layout>}/>
 
             {/* Coordinator Routes */}
             <Route path="/dashboard" element={<LayoutCoordinator><CoordinatorDashboard/></LayoutCoordinator>}/>
