@@ -115,7 +115,6 @@ exports.updateAttendance = async (req, res) => {
         }));
 
         await AttendanceModel.bulkWrite(bulkOps);
-
         // Optionally, update student points in a separate loop if needed
         for (const update of updates) {
             if (update.status === "present" && update.pointsGiven > 0) {

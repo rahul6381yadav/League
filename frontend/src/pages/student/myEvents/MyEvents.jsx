@@ -43,6 +43,7 @@ const MyEvents = () => {
             if (records.length > 0) {
                 // Extract event IDs as strings
                 const eventIds = records.map(record => record.eventId._id.toString()); // Ensure they are strings
+                console.log(eventIds);
                 // Send the array of event IDs to the new backend endpoint
                 const eventResponse = await axios.post(
                     'http://localhost:4000/api/v1/club/all-events',
@@ -69,7 +70,6 @@ const MyEvents = () => {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         fetchMyEvents();
     }, [pagination]);
