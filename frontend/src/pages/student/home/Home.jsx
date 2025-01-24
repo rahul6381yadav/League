@@ -45,7 +45,7 @@ const HomePage = () => {
     };
 
     const currentYear = new Date().getFullYear();
-
+    const studentId = decodedToken.userId;
     useEffect(() => {
         // Fetch upcoming events from the backend API
         const fetchUpcomingEvents = async () => {
@@ -94,7 +94,6 @@ const HomePage = () => {
         const fetchTotalPoints = async () => {
             try {
                 let sumPoints = 0;
-                const studentId = decodedToken.userId;
                 const response = await fetch(`http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -123,7 +122,6 @@ const HomePage = () => {
         const updateTotalPoints = async (sumPoints) => {
             try {
                 // Extract the studentId from the decoded JWT token
-                const studentId = decodedToken.userId; // Assuming decodedToken contains the userId
 
                 // Make a GET request to the backend to fetch the user's profile, passing studentId
                 const response = await fetch(`http://localhost:4000/user/profile?id=${studentId}`, {
@@ -394,7 +392,7 @@ const HomePage = () => {
                             </tbody>
                         </table>
                     </div> */}
-                    <PastParticipants/>
+                    <PastParticipants studentId={studentId} />
                 </div>
             </div>
         </div>
