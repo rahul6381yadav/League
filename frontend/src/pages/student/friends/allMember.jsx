@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const AllMember = () => {
     const [users, setUsers] = useState([]); // Full data from API
     const [filteredUsers, setFilteredUsers] = useState([]); // Filtered data
-    const [rolesFilter, setRolesFilter] = useState("");
+    const [rolesFilter, setRolesFilter] = useState("student");
     const [batchFilter, setBatchFilter] = useState("");
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
