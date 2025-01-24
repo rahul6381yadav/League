@@ -46,13 +46,79 @@ const getTrophyStyle = (index) => {
     }
 };
 
+
 const EventSignUp = () => {
     const { id } = useParams();
     const [event, setEvent] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [isParticipated, setIsParticipated] = useState(false);
     const token = localStorage.getItem("jwtToken");
+    const AttendanceCount = async () => {
+        try {
+            const response = await fetch(`http://localhost:4000/api/v1/club/attendance?eventId=${id}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
+            const result = await response.json();
+
+            // Ensure result.records exists and is an array
+            if (Array.isArray(result.records)) {
+                console.log(result.records.length); // Log attendance count
+                increaseParticipationCount(result.records.length);
+            } else {
+                console.error("Invalid records data", result);
+            }
+        } catch (error) {
+            console.log("Error fetching attendance:", error);
+        }
+    };
+
+    const increaseParticipationCount = async (noOfParticipants) => {
+        try {
+            console.log("Token is here", token);
+
+            // Fetch current event data first (to increment participantsCount correctly)
+            const eventResponse = await fetch(`http://localhost:4000/api/v1/club/events?id=${id}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const eventData = await eventResponse.json();
+            console.log("events data ", eventData);
+            if (eventResponse.ok && eventData) {
+                // Get the current participants count and increment it
+                const updatedParticipantsCount = noOfParticipants;
+
+                // Now, send the PUT request to update participants count
+                const updateResponse = await fetch(`http://localhost:4000/api/v1/club/events?id=${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",  // Ensure you set the correct content type
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        participantsCount: updatedParticipantsCount,
+                    }),
+                });
+
+                if (updateResponse.ok) {
+                    const data = await updateResponse.json();
+                    console.log("Updated event:", data);
+                } else {
+                    console.error("Failed to update participants count:", await updateResponse.json());
+                }
+            } else {
+                console.error("Error fetching event data or invalid response", eventData);
+            }
+        } catch (error) {
+            console.log("Error updating participants count:", error);
+        }
+    };
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
@@ -95,9 +161,9 @@ const EventSignUp = () => {
         fetchEventDetails();
         getParticipants();
         checkParticipation();
-
+        AttendanceCount();
     }, [id, decodedToken.userId, token]);
-
+   
     const handleSignUp = async () => {
         if (!isParticipated) {
             try {
@@ -132,7 +198,7 @@ const EventSignUp = () => {
                 const sortedParticipants = (response.data.records || []).sort((a, b) => b.pointsGiven - a.pointsGiven);
                 setParticipants(sortedParticipants);
 
-
+                AttendanceCount();
                 alert("Successfully signed up for the event!");
             } catch (error) {
                 console.error("Error signing up:", error.response?.data || error.message);
