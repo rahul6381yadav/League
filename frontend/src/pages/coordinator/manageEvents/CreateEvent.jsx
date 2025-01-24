@@ -24,10 +24,12 @@ function CreateEvents() {
     const token = localStorage.getItem("jwtToken");
     const [eventData, setEventData] = useState({
         eventName: '',
+        photo: '',
         description: '',
         venue: '',
         duration: '',
         maxPoints: '',
+        endDate:'',
         date: '',
     });
     const location = useLocation();
@@ -39,7 +41,7 @@ function CreateEvents() {
 
     useEffect(() => {
         const fetchClubs = async () => {
-            try {
+            try { 
                 const response = await fetch(`http://localhost:4000/api/v1/club`, {
                     method: "GET",
                     headers: {
@@ -76,7 +78,7 @@ function CreateEvents() {
         const clubIds = [primaryClubId, ...selectedCollateralClubs];
         const newEvent = { ...eventData, clubIds };
         console.log("club Events ",clubIds); 
-        console.log("new Events ", newEvent);
+        console.log("new Events  ", newEvent);
         try {
             const response = await fetch('http://localhost:4000/api/v1/club/events', {
                 method: 'POST',
@@ -93,10 +95,12 @@ function CreateEvents() {
             } else {
                 setEventData({
                     eventName: '',
+                    photo: '',
                     description: '',
                     venue: '',
                     duration: '',
                     maxPoints: '',
+                    endDate: '',
                     date: '',
                 });
                 setSelectedCollateralClubs([]);
@@ -152,17 +156,45 @@ function CreateEvents() {
                                     />
                                 </div>
 
+                                {/* banner of events */}
+                                <div>
+                                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Banner Link</label>
+                                    <input
+                                        type="text"
+                                        name="photo"
+                                        value={eventData.photo}
+                                        onChange={handleInputChange}
+                                        className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
+                                        required
+                                    />
+                                </div>
+
                                 {/* Event Details Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
                                             <FaCalendarAlt className="inline mr-2" />
-                                            Date
+                                            Start Date
                                         </label>
                                         <input
                                             type="date"
                                             name="date"
                                             value={eventData.date}
+                                            onChange={handleInputChange}
+                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                                            <FaCalendarAlt className="inline mr-2" />
+                                            End Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="endDate"
+                                            value={eventData.endDate}
                                             onChange={handleInputChange}
                                             className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
                                             required
@@ -285,7 +317,7 @@ function CreateEvents() {
                                                     id={club._id}
                                                     checked={selectedCollateralClubs.includes(club._id)}
                                                     onChange={(e) => {
-                                                        e.stopPropagation();
+                                                        e.stopPropagation(); 
                                                         handleCheckboxChange(club._id);
                                                     }}
                                                     className="w-5 h-5 text-mirage-600 dark:text-mirage-400 border-mirage-300 dark:border-mirage-600 rounded cursor-pointer transition-all hover:ring-2 hover:ring-mirage-400 dark:hover:ring-mirage-500"
