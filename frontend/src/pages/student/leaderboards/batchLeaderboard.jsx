@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Mail, Trophy, UserCircle } from "lucide-react";
+import { Mail, Trophy } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 
@@ -106,13 +106,25 @@ const BatchLeaderboard = () => {
     const getRowStyle = (index) => {
         switch (index) {
             case 0:
-                return 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-800 dark:text-white';
+                return {
+                    background: 'bg-gradient-to-r from-yellow-400 to-yellow-500',
+                    text: 'text-gray-800 dark:text-white'
+                };
             case 1:
-                return 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-800 dark:text-white';
+                return {
+                    background: 'bg-gradient-to-r from-gray-400 to-gray-500',
+                    text: 'text-gray-800 dark:text-white'
+                };
             case 2:
-                return 'bg-gradient-to-r from-amber-400 to-amber-500 text-gray-800 dark:text-white';
+                return {
+                    background: 'bg-gradient-to-r from-amber-400 to-amber-500',
+                    text: 'text-gray-800 dark:text-white'
+                };
             default:
-                return 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200';
+                return {
+                    background: 'bg-mirage-300 dark:bg-mirage-700',
+                    text: 'text-mirage-700 dark:text-mirage-200'
+                };
         }
     };
 
@@ -171,14 +183,18 @@ const BatchLeaderboard = () => {
                             {filteredStudents.length > 0 ? (
                                 <div className="grid grid-cols-1 gap-3">
                                     {filteredStudents.map((student, index) => {
-                                        const isCurrentUser = student._id === userId;
+                                        const isCurrentUser = student._id === decodedToken?.userId;
+                                        const topThreeStyle = index < 3 ? getRowStyle(index) : null;
+
                                         return (
                                             <div
                                                 key={student._id}
                                                 className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                                                     isCurrentUser
-                                                        ? 'bg-blue-200 dark:bg-blue-900 border-2 border-blue-500'
-                                                        : getRowStyle(index)
+                                                        ? index < 3 ? `${topThreeStyle.background} ${topThreeStyle.text} border-2 border-blue-500` : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200 border-2 border-blue-500'
+                                                        : topThreeStyle
+                                                            ? `${topThreeStyle.background} ${topThreeStyle.text} `
+                                                            : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200'
                                                 }`}
                                                 onClick={() => {
                                                     if (isCurrentUser) {
@@ -198,15 +214,25 @@ const BatchLeaderboard = () => {
 
                                                     {/* Name and Additional Details */}
                                                     <div className="flex-1">
-                                                        <h4 className="text-sm font-medium flex items-center text-mirage-700 dark:text-mirage-200">
+                                                        <h4 className={`text-sm font-medium flex items-center ${
+                                                            index < 3 ? topThreeStyle.text : 'text-mirage-700 dark:text-mirage-200'
+                                                        }`}>
                                                             {student.fullName}{isCurrentUser && (<span className="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded-full">You</span>)}
                                                         </h4>
-                                                        <div className="flex items-center space-x-2 text-xs text-mirage-500 dark:text-mirage-300">
+                                                        <div className={`flex items-center space-x-2 text-xs ${
+                                                            index < 3
+                                                                ? 'text-mirage-600 dark:text-mirage-200'
+                                                                : 'text-mirage-500 dark:text-mirage-300'
+                                                        }`}>
                                                             <Mail className="w-4 h-4" />
                                                             <span>{student.email}</span>
                                                         </div>
-                                                        <div className="text-xs text-mirage-500 dark:text-mirage-300">
-                                                            Student ID: {student.studentId}
+                                                        <div className={`text-xs ${
+                                                            index < 3
+                                                                ? 'text-mirage-600 dark:text-mirage-200'
+                                                                : 'text-mirage-500 dark:text-mirage-300'
+                                                        }`}>
+                                                            Batch: {student.batchCode} | Student ID: {student.studentId}
                                                         </div>
                                                     </div>
                                                 </div>

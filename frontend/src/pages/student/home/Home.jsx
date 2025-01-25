@@ -183,15 +183,19 @@ const HomePage = () => {
                                         timeZone: 'Asia/Kolkata', // Timezone set to UTC+5:30
                                     });
 
+
                                     return (
                                         <div
                                             key={index}
-                                            className={`flex-shrink-0 p-4 rounded-lg shadow ${task.color} bg-mirage-100 dark:bg-mirage-900 text-mirage-800 dark:text-mirage-200`}
+                                            className={`flex-shrink-0 p-4 rounded-lg shadow ${task.color} bg-mirage-100 dark:bg-mirage-700 text-mirage-800 dark:text-mirage-200`}
                                             style={{ minWidth: "200px" }}
                                             onClick={() => {
                                                 navigate(`/event-signup/${task._id}`);
                                             }}
                                         >
+                                            <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200 mb-2">
+                                                Date: {taskDate.getDate()}/{taskDate.getMonth()+1}/{taskDate.getFullYear()} - {taskEndDate.getDate()}/{taskEndDate.getMonth()+1}/{taskEndDate.getFullYear()}
+                                            </p>
                                             <p className="text-sm font-medium mb-2 text-mirage-700 dark:text-mirage-200">
                                                 {localStartTime} - {localEndTime}
                                             </p>
@@ -208,121 +212,22 @@ const HomePage = () => {
                                                         />
                                                         <span
                                                             className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            style={{ whiteSpace: "nowrap" }}>
-                                                          {club.name}
-                                                        </span>
+                                                            style={{ whiteSpace: "nowrap" }}
+                                                        >
+                            {club.name}
+                        </span>
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                     );
                                 })
+
                             )}
                         </div>
                     </div>
 
-                    {/* Upcoming Events
-                    <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                        <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">Upcoming Events</h2>
-                        {loading ? (
-                            <p>Loading events...</p>
-                        ) : error ? (
-                            <p className="text-red-500">{error}</p>
-                        ) : (
-                            <div className="flex flex-wrap justify-start gap-4">
-                                {upcomingEvents.map((event, index) => {
-                                    const eventStartDate = new Date(event.date);
-                                    const localStartTime = eventStartDate.toLocaleString('en-US', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'Asia/Kolkata', // Timezone set to UTC+5:30
-                                    });
 
-                                    const eventEndDate = new Date(event.endDate);
-                                    const localEndTime = eventEndDate.toLocaleString('en-US', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'Asia/Kolkata', // Timezone set to UTC+5:30
-                                    });
-
-                                    // Format the event date (e.g., January 20, 2025)
-                                    const formattedDate = eventStartDate.toLocaleDateString('en-US', {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    });
-
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="flex-shrink-0 p-4 rounded-lg shadow bg-mirage-100 dark:bg-mirage-900 text-mirage-800 dark:text-mirage-200 flex flex-col space-y-2"
-                                            style={{ minWidth: "200px" }}
-                                            onClick={() => {
-                                                navigate(`/event-signup/${event._id}`);
-                                            }}
-                                        >
-                                            <p className="text-m font-semibold text-mirage-900 dark:text-mirage-50">
-                                                {event.eventName}
-                                            </p>
-                                            {/* Display the event date */}
-                                            {/* <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                                {formattedDate}
-                                            </p>
-                                            <div className="flex space-x-2">
-                                                {event.clubIds.map((club, clubIndex) => (
-                                                    <div key={clubIndex} className="relative group"
-                                                    >
-                                                        <img
-                                                            src={club.image} // Assuming each club has an imageUrl property
-                                                            alt={club.name}
-                                                            className="w-10 h-10 rounded-full"
-                                                        />
-                                                        <span
-                                                            className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            style={{ whiteSpace: "nowrap" }}
-                                                        >
-                                        {club.name}
-                                    </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                                {localStartTime} - {localEndTime}
-                                            </p>
-                                        </div>
-                                    );
-                                })}
-                            </div> */}
-                        {/* )}
-                    </div>} */}
-
-
-
-                    {/* Participation Calendar */}
-                    {/* <div className="mt-6 p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                        <h3 className="text-lg font-semibold mb-4 text-mirage-900 dark:text-mirage-50">Participation
-                            Calendar</h3>
-                        <div className="flex justify-center">
-                            <CalendarHeatmap
-                                startDate={new Date(`${currentYear}-01-01`)}
-                                endDate={new Date(`${currentYear}-12-31`)}
-                                values={heatmapData}
-                                classForValue={(value) => {
-                                    return value ? getColorForPoints(value.count) : "bg-mirage-200 dark:bg-mirage-700";
-                                }}
-                                gutterSize={4}
-                                showMonthLabels={true}
-                                monthLabels={[
-                                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                                ]}
-                                weekdayLabels={["M", "T", "W", "T", "F", "S"]}
-                                cellSize={20}
-                                style={{ pointerEvents: "none" }}
-                            />
-                        </div>
-                    </div> */}
                     <MyCalendar />
                 </div>
 

@@ -34,8 +34,8 @@ import BatchLeaderboard from "./pages/student/leaderboards/batchLeaderboard";
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/landing" element={<LeaderboardLanding/>}/>
-            <Route path="/" element={<Login/>}/>
+            <Route path="/" element={<LeaderboardLanding/>}/>
+            <Route path="/login" element={<Login/>}/>
             <Route path="/admin" element={<AdminLogin/>}/>
             <Route path="/forget-password" element={<ForgetPassword/>}/>
 

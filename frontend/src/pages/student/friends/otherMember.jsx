@@ -64,31 +64,32 @@ const OtherMembers = () => {
             <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
                 {/* Profile Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-6 w-full">
                         <img
                             src={profile.photo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
                             alt="Profile Avatar"
                             className="w-32 h-32 rounded-full object-cover border-4 border-mirage-100 dark:border-mirage-700"
                         />
-                        <div>
-                            <h1 className="text-3xl font-bold text-mirage-900 dark:text-mirage-50">{profile.name}</h1>
-                            <p className="text-lg text-mirage-700 dark:text-mirage-200">{profile.role}</p>
-                            <p className="text-lg text-mirage-700 dark:text-mirage-200">{profile.studentId}</p>
+                        <div className="flex-grow">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-mirage-900 dark:text-mirage-50">{profile.name}</h1>
+                                    <p className="text-lg text-mirage-700 dark:text-mirage-200">{profile.role}</p>
+                                    <p className="text-lg text-mirage-700 dark:text-mirage-200">{profile.studentId}</p>
+                                </div>
+                                <div className="bg-mirage-100 dark:bg-mirage-900 p-4 rounded-lg flex flex-col items-center justify-center h-24 w-32">
+                                    <p className="text-sm text-mirage-700 dark:text-mirage-200 mb-2 text-center">Total Points</p>
+                                    <p className="text-4xl font-bold text-mirage-900 dark:text-mirage-50 text-center">{profile.TotalPoints}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Points Display */}
-                <div className="mb-8 p-6 rounded-lg bg-mirage-100 dark:bg-mirage-900">
-                    <div className="text-center">
-                        <p className="text-6xl font-bold text-mirage-900 dark:text-mirage-50">{profile.TotalPoints}</p>
-                        <p className="text-sm text-mirage-700 dark:text-mirage-200 mt-2">Total Points</p>
-                    </div>
-                </div>
                 <div className="border">
                     <PastParticipants studentId={studentId} />
                 </div>
-             
+
                 {/* Contact Information */}
                 <div className="p-6 rounded-lg bg-mirage-100 dark:bg-mirage-900">
                     <h2 className="text-xl font-bold mb-6 text-mirage-900 dark:text-mirage-50">Contact Information</h2>
