@@ -5,6 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import axios from "axios"; // Import axios for making API requests
 import {jwtDecode} from "jwt-decode";
 import PastParticipants from "./PastParticipants";
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
     const [upcomingEvents, setUpcomingEvents] = useState([]); // State to hold upcoming events
@@ -13,6 +14,7 @@ const HomePage = () => {
     const [error, setError] = useState(null); // State to handle errors
     const [totalPoints, setTotalPoints] = useState(null); // State to store total points
     const { userId, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
 
 // Token decoding logic remains the same
@@ -73,9 +75,9 @@ const HomePage = () => {
                 const currentDate = new Date();
                 const dateAfter = new Date(currentDate.setHours(0, 0, 0, 0)); // Start of today
                 const dateBefore = new Date(currentDate.setHours(23, 59, 59, 999)); // End of today
+                const ongoing = new Date(currentDate);
                 const params = {
-                    dateAfter,
-                    dateBefore
+                    ongoing
                 };
        
                 const response = await axios.get("http://localhost:4000/api/v1/club/events", {
@@ -158,8 +160,7 @@ const HomePage = () => {
                 <div className="space-y-6">
                     {/* Today's Schedule */}
                     <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                        <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">Today's
-                            Schedule</h2>
+                        <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">Ongoing Events</h2>
                         <div className="flex overflow-x-auto space-x-4">
                             {loading ? (
                                 <p>Loading today's schedule...</p>
@@ -186,6 +187,9 @@ const HomePage = () => {
                                             key={index}
                                             className={`flex-shrink-0 p-4 rounded-lg shadow ${task.color} bg-mirage-100 dark:bg-mirage-900 text-mirage-800 dark:text-mirage-200`}
                                             style={{ minWidth: "200px" }}
+                                            onClick={() => {
+                                                navigate(`/event-signup/${task._id}`);
+                                            }}
                                         >
                                             <p className="text-sm font-medium mb-2 text-mirage-700 dark:text-mirage-200">
                                                 {localStartTime} - {localEndTime}
@@ -253,6 +257,9 @@ const HomePage = () => {
                                             key={index}
                                             className="flex-shrink-0 p-4 rounded-lg shadow bg-mirage-100 dark:bg-mirage-900 text-mirage-800 dark:text-mirage-200 flex flex-col space-y-2"
                                             style={{ minWidth: "200px" }}
+                                            onClick={() => {
+                                                navigate(`/event-signup/${event._id}`);
+                                            }}
                                         >
                                             <p className="text-m font-semibold text-mirage-900 dark:text-mirage-50">
                                                 {event.eventName}
@@ -263,7 +270,8 @@ const HomePage = () => {
                                             </p>
                                             <div className="flex space-x-2">
                                                 {event.clubIds.map((club, clubIndex) => (
-                                                    <div key={clubIndex} className="relative group">
+                                                    <div key={clubIndex} className="relative group"
+                                                    >
                                                         <img
                                                             src={club.image} // Assuming each club has an imageUrl property
                                                             alt={club.name}
