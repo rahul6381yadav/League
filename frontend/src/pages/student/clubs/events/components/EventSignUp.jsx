@@ -6,6 +6,7 @@ import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
 import { Mail, Trophy } from "lucide-react";
 // decode jwt token
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -17,7 +18,6 @@ if (token) {
         console.error("Error decoding JWT token:", error.message);
     }
 }
-
 const getTrophyStyle = (index) => {
     switch (index) {
         case 0:
@@ -53,6 +53,7 @@ const EventSignUp = () => {
     const [participants, setParticipants] = useState([]);
     const [isParticipated, setIsParticipated] = useState(false);
     const token = localStorage.getItem("jwtToken");
+    const navigate = useNavigate();
     const AttendanceCount = async () => {
         try {
             const response = await fetch(`http://localhost:4000/api/v1/club/attendance?eventId=${id}`, {
@@ -314,7 +315,13 @@ const EventSignUp = () => {
                                             return (
                                                 <div key={participant._id} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'}`}>
                                                     {/* Profile Picture and Details */}
-                                                    <div className="flex items-center space-x-3 flex-1">
+                                                    <div className="flex items-center space-x-3 flex-1"
+                                                        onClick={() => {
+                                                            if (participant?.studentId?._id !== decodedToken?.userId) {
+                                                                navigate(`/friends/${participant.studentId._id}`);
+                                                            }
+                                                        }}
+                                                    >
                                                         {/* Profile Picture */}
                                                         <img
                                                             src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'} // Default fallback image
