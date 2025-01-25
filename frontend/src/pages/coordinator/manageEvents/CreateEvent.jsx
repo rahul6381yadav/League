@@ -8,11 +8,9 @@ import { jwtDecode } from "jwt-decode";
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
-console.log("token ", token);
 if (token) {
     try {
         decodedToken = jwtDecode(token); // Decode JWT token
-        console.log("Decoded JWT token:", decodedToken);
     } catch (error) {
         console.error("Error decoding JWT token:", error.message);
     }
@@ -31,6 +29,7 @@ function CreateEvents() {
         maxPoints: '',
         endDate:'',
         date: '',
+        numberOfWinners: '', // New field
     });
     const location = useLocation();
     const navigate = useNavigate();
@@ -102,6 +101,7 @@ function CreateEvents() {
                     maxPoints: '',
                     endDate: '',
                     date: '',
+                    numberOfWinners: '', // Reset new field
                 });
                 setSelectedCollateralClubs([]);
                 alert('Event created successfully!');
@@ -245,6 +245,20 @@ function CreateEvents() {
                                             required
                                         />
                                     </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                                            Number of Winners
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="numberOfWinners"
+                                            value={eventData.numberOfWinners}
+                                            onChange={handleInputChange}
+                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
+                                            required
+                                        />
+                                    </div>
+
                                 </div>
                             </div>
 

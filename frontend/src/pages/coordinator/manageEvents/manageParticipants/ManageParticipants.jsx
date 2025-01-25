@@ -68,15 +68,42 @@ const ManageParticipants = () => {
 
         const getWinners = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/v1/club/winners`, {
-                    headers: {Authorization: `Bearer ${token}`},
-                    params: {eventId: id},
+                // Fetch event details to get totalWinner count
+                const eventResponse = await axios.get(`http://localhost:4000/api/v1/club/events`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params: { id }, // `id` refers to the eventId
                 });
-                setWinners(response.data.winners || []);
+
+                const event = eventResponse.data.event;
+                if (!event) {
+                    console.error("Event not found.");
+                    return;
+                }
+
+                const totalWinners = event.totalWinner;
+
+                // Fetch attendance records sorted by pointsGiven in descending order
+                const attendanceResponse = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params: {
+                        eventId: id,
+                        pointsGreaterThan: 0, // Optional: filter out participants with zero points
+                    },
+                });
+
+                const attendanceRecords = attendanceResponse.data.records || [];
+
+                // Sort attendance by pointsGiven in descending order and select the top `totalWinner` participants
+                const winners = attendanceRecords
+                    .sort((a, b) => b.pointsGiven - a.pointsGiven) // Descending order
+                    .slice(0, totalWinners);
+
+                setWinners(winners); // Update state with the top winners
             } catch (error) {
                 console.error("Error fetching winners:", error.response?.data || error.message);
             }
         };
+
 
         fetchEventDetails();
         getParticipants();
