@@ -27,12 +27,14 @@ import MyEvents from "./pages/student/myEvents/MyEvents";
 import MyProfile from './pages/student/profile/Profile';
 import CreateEvents from "./pages/coordinator/manageEvents/CreateEvent";
 import OtherMembers from './pages/student/friends/otherMember';
+import LeaderboardLanding from './pages/landing/landingPage';
 import Leaderboard from "./pages/student/leaderboards/overallLeaderboard";
 import BatchLeaderboard from "./pages/student/leaderboards/batchLeaderboard";
 
 function AppRoutes() {
     return (
         <Routes>
+            <Route path="/landing" element={<LeaderboardLanding/>}/>
             <Route path="/" element={<Login/>}/>
             <Route path="/admin" element={<AdminLogin/>}/>
             <Route path="/forget-password" element={<ForgetPassword/>}/>
