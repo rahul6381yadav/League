@@ -44,8 +44,8 @@ const CoordinatorSidebar = ({ onToggle }) => {
         { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/dashboard" },
         { icon: <UserGroupIcon className="h-6 w-6" />, label: "Club Details", path: "/my-club" },
         { icon: <ClipboardListIcon className="h-6 w-6" />, label: "Manage Events", path: "/manage-events" },
-        { icon: <BellIcon className="h-6 w-6" />, label: "Notifications", path: "/notifications" },
-        { icon: <UserCircleIcon className="h-6 w-6" />, label: "Members", path: "/members" },
+        { icon: <BellIcon className="h-6 w-6" />, label: "Notifications", path: "#" },
+        { icon: <UserCircleIcon className="h-6 w-6" />, label: "Members", path: "#" },
     ];
 
     useEffect(() => {
