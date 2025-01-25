@@ -35,10 +35,10 @@ function AppRoutes() {
             <Route path="/" element={<Login/>}/>
             <Route path="/admin" element={<AdminLogin/>}/>
             <Route path="/forget-password" element={<ForgetPassword/>}/>
-            <Route path="/event-signup/:id" element={<Layout><EventSignUp/></Layout>}/>
 
             {/* Student Routes */}
             <Route path="/home" element={<Layout><HomePage/></Layout>}/>
+            <Route path="/event-signup/:id" element={<Layout><EventSignUp/></Layout>}/>
             <Route path="/clubs" element={<Layout><Clubs/></Layout>}/>
             <Route path="/club-events" element={<Layout><ClubEventsPage/></Layout>}/>
             <Route path="/all-events" element={<Layout><AllEvents/></Layout>}/>

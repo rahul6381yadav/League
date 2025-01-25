@@ -41,7 +41,7 @@ exports.createEvent = async (req, res) => {
 
 exports.getEvents = async (req, res) => {
     try {
-        const {clubId, search, limit, skip, id, dateAfter, dateBefore, status} = req.query;
+        const {clubId, search, limit, skip, id, dateAfter, dateBefore, status,ongoing} = req.query;
 
         if (id) {
             const event = await EventModel.findById(id).populate("clubIds winners");
@@ -58,6 +58,11 @@ exports.getEvents = async (req, res) => {
         if (dateBefore) {
             filter.date = {...(filter.date || {}), $lte: new Date(dateBefore)};
         }
+        if (ongoing && !isNaN(new Date(ongoing).getTime())) {
+            filter.date = { $lte: new Date(ongoing) };
+            filter.endDate = { $gte: new Date(ongoing) };
+        }
+
         if (status) {
             if (statusValues) {
                 filter.status = {$in: status.split(',')};
