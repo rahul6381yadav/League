@@ -66,7 +66,7 @@ const OtherMembers = () => {
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-6">
                         <img
-                            src={profile.photo || "https://static.vecteezy.com/system/resources/thumbnails/028/794/707/small/cartoon-cute-school-boy-photo.jpg"}
+                            src={profile.photo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
                             alt="Profile Avatar"
                             className="w-32 h-32 rounded-full object-cover border-4 border-mirage-100 dark:border-mirage-700"
                         />

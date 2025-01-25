@@ -49,9 +49,9 @@ const Sidebar = ({onToggle}) => {
         { icon: <UserGroupIcon className="h-6 w-6" />, label: "All Clubs", path: "/clubs" },
         { icon: <ClipboardCheckIcon className="h-6 w-6" />, label: "My Events", path: "/my-events" },
         { icon: <ArchiveIcon className="h-6 w-6" />, label: "All Events", path: "/all-events" },
-        { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
-        { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/overall-leaderboard" },
-        { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "/my-achievements" },
+        { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "#" },
+        { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "#" },
+        { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "#" },
         { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/myProfile" },
         { icon: <FaUsers className="h-6 w-6" />, label: "Friends", path: "/friends" },
     ];
@@ -151,7 +151,7 @@ const Sidebar = ({onToggle}) => {
                 {/* Sidebar Footer */}
                 <div className="absolute bottom-4 w-full px-3">
                     <ul className="space-y-2">
-                        {[{icon: <CogIcon className="h-6 w-6"/>, label: "Settings", path: "/settings"}]
+                        {[{icon: <CogIcon className="h-6 w-6"/>, label: "Settings", path: "#"}]
                             .map((item, idx) => (
                                 <li
                                     key={idx}
