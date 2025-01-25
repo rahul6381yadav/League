@@ -126,7 +126,7 @@ const AllMember = () => {
                         onClick={() => setCurrentPage(pageNumber)}
                         className={`px-4 py-2 mx-1 rounded ${currentPage === pageNumber
                                 ? "bg-blue-500 text-white"
-                                : "bg-gray-200 dark:bg-gray-700 dark:text-white"
+                                : "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
                             }`}
                     >
                         {pageNumber}
