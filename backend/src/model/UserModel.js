@@ -14,6 +14,17 @@ const userSchema = new mongoose.Schema({
     studentId: {
         type: String,
         required: false,
+        set: function (value) {
+            if (this.role === 'student' && this.email) {
+                // Extract the student ID from the email (e.g., "cs23b1059@iiitr.ac.in")
+                const emailPrefix = this.email.split('@')[0]; // Get the part before '@'
+                const extractedStudentId = emailPrefix.replace(/^(cs|mc|ad)(\d{2})(\d{4})$/i, (_, year, id) => {
+                    return `${year.toUpperCase()}${id.toUpperCase()}`;
+                });
+                return extractedStudentId; // Set the studentId to the formatted value
+            }
+            return value; // If not a student, return the value as it is
+        },
     },
     email: {
         type: String,

@@ -6,6 +6,7 @@ import axios from "axios"; // Import axios for making API requests
 import {jwtDecode} from "jwt-decode";
 import PastParticipants from "./PastParticipants";
 import { useNavigate } from 'react-router-dom';
+import MyCalendar from "../../coordinator/dashboard/calender";
 
 const HomePage = () => {
     const [upcomingEvents, setUpcomingEvents] = useState([]); // State to hold upcoming events
@@ -220,7 +221,7 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    {/* Upcoming Events */}
+                    {/* Upcoming Events
                     <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
                         <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">Upcoming Events</h2>
                         {loading ? (
@@ -265,7 +266,7 @@ const HomePage = () => {
                                                 {event.eventName}
                                             </p>
                                             {/* Display the event date */}
-                                            <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                            {/* <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
                                                 {formattedDate}
                                             </p>
                                             <div className="flex space-x-2">
@@ -292,14 +293,14 @@ const HomePage = () => {
                                         </div>
                                     );
                                 })}
-                            </div>
-                        )}
-                    </div>
+                            </div> */}
+                        {/* )}
+                    </div>} */}
 
 
 
                     {/* Participation Calendar */}
-                    <div className="mt-6 p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
+                    {/* <div className="mt-6 p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
                         <h3 className="text-lg font-semibold mb-4 text-mirage-900 dark:text-mirage-50">Participation
                             Calendar</h3>
                         <div className="flex justify-center">
@@ -321,9 +322,11 @@ const HomePage = () => {
                                 style={{ pointerEvents: "none" }}
                             />
                         </div>
-                    </div>
+                    </div> */}
+                    <MyCalendar />
                 </div>
 
+                
                 {/* Right Column */}
                 <div className="space-y-6">
                     {/* Student of the Year and Student of the Month in the same row */}
@@ -400,6 +403,7 @@ const HomePage = () => {
                             </tbody>
                         </table>
                     </div> */}
+                 
                     <PastParticipants studentId={studentId} />
                 </div>
             </div>
