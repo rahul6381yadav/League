@@ -125,12 +125,12 @@ function AddMembers({ alreadyMemberIds = [] }) {
                 <select
                     value={roleFilter}
                     onChange={handleRoleFilterChange}
-                    className="p-2 border rounded w-1/4 bg-mirage-100 dark:bg-mirage-700 text-mirage-50 border-mirage-300"
+                    className="p-2 border rounded w-1/4  text-black dark:text-white bg-mirage-100 dark:bg-mirage-700 border-mirage-300"
                 >
-                    <option value="student">Student</option>
-                    <option value="coordinator">Coordinator</option>
-                    <option value="faculty">Faculty</option>
-                    <option value="cosa">COSA Member</option>
+                    <option className="text-black dark:text-white" value="student">Student</option>
+                    <option className="text-black dark:text-white" value="coordinator">Coordinator</option>
+                    <option className="text-black dark:text-white" value="faculty">Faculty</option>
+                    <option className="text-black dark:text-white" value="cosa">COSA Member</option>
                 </select>
             </div>
             <table className="w-full border-collapse border border-mirage-300">
