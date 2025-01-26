@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {useLocation} from "react-router-dom";
 
 function ViewUsers() {
-    const [isCoordinator, setIsCoordinator] = useState(false);
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [rolesFilter, setRolesFilter] = useState("");
@@ -10,7 +9,6 @@ function ViewUsers() {
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(7);
-    const email = localStorage.getItem("emailCont");
     const location = useLocation();
     const token = localStorage.getItem("jwtToken");
     const {primaryClubId, primaryClubEmail} = location.state || {};
@@ -65,9 +63,8 @@ function ViewUsers() {
 
     useEffect(() => {
         const roles = localStorage.getItem("roles");
-        setIsCoordinator(roles === "coordinator" && email === primaryClubEmail);
         fetchAllUsers();
-    }, [email, rolesFilter, search]);
+    }, [rolesFilter, search]);
 
     useEffect(() => {
         applyFilters();

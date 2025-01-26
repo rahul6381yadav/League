@@ -10,7 +10,6 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(7);
     const [selectedUsers, setSelectedUsers] = useState([]);
-    const email = localStorage.getItem("emailCont");
     const token = localStorage.getItem("jwtToken");
     const decodedToken = jwtDecode(token);
 
@@ -98,7 +97,7 @@ function AddMembers({ alreadyMemberIds = [] }) {
 
     useEffect(() => {
         fetchAllUsers();
-    }, [email, roleFilter, search]);
+    }, [roleFilter, search]);
 
     useEffect(() => {
         applyFilters();
