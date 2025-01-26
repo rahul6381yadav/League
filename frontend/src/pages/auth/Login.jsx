@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useRole} from '../../context/RoleContext';
-import {loginWithEmail, loginWithGoogle} from '../../utils/FirebaseAuthService';
-import {backendUrl} from '../../utils/routes';
+import React, { memo, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRole } from '../../context/RoleContext';
+import { loginWithEmail, loginWithGoogle } from '../../utils/FirebaseAuthService';
+import { backendUrl } from '../../utils/routes';
 import Spinner from "../common/circularIndicator"
 
-function Login() {
+const Login = memo(() => {
     const [activeTab, setActiveTab] = useState('student');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const {setRole} = useRole();
+    const { role, setRole} = useRole();
     const navigate = useNavigate();
 
     const handleEmailLogin = async (e) => {
@@ -93,7 +93,7 @@ function Login() {
                     localStorage.setItem("authToken", firebaseToken);
                     setRole(activeTab);
                     if (activeTab === 'student') {
-                    navigate('/home');
+                        navigate('/home');
                     }
                     else if (activeTab === 'coordinator') {
                         navigate('/dashboard');
@@ -119,6 +119,19 @@ function Login() {
         "coordinator": "Coordinator",
         "cosa": "CoSA"
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (token) {
+            if(role==="student"){
+                navigate("/home");
+            } else if(role==="coordinator"){
+                navigate("/dashboard");
+            } else if(role==="admin"){
+                navigate("/admin");
+            }
+        }
+    }, [navigate]);
 
     return (
         <>
@@ -150,7 +163,7 @@ function Login() {
                     </div>
 
                     <div className="p-6 space-y-4">
-                        <h2 className="text-2xl font-bold text-center text-black">{`Login as ${activeTab}`}</h2>
+                        <h2 className="text-2xl font-bold text-center text-black">{`Login as ${Tabs[activeTab]}`}</h2>
 
                         <form onSubmit={handleEmailLogin} className="space-y-4">
                             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
@@ -193,27 +206,41 @@ function Login() {
                             </button>
                         </form>
 
-                        <button
-                            onClick={handleGoogleLogin}
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:shadow-md"
-                        >
-                            <img
-                                src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-                                alt="Google Logo"
-                                className="w-5 h-5"
-                            />
-                            <span className="text-sm font-medium">Sign in with Google</span>
-                        </button>
+                        {/* Forgot Password and Sign In with Google */}
+                        <div className="flex justify-between items-center mt-4">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/forget-password')}
+                                className="text-sm text-blue-500 hover:underline"
+                            >
+                                Forgot Password?
+                            </button>
+
+                            {/* Google Sign-In Button */}
+                            <button
+                                onClick={handleGoogleLogin}
+                                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <img
+                                    src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+                                    alt="Google Logo"
+                                    className="w-5 h-5"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Sign in with Google</span>
+                            </button>
+                        </div>
+
+
                     </div>
                 </div>
                 {loading && (
                     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                        <Spinner className="h-10 w-10 border-blue-500"/>
+                        <Spinner className="h-10 w-10 border-blue-500" />
                     </div>
                 )}
             </div>
         </>
     );
-}
+})
 
 export default Login;

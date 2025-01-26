@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {motion} from 'framer-motion';
 import {useDarkMode} from "../../context/ThemeContext";
 import {useLocation, useNavigate} from "react-router-dom";
+import { useRole } from '../../context/RoleContext';
 
 const clubs = [
     {
@@ -84,6 +85,7 @@ const LeaderboardLanding = () => {
     const [visibleClubs, setVisibleClubs] = useState(3);
     const [activeClub, setActiveClub] = useState(null);
     const navigate = useNavigate();
+    const {role} = useRole();
 
     const updateVisibleClubs = () => {
         if (window.innerWidth <= 640) {
@@ -103,6 +105,18 @@ const LeaderboardLanding = () => {
             window.removeEventListener('resize', updateVisibleClubs);
         };
     }, []);
+    useEffect(() => {
+            const token = localStorage.getItem("authToken");
+            if (token) {
+                if(role==="student"){
+                    navigate("/home");
+                } else if(role==="coordinator"){
+                    navigate("/dashboard");
+                } else if(role==="admin"){
+                    navigate("/admin");
+                }
+            }
+        }, [navigate]);
 
     return (
         <>
