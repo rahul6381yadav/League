@@ -1,2 +1,2 @@
-export const backendUrl = "https://kpm41lk1-4000.inc1.devtunnels.ms";
-export const apiBaseUrl = "https://kpm41lk1-4000.inc1.devtunnels.ms/api/v1";
+export const backendUrl = "https://league-backend-36in2.ondigitalocean.app";
+export const apiBaseUrl = "https://league-backend-36in2.ondigitalocean.app/api/v1";
