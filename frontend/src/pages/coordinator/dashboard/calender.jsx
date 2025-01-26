@@ -22,7 +22,10 @@ const MyCalendar = () => {
         1
     ).getDay();
 
-    const formattedDate = (date) => date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    const formattedDate = (date) => {
+        const offsetDate = new Date(date.getTime() + 5.5 * 60 * 60 * 1000); // Adjust to IST
+        return offsetDate.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    };
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -33,15 +36,15 @@ const MyCalendar = () => {
 
                 const [upcomingRes, ongoingRes, pastRes] = await Promise.all([
                     axios.get("http://localhost:4000/api/v1/club/events", {
-                        params: { dateAfter },
+                        params: { dateAfter: formattedDate(dateAfter) },
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                     axios.get("http://localhost:4000/api/v1/club/events", {
-                        params: { ongoing: currentDateTime },
+                        params: { ongoing: formattedDate(currentDateTime) },
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                     axios.get("http://localhost:4000/api/v1/club/events", {
-                        params: { dateBefore },
+                        params: { dateBefore: formattedDate(dateBefore) },
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);

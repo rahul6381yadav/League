@@ -4,7 +4,7 @@ import axios from "axios";
 import {FaCalendarAlt, FaClock, FaMapMarkerAlt} from "react-icons/fa";
 import {jwtDecode} from "jwt-decode";
 import { Search } from "lucide-react";
-
+import { useNavigate } from 'react-router-dom';
 // Token decoding logic remains the same
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
@@ -39,6 +39,7 @@ const ManageParticipants = () => {
     const [givePointsModalOpen, setGivePointsModalOpen] = useState(false);
     const [pointsForAll, setPointsForAll] = useState("");
     const [isGivingPoints, setIsGivingPoints] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEventDetails = async () => {
@@ -318,9 +319,21 @@ const ManageParticipants = () => {
                             </div>
                         </div>
                         <div className="p-6 flex-1 flex flex-col">
+                           
+                                <div className="relative flex justify-end">
+                                <button
+                                    onClick={() => {
+                                        navigate(`/events/edit/${event._id}`)
+                                    }}
+                                    className="bg-blue-500 text-white px-3 py-1.5 text-sm rounded-md w-24 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                        Edit Events
+                                    </button>
+                                </div>   
                             {event ? (
                                 <>
                                     <h1 className="text-3xl font-bold text-mirage-600 dark:text-mirage-100 mb-4">{event.eventName}</h1>
+
+
                                     <div className="space-y-4 flex-1">
                                         <div className="space-y-2">
                                             <div

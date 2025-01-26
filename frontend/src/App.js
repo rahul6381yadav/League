@@ -29,6 +29,7 @@ import CreateEvents from "./pages/coordinator/manageEvents/CreateEvent";
 import AllMember from './pages/student/friends/allMember';
 import OtherMembers from './pages/student/friends/otherMember';
 import LeaderboardLanding from './pages/landing/landingPage';
+import EditEvents from './pages/coordinator/manageEvents/EditEvents';
 
 function AppRoutes() {
     return (
@@ -55,7 +56,7 @@ function AppRoutes() {
             <Route path="/events/:id" element={<LayoutCoordinator><ManageParticipants/></LayoutCoordinator>}/>
             <Route path="/my-club" element={<LayoutCoordinator><MyClub/></LayoutCoordinator>}/>
             <Route path="/events/create" element={<LayoutCoordinator><CreateEvents /></LayoutCoordinator>} />
-            <Route path="/events/edit/:id" element={<LayoutCoordinator><CreateEvents /></LayoutCoordinator>} />
+            <Route path="/events/edit/:id" element={<LayoutCoordinator><EditEvents/></LayoutCoordinator>} />
 
 
             {/* Admin Routes */}
