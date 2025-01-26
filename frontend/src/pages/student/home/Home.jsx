@@ -13,6 +13,7 @@ const HomePage = () => {
     const [upcomingEvents, setUpcomingEvents] = useState([]); // State to hold upcoming events
     const [todaySchedule, setTodaySchedule] = useState([]); // State to hold today's schedule
     const [loading, setLoading] = useState(true); // State to handle loading state
+    const [loadOngoing, setLoadOngoing] = useState(true);
     const [error, setError] = useState(null); // State to handle errors
     const [totalPoints, setTotalPoints] = useState(null); // State to store total points
     const navigate = useNavigate();
@@ -87,10 +88,10 @@ const HomePage = () => {
                 });
                 setTodaySchedule(response.data.events); // Assuming response.data.schedule contains the today's schedule
 
-                setLoading(false);
+                setLoadOngoing(false);
             } catch (err) {
                 setError("Failed to load today's schedule");
-                setLoading(false);
+                setLoadOngoing(false);
             }
         };
 
@@ -161,28 +162,56 @@ const HomePage = () => {
                 <div className="space-y-6">
                     {/* Today's Schedule */}
                     <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                        <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">Ongoing Events</h2>
+                        <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">
+                            Ongoing Events
+                        </h2>
                         <div className="flex overflow-x-auto space-x-4">
-                            {loading ? (
-                                <p>Loading today's schedule...</p>
+                            {loadOngoing ? (
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex-shrink-0 p-4 rounded-lg shadow bg-mirage-100 dark:bg-mirage-700 text-mirage-800 dark:text-mirage-200"
+                                        style={{ minWidth: "200px" }}
+                                    >
+                                        <div className="animate-pulse">
+                                            {/* Date Placeholder */}
+                                            <div className="h-4 bg-mirage-300 dark:bg-mirage-600 rounded mb-2 w-3/4"></div>
+
+                                            {/* Time Placeholder */}
+                                            <div className="h-4 bg-mirage-300 dark:bg-mirage-600 rounded mb-2 w-2/4"></div>
+
+                                            {/* Event Name Placeholder */}
+                                            <div className="h-6 bg-mirage-400 dark:bg-mirage-500 rounded mb-3 w-5/6"></div>
+
+                                            {/* Circle Placeholder for Clubs */}
+                                            <div className="flex space-x-2">
+                                                {Array.from({ length: 3 }).map((_, clubIndex) => (
+                                                    <div
+                                                        key={clubIndex}
+                                                        className="w-10 h-10 bg-mirage-300 dark:bg-mirage-600 rounded-full"
+                                                    ></div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
                             ) : error ? (
                                 <p className="text-red-500">{error}</p>
                             ) : (
                                 todaySchedule.map((task, index) => {
-                                    const taskDate = new Date(task.date); // Ensure task.date is a Date object
-                                    const localStartTime = taskDate.toLocaleString('en-US', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'Asia/Kolkata', // Timezone set to UTC+5:30
+                                    const taskDate = new Date(task.date);
+                                    const localStartTime = taskDate.toLocaleString("en-US", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        timeZone: "Asia/Kolkata",
                                     });
 
                                     const taskEndDate = new Date(task.endDate);
-                                    const localEndTime = taskEndDate.toLocaleString('en-US', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'Asia/Kolkata', // Timezone set to UTC+5:30
+                                    const localEndTime = taskEndDate.toLocaleString("en-US", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        timeZone: "Asia/Kolkata",
                                     });
-
 
                                     return (
                                         <div
@@ -194,7 +223,8 @@ const HomePage = () => {
                                             }}
                                         >
                                             <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200 mb-2">
-                                                Date: {taskDate.getDate()}/{taskDate.getMonth() + 1}/{taskDate.getFullYear()} - {taskEndDate.getDate()}/{taskEndDate.getMonth() + 1}/{taskEndDate.getFullYear()}
+                                                Date: {taskDate.getDate()}/{taskDate.getMonth() + 1}/{taskDate.getFullYear()} -{" "}
+                                                {taskEndDate.getDate()}/{taskEndDate.getMonth() + 1}/{taskEndDate.getFullYear()}
                                             </p>
                                             <p className="text-sm font-medium mb-2 text-mirage-700 dark:text-mirage-200">
                                                 {localStartTime} - {localEndTime}
@@ -206,7 +236,7 @@ const HomePage = () => {
                                                 {task.clubIds.map((club, clubIndex) => (
                                                     <div key={clubIndex} className="relative group">
                                                         <img
-                                                            src={club.image} // Assuming each club has an imageUrl property
+                                                            src={club.image}
                                                             alt={club.name}
                                                             className="w-10 h-10 rounded-full"
                                                         />
@@ -222,10 +252,10 @@ const HomePage = () => {
                                         </div>
                                     );
                                 })
-
                             )}
                         </div>
                     </div>
+
 
 
                     <MyCalendar />
