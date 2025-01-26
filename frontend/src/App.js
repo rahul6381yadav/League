@@ -2,7 +2,6 @@ import './App.css';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import {AuthProvider} from './context/AuthContext';
 import {RoleProvider} from './context/RoleContext';
-import {EmailProvider} from './context/EmailContext';
 import {DarkModeProvider} from './context/ThemeContext';
 
 import Login from './pages/auth/Login';
@@ -75,13 +74,11 @@ function App() {
     return (
         <AuthProvider>
             <RoleProvider>
-                <EmailProvider>
                     <Router>
                         <DarkModeProvider>
                             <AppRoutes/>
                         </DarkModeProvider>
                     </Router>
-                </EmailProvider>
             </RoleProvider>
         </AuthProvider>
     );

@@ -5,19 +5,10 @@ import ViewEvents from './components/ViewEvents';
 const ClubEvents = () => {
     const [isCoordinator, setIsCoordinator] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false); // Added state for modal
-    const email = localStorage.getItem("emailCont");
     const location = useLocation();
-    const {clubId, clubEmail, clubName} = location.state || {};
-    const navigate = useNavigate();
+    const {clubId,clubName} = location.state || {};
 
-    useEffect(() => {
-        const roles = localStorage.getItem('roles');
-        setIsCoordinator((roles === "coordinator") && (email === clubEmail));
-    }, [email]);
 
-    const handleViewMembers = () => {
-        navigate('/Clubs/ClubMember', {state: {primaryClubId: clubId, primaryClubEmail: clubEmail}});
-    };
 
     return (
         <div className="text-gray-900 min-h-screen flex flex-col w-full">
