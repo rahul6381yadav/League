@@ -80,7 +80,7 @@ const Sidebar = ({onToggle}) => {
 
             {/* Mobile Bottom NavBar */}
             <div
-                className="z-100 fixed bottom-0 left-0 w-full bg-mirage-100 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
+                className="z-[1000] fixed bottom-0 left-0 w-full bg-mirage-100 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
                     {[{ name: "Home", icon: <FaTachometerAlt className="h-6 w-6" />, href: "/home" },
                         { name: "Clubs", icon: <FaUsers className="h-6 w-6" />, href: "/clubs" },
