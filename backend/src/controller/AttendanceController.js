@@ -88,7 +88,7 @@ exports.getParticipation = async (req, res) => {
 
         const records = await AttendanceModel.find(filter)
             .populate("studentId eventId")
-            .limit(limit ? parseInt(limit) : 30)
+            .limit(limit ? parseInt(limit) : 500)
             .skip(skip ? parseInt(skip) : 0);
 
         res.status(200).json({message: "Attendance records fetched successfully", records, isError: false});
