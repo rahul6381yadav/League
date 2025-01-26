@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { backendUrl } from '../../utils/routes';
 
 function Createclub() {
     const [Error, setError] = useState("");
@@ -15,7 +16,7 @@ function Createclub() {
     });
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -25,7 +26,7 @@ function Createclub() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:4000/api/v1/club`, {
+            const response = await fetch(`${backendUrl}/api/v1/club`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

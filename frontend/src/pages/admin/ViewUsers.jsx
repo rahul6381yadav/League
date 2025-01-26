@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useLocation} from "react-router-dom";
-
+import { backendUrl } from '../../utils/routes';
 function ViewUsers() {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -16,7 +16,7 @@ function ViewUsers() {
     const fetchAllUsers = async () => {
         try {
             const response = await fetch(
-                `http://localhost:4000/user/profile?roles=${rolesFilter}&search=${search}`,
+                `${backendUrl}/user/profile?roles=${rolesFilter}&search=${search}`,
                 {
                     method: "GET",
                     headers: {
@@ -116,7 +116,7 @@ function ViewUsers() {
                     <tr key={user._id}>
                         <td className="border p-2">
                             <img
-                                src={`http://localhost:4000/uploads/${user.photo}`}
+                                src={`${backendUrl}/uploads/${user.photo}`}
                                 alt="Profile"
                                 className="w-10 h-10 rounded-full"
                             />

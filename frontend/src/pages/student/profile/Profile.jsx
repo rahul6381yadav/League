@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaTwitter } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import EditProfile from "./EditProfile";
+import { backendUrl } from "../../../utils/routes";
 
 const MyProfile = () => {
     const [profile, setProfile] = useState({
@@ -36,7 +37,7 @@ const MyProfile = () => {
             }
 
             const response = await fetch(
-                `http://localhost:4000/user/profile?id=${decodedToken.userId}`,
+                `${backendUrl}/user/profile?id=${decodedToken.userId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -75,7 +76,7 @@ const MyProfile = () => {
             }
 
             const response = await fetch(
-                `http://localhost:4000/user/profile?id=${decodedToken.userId}`,
+                `${backendUrl}/user/profile?id=${decodedToken.userId}`,
                 {
                     method: "PUT",
                     headers: {
@@ -86,7 +87,7 @@ const MyProfile = () => {
                         fullName: updatedProfile.name,
                         photo: updatedProfile.photo,
                         linkedin: updatedProfile.linkedin,
-                        phone:updatedProfile.phone,
+                        phone: updatedProfile.phone,
                         twitter: updatedProfile.twitter,
                         instagram: updatedProfile.instagram,
                         github: updatedProfile.github,
@@ -113,7 +114,7 @@ const MyProfile = () => {
     };
 
     const handleSaveProfile = (updatedProfile) => {
-        console.log("updated profile : ",updatedProfile);
+        console.log("updated profile : ", updatedProfile);
         setProfile(updatedProfile);
         updateProfileDetails(updatedProfile);
     };

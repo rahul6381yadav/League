@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 // decode jwt token
 import { jwtDecode } from "jwt-decode";
+import { backendUrl } from '../../../utils/routes';
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -26,7 +27,7 @@ function EditEvents() {
     const { id } = useParams();
     const [eventData, setEventData] = useState({
         eventName: '',
-        clubIds:[],
+        clubIds: [],
         photo: '',
         description: '',
         venue: '',
@@ -43,7 +44,7 @@ function EditEvents() {
     };
     const handleFormFetch = async () => {
         try {
-            const response = await fetch(`http://localhost:4000/api/v1/club/events?id=${id}`, {
+            const response = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,13 +85,13 @@ function EditEvents() {
         console.log("club Events ", clubIds);
         console.log("new Events  ", newEvent);
         try {
-            const response = await fetch(`http://localhost:4000/api/v1/club/events?id=${id}`, {
+            const response = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body:JSON.stringify(newEvent),
+                body: JSON.stringify(newEvent),
             });
 
             const data = await response.json();

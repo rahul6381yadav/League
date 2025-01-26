@@ -3,6 +3,7 @@ import axios from "axios";
 import { Mail, Trophy } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+import { backendUrl } from "../../../utils/routes";
 
 const BatchLeaderboard = () => {
     const [students, setStudents] = useState([]);
@@ -23,7 +24,7 @@ const BatchLeaderboard = () => {
         const fetchUserAndBatchDetails = async () => {
             try {
                 // First, fetch the current user's details to get the batch code and student ID
-                const userResponse = await axios.get(`http://localhost:4000/user/profile/`, {
+                const userResponse = await axios.get(`${backendUrl}/user/profile/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -40,7 +41,7 @@ const BatchLeaderboard = () => {
                 setCurrentUser(userData);
 
                 // Then, fetch students in the same batch
-                const studentsResponse = await axios.get("http://localhost:4000/user/profile", {
+                const studentsResponse = await axios.get(`${backendUrl}/user/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -160,11 +161,10 @@ const BatchLeaderboard = () => {
                             <div className="flex items-center space-x-4">
                                 <button
                                     onClick={toggleStudentIdFilter}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                                        filteredByInitial
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300'
-                                    }`}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${filteredByInitial
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300'
+                                        }`}
                                 >
                                     {filteredByInitial
                                         ? `Show All (${students.length})`
@@ -189,13 +189,12 @@ const BatchLeaderboard = () => {
                                         return (
                                             <div
                                                 key={student._id}
-                                                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                                                    isCurrentUser
-                                                        ? index < 3 ? `${topThreeStyle.background} ${topThreeStyle.text} border-2 border-blue-500` : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200 border-2 border-blue-500'
-                                                        : topThreeStyle
-                                                            ? `${topThreeStyle.background} ${topThreeStyle.text} `
-                                                            : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200'
-                                                }`}
+                                                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${isCurrentUser
+                                                    ? index < 3 ? `${topThreeStyle.background} ${topThreeStyle.text} border-2 border-blue-500` : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200 border-2 border-blue-500'
+                                                    : topThreeStyle
+                                                        ? `${topThreeStyle.background} ${topThreeStyle.text} `
+                                                        : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200'
+                                                    }`}
                                                 onClick={() => {
                                                     if (isCurrentUser) {
                                                         navigate(`/myProfile`);
@@ -214,24 +213,21 @@ const BatchLeaderboard = () => {
 
                                                     {/* Name and Additional Details */}
                                                     <div className="flex-1">
-                                                        <h4 className={`text-sm font-medium flex items-center ${
-                                                            index < 3 ? topThreeStyle.text : 'text-mirage-700 dark:text-mirage-200'
-                                                        }`}>
+                                                        <h4 className={`text-sm font-medium flex items-center ${index < 3 ? topThreeStyle.text : 'text-mirage-700 dark:text-mirage-200'
+                                                            }`}>
                                                             {student.fullName}{isCurrentUser && (<span className="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded-full">You</span>)}
                                                         </h4>
-                                                        <div className={`flex items-center space-x-2 text-xs ${
-                                                            index < 3
-                                                                ? 'text-mirage-600 dark:text-mirage-200'
-                                                                : 'text-mirage-500 dark:text-mirage-300'
-                                                        }`}>
+                                                        <div className={`flex items-center space-x-2 text-xs ${index < 3
+                                                            ? 'text-mirage-600 dark:text-mirage-200'
+                                                            : 'text-mirage-500 dark:text-mirage-300'
+                                                            }`}>
                                                             <Mail className="w-4 h-4" />
                                                             <span>{student.email}</span>
                                                         </div>
-                                                        <div className={`text-xs ${
-                                                            index < 3
-                                                                ? 'text-mirage-600 dark:text-mirage-200'
-                                                                : 'text-mirage-500 dark:text-mirage-300'
-                                                        }`}>
+                                                        <div className={`text-xs ${index < 3
+                                                            ? 'text-mirage-600 dark:text-mirage-200'
+                                                            : 'text-mirage-500 dark:text-mirage-300'
+                                                            }`}>
                                                             Batch: {student.batchCode} | Student ID: {student.studentId}
                                                         </div>
                                                     </div>

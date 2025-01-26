@@ -3,6 +3,7 @@ import axios from 'axios';
 import Pagination from '../clubs/events/components/Pagination';
 import EventFilters from '../clubs/events/components/EventFilter';
 import EventCard from '../clubs/events/components/EventCard';
+import { backendUrl } from '../../../utils/routes';
 
 const AllEvents = () => {
     const [allEvents, setAllEvents] = useState([]);
@@ -15,7 +16,7 @@ const AllEvents = () => {
     const fetchAllEvents = async () => {
         try {
             const response = await axios.get(
-                'http://localhost:4000/api/v1/club/events',
+                `${backendUrl}/api/v1/club/events`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

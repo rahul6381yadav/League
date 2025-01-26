@@ -1,14 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import EventCard from '../../../student/clubs/events/components/EventCard';
 import Pagination from '../../../student/clubs/events/components/Pagination';
 import EventFilters from '../../../student/clubs/events/components/EventFilter';
+import { backendUrl } from "../../../../utils/routes";
 
 function ViewEvents(props) {
     const [allEvents, setAllEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [pagination, setPagination] = useState({limit: 6, skip: 0});
+    const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
     const [filters, setFilters] = useState({});
     const [selectedEvent, setSelectedEvent] = useState(null); // Track the selected event
     const [isPopupOpen, setIsPopupOpen] = useState(false); // Control the popup visibility
@@ -18,7 +19,7 @@ function ViewEvents(props) {
     const fetchAllEvents = async () => {
         try {
             const response = await axios.get(
-                `http://localhost:4000/api/v1/club/events?clubId=${props.primaryClubId}`,
+                `${backendUrl}/api/v1/club/events?clubId=${props.primaryClubId}`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -84,7 +85,7 @@ function ViewEvents(props) {
             <div className="p-4 w-full flex-grow">
                 <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">Club Events</h1>
 
-                <EventFilters setFilters={setFilters}/>
+                <EventFilters setFilters={setFilters} />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                     {filteredEventsPaginated.length > 0 ? (
@@ -102,7 +103,7 @@ function ViewEvents(props) {
                     )}
                 </div>
 
-                <Pagination pagination={pagination} setPagination={setPagination}/>
+                <Pagination pagination={pagination} setPagination={setPagination} />
             </div>
 
             {/* Sign-up Popup */}

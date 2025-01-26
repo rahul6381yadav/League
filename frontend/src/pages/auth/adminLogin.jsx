@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../../context/AuthContext';
 import {useRole} from '../../context/RoleContext';
-
+import { backendUrl } from '../../utils/routes';
 function AdminLogin() {
     const [email, setEmail] = useState("");  // Changed username to email
     const [password, setPassword] = useState("");
@@ -28,7 +28,7 @@ function AdminLogin() {
         };
 
         try {
-            const response = await fetch(`http://localhost:4000/user/login`, {
+            const response = await fetch(`${backendUrl}/user/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

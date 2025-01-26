@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import EventCard from './components/EventCard';
 import EventFilters from './components/EventFilter';
 import Pagination from './components/Pagination';
-import {FaPlus} from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 // decode jwt token
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { backendUrl } from '../../../../utils/routes';
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -23,7 +24,7 @@ const EventPage = () => {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
     const [filters, setFilters] = useState({});
-    const [pagination, setPagination] = useState({limit: 6, skip: 0});
+    const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
     const [primaryClubId, setPrimaryClubId] = useState('');
     const [primaryClubName, setPrimaryClubName] = useState('');
     const [clubDetails, setClubDetails] = useState([]);
@@ -36,7 +37,7 @@ const EventPage = () => {
                 console.error('No auth token found. Please log in.');
                 return;
             }
-            const response = await fetch(`http://localhost:4000/api/v1/club?email=${email}`, {
+            const response = await fetch(`${backendUrl}/api/v1/club?email=${email}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -60,12 +61,12 @@ const EventPage = () => {
                 console.error('No auth token found. Please log in.');
                 return;
             }
-            const {limit, skip} = pagination;
-            const response = await axios.get('http://localhost:4000/api/v1/club/events', {
+            const { limit, skip } = pagination;
+            const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                params: {limit, skip},
+                params: { limit, skip },
             });
             if (response.data && response.data.events) {
                 setEvents(response.data.events);
@@ -98,7 +99,7 @@ const EventPage = () => {
     const handleDeleteEvent = async (eventId) => {
         try {
             const token = localStorage.getItem("jwtToken");
-            await axios.delete(`http://localhost:4000/api/v1/club/events/${eventId}`, {
+            await axios.delete(`${backendUrl}/api/v1/club/events/${eventId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -132,12 +133,12 @@ const EventPage = () => {
         <div className="h-screen bg-mirage-50 dark:bg-mirage-800 flex flex-col">
             <div className="flex-1 container mx-auto p-4">
                 <h1 className="text-3xl font-bold text-mirage-900 dark:text-mirage-50 text-center mb-4">ALL EVENTS</h1>
-                <EventFilters setFilters={setFilters}/>
+                <EventFilters setFilters={setFilters} />
                 <button
                     onClick={handleCreateEvent}
                     className="mb-4 p-2 bg-mirage-600 text-white rounded flex items-center space-x-2 shadow-md hover:bg-mirage-500 transition"
                 >
-                    <FaPlus/>
+                    <FaPlus />
                     <span>Create Event</span>
                 </button>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -157,7 +158,7 @@ const EventPage = () => {
                     )}
                 </div>
 
-                <Pagination pagination={pagination} setPagination={setPagination}/>
+                <Pagination pagination={pagination} setPagination={setPagination} />
             </div>
         </div>
     );

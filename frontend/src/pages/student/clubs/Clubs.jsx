@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { backendUrl } from "../../../utils/routes";
 
 function Clubs() {
     const [clubs, setClubs] = useState([]);
@@ -21,7 +22,7 @@ function Clubs() {
                 ratingMax: validatedMax,
             }).toString();
 
-            const response = await fetch(`http://localhost:4000/api/v1/club?${queryParams}`, {
+            const response = await fetch(`${backendUrl}/api/v1/club?${queryParams}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

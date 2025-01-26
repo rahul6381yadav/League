@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { jwtDecode } from 'jwt-decode';
 import AddMembers from "./components/Addmember";
 import DeleteMembers from "./components/Deletemember";
-
+import { backendUrl } from '../../../utils/routes';
 function MyClub() {
     const [clubDetails, setClubDetails] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,7 +20,7 @@ function MyClub() {
             }
             console.log(decodedToken.clubId);
             const response = await fetch(
-                `http://localhost:4000/api/v1/club?id=${decodedToken.clubId}`,
+                `${backendUrl}/api/v1/club?id=${decodedToken.clubId}`,
                 {
                     method: "GET",
                     headers: {

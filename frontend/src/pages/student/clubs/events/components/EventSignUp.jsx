@@ -7,6 +7,7 @@ import { Mail, Trophy } from "lucide-react";
 // decode jwt token
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+import { backendUrl } from "../../../../../utils/routes";
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -56,7 +57,7 @@ const EventSignUp = () => {
     const navigate = useNavigate();
     const AttendanceCount = async () => {
         try {
-            const response = await fetch(`http://localhost:4000/api/v1/club/attendance?eventId=${id}`, {
+            const response = await fetch(`${backendUrl}/api/v1/club/attendance?eventId=${id}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -82,7 +83,7 @@ const EventSignUp = () => {
             console.log("Token is here", token);
 
             // Fetch current event data first (to increment participantsCount correctly)
-            const eventResponse = await fetch(`http://localhost:4000/api/v1/club/events?id=${id}`, {
+            const eventResponse = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -96,7 +97,7 @@ const EventSignUp = () => {
                 const updatedParticipantsCount = noOfParticipants;
 
                 // Now, send the PUT request to update participants count
-                const updateResponse = await fetch(`http://localhost:4000/api/v1/club/events?id=${id}`, {
+                const updateResponse = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",  // Ensure you set the correct content type
@@ -123,7 +124,7 @@ const EventSignUp = () => {
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/v1/club/events`, {
+                const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
                     params: { id },
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -135,7 +136,7 @@ const EventSignUp = () => {
 
         const getParticipants = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
+                const response = await axios.get(`${backendUrl}/api/v1/club/attendance`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { eventId: id },
                 });
@@ -148,7 +149,7 @@ const EventSignUp = () => {
 
         const checkParticipation = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
+                const response = await axios.get(`${backendUrl}/api/v1/club/attendance`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { studentId: decodedToken.userId, eventId: id },
                 });
@@ -164,7 +165,7 @@ const EventSignUp = () => {
         checkParticipation();
         AttendanceCount();
     }, [id, decodedToken.userId, token]);
-   
+
     const handleSignUp = async () => {
         if (!isParticipated) {
             try {
@@ -180,7 +181,7 @@ const EventSignUp = () => {
 
                 // Send the participation data to the API
                 await axios.post(
-                    `http://localhost:4000/api/v1/club/attendance`, // Endpoint updated
+                    `${backendUrl}/api/v1/club/attendance`, // Endpoint updated
                     participationData,
                     {
                         headers: { Authorization: `Bearer ${token}` },
@@ -190,12 +191,12 @@ const EventSignUp = () => {
                 setIsParticipated(true);
 
                 // Fetch updated participation data and sort
-                const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
+                const response = await axios.get(`${backendUrl}/api/v1/club/attendance`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { eventId: id },
                 });
 
-// Check if records exist and then sort
+                // Check if records exist and then sort
                 const sortedParticipants = (response.data.records || []).sort((a, b) => b.pointsGiven - a.pointsGiven);
                 setParticipants(sortedParticipants);
 
@@ -217,7 +218,7 @@ const EventSignUp = () => {
                     {/* Fixed Banner Section */}
                     <div className="relative w-full rounded-t-lg" style={{ paddingBottom: '42.8571%' }}>
                         <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                            {(event&&event.photo) ? (
+                            {(event && event.photo) ? (
                                 <img
                                     src={event.photo}
                                     alt="Event Banner"

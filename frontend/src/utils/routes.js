@@ -1,2 +1,2 @@
-export const backendUrl = "http://localhost:4000";
-export const apiBaseUrl = "localhost:4000/api/v1";
+export const backendUrl = "https://kpm41lk1-4000.inc1.devtunnels.ms";
+export const apiBaseUrl = "https://kpm41lk1-4000.inc1.devtunnels.ms/api/v1";

@@ -1,7 +1,7 @@
 // React Component
 import React, {useState} from "react";
 import {useAuth} from "../../context/AuthContext";
-
+import { backendUrl } from '../../utils/routes';
 const AdminPanel = () => {
     const [users, setUsers] = useState([
         {
@@ -61,7 +61,7 @@ const AdminPanel = () => {
     const handleSubmit = async () => {
         try {
             const promises = users.map(async (user) => {
-                const response = await fetch(`http://localhost:4000/user/signup`, {
+                const response = await fetch(`${backendUrl}/user/signup`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
