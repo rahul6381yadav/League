@@ -164,31 +164,76 @@ const MyCalendar = () => {
                 </div>
 
                 {selectedDate && (
-                    <div className="mt-4 p-4 text-mirage-950 dark:text-mirage-50 bg-mirage-100 dark:bg-mirage-800 rounded">
-                        <h3 className="font-semibold text-lg">
+                    <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800 mt-6">
+                        <h2 className="text-lg font-semibold mb-4 text-center text-mirage-900 dark:text-mirage-50">
                             Events on {selectedDate.toDateString()}
-                        </h3>
-                        {events.length > 0 ? (
-                            <ul>
-                                {events.map((event, index) => (
-                                    <li
-                                        key={index}
-                                        className="mt-2 p-2 border text-mirage-950 dark:text-mirage-50 rounded bg-mirage-100 dark:bg-mirage-700"
-                                    >
-                                        <span className="font-bold">{event.eventName}</span> -{" "}
-                                        <span>{event.duration}</span>
-                                        {event.endDate && (
-                                            <p>
-                                                End Date: {new Date(event.endDate).toDateString()}
+                        </h2>
+                        <div className="flex overflow-x-auto space-x-4">
+                            {events.length > 0 ? (
+                                events.map((event, index) => {
+                                    const eventStartDate = new Date(event.date);
+                                    const localStartTime = eventStartDate.toLocaleString("en-US", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        timeZone: "Asia/Kolkata",
+                                    });
+
+                                    const eventEndDate = new Date(event.endDate);
+                                    const localEndTime = eventEndDate.toLocaleString("en-US", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        timeZone: "Asia/Kolkata",
+                                    });
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="flex-shrink-0 p-4 rounded-lg shadow bg-mirage-100 dark:bg-mirage-700 text-mirage-800 dark:text-mirage-200"
+                                            style={{ minWidth: "200px" }}
+                                        >
+                                            <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200 mb-2">
+                                                Date: {eventStartDate.getDate()}/
+                                                {eventStartDate.getMonth() + 1}/
+                                                {eventStartDate.getFullYear()} -{" "}
+                                                {eventEndDate.getDate()}/
+                                                {eventEndDate.getMonth() + 1}/
+                                                {eventEndDate.getFullYear()}
                                             </p>
-                                        )}
-                                        <p>Venue: {event.venue}</p>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No events scheduled for this date.</p>
-                        )}
+                                            <p className="text-sm font-medium mb-2 text-mirage-700 dark:text-mirage-200">
+                                                {event.duration}
+                                            </p>
+                                            <p className="text-m font-medium mb-3 text-mirage-900 dark:text-mirage-50">
+                                                {event.eventName}
+                                            </p>
+                                            <p className="text-sm text-mirage-700 dark:text-mirage-200">
+                                                Venue: {event.venue}
+                                            </p>
+                                            <div className="flex space-x-2">
+                                                {event.clubIds.map((club, clubIndex) => (
+                                                    <div key={clubIndex} className="relative group">
+                                                        <img
+                                                            src={club.image} // Assuming each club has an imageUrl property
+                                                            alt={club.name}
+                                                            className="w-10 h-10 rounded-full"
+                                                        />
+                                                        <span
+                                                            className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            style={{ whiteSpace: "nowrap" }}
+                                                        >
+                                                            {club.name}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-center text-mirage-900 dark:text-mirage-50">
+                                    No events scheduled for this date.
+                                </p>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
