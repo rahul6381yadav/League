@@ -26,16 +26,17 @@ import AllEvents from "./pages/student/allEvents/AllEvents";
 import MyEvents from "./pages/student/myEvents/MyEvents";
 import MyProfile from './pages/student/profile/Profile';
 import CreateEvents from "./pages/coordinator/manageEvents/CreateEvent";
-import AllMember from './pages/student/friends/allMember';
 import OtherMembers from './pages/student/friends/otherMember';
 import LeaderboardLanding from './pages/landing/landingPage';
+import Leaderboard from "./pages/student/leaderboards/overallLeaderboard";
+import BatchLeaderboard from "./pages/student/leaderboards/batchLeaderboard";
 import EditEvents from './pages/coordinator/manageEvents/EditEvents';
 
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/landing" element={<LeaderboardLanding/>}/>
-            <Route path="/" element={<Login/>}/>
+            <Route path="/" element={<LeaderboardLanding/>}/>
+            <Route path="/login" element={<Login/>}/>
             <Route path="/admin" element={<AdminLogin/>}/>
             <Route path="/forget-password" element={<ForgetPassword/>}/>
 
@@ -47,8 +48,10 @@ function AppRoutes() {
             <Route path="/all-events" element={<Layout><AllEvents/></Layout>}/>
             <Route path="/my-events" element={<Layout><MyEvents /></Layout>} />
             <Route path="/myProfile" element={<Layout><MyProfile /></Layout>} />
-            <Route path="/friends" element={<Layout><AllMember /></Layout>} />
+
             <Route path="/friends/:id" element={<Layout><OtherMembers/></Layout>}/>
+            <Route path="/leaderboard" element={<Layout><Leaderboard/></Layout>}/>
+            <Route path="/batch-leaderboard" element={<Layout><BatchLeaderboard/></Layout>}/>
 
             {/* Coordinator Routes */}
             <Route path="/dashboard" element={<LayoutCoordinator><CoordinatorDashboard/></LayoutCoordinator>}/>

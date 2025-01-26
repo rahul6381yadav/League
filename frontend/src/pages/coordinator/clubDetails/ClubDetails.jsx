@@ -79,19 +79,50 @@ function MyClub() {
                 My Club
             </h1>
             <div className="bg-mirage-200 dark:bg-mirage-800 shadow-md rounded-lg p-6 mb-6 flex-1">
-                <div className="flex items-center mb-4">
-                    <img
-                        src={clubDetails.image || "/placeholder-image.png"}
-                        alt={clubDetails.name}
-                        className="w-24 h-24 rounded-full border-2 bg-mirage-400 dark:bg-mirage-800 border-mirage-300 dark:border-mirage-600 object-cover"
-                    />
-                    <div className="ml-4">
-                        <h2 className="text-xl font-semibold text-mirage-800 dark:text-mirage-50">
-                            {clubDetails.name}
-                        </h2>
-                        <p className="text-mirage-600 dark:text-mirage-400">
-                            {clubDetails.description || "No description available."}
-                        </p>
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center">
+                        <img
+                            src={clubDetails.image || "/placeholder-image.png"}
+                            alt={clubDetails.name}
+                            className="w-24 h-24 rounded-full border-2 bg-mirage-400 dark:bg-mirage-800 border-mirage-300 dark:border-mirage-600 object-cover"
+                        />
+                        <div className="ml-4">
+                            <h2 className="text-xl font-semibold text-mirage-800 dark:text-mirage-50">
+                                {clubDetails.name}
+                            </h2>
+                            <p className="text-mirage-600 dark:text-mirage-400">
+                                {clubDetails.description || "No description available."}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-600 dark:hover:bg-mirage-700"
+                            onClick={() => console.log("Edit club details clicked")}
+                        >
+                            Edit Club Details
+                        </button>
+                        <button
+                            className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-500 dark:hover:bg-mirage-600"
+                            onClick={() => {
+                                setIsModalOpen(true);
+                                console.log("Add member clicked");
+                            }}
+                        >
+                            Add Member
+                        </button>
+                        <button
+                            className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-800 dark:hover:bg-mirage-900"
+                            onClick={() => setIsDeleteModalOpen(true)}
+                        >
+                            Delete Member
+                        </button>
+                        <button
+                            className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-700 dark:hover:bg-mirage-800"
+                            onClick={() => console.log("Add student member clicked")}
+                        >
+                            Add Student Member
+                        </button>
                     </div>
                 </div>
 
@@ -157,35 +188,35 @@ function MyClub() {
                     )}
                 </div>
 
-                <div className="flex flex-wrap gap-4 mt-6">
-                    <button
-                        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-600 dark:hover:bg-mirage-700"
-                        onClick={() => console.log("Edit club details clicked")}
-                    >
-                        Edit Club Details
-                    </button>
-                    <button
-                        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-500 dark:hover:bg-mirage-600"
-                        onClick={() => {
-                            setIsModalOpen(true);
-                            console.log("Add member clicked")
-                        }}
-                    >
-                        Add Member
-                    </button>
-                    <button
-                        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-800 dark:hover:bg-mirage-900"
-                        onClick={() => setIsDeleteModalOpen(true)}
-                    >
-                        Delete Member
-                    </button>
-                    <button
-                        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-700 dark:hover:bg-mirage-800"
-                        onClick={() => console.log("Add student member clicked")}
-                    >
-                        Add Student Member
-                    </button>
-                </div>
+                {/*<div className="flex flex-wrap gap-4 mt-6">*/}
+                {/*    <button*/}
+                {/*        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-600 dark:hover:bg-mirage-700"*/}
+                {/*        onClick={() => console.log("Edit club details clicked")}*/}
+                {/*    >*/}
+                {/*        Edit Club Details*/}
+                {/*    </button>*/}
+                {/*    <button*/}
+                {/*        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-500 dark:hover:bg-mirage-600"*/}
+                {/*        onClick={() => {*/}
+                {/*            setIsModalOpen(true);*/}
+                {/*            console.log("Add member clicked")*/}
+                {/*        }}*/}
+                {/*    >*/}
+                {/*        Add Member*/}
+                {/*    </button>*/}
+                {/*    <button*/}
+                {/*        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-800 dark:hover:bg-mirage-900"*/}
+                {/*        onClick={() => setIsDeleteModalOpen(true)}*/}
+                {/*    >*/}
+                {/*        Delete Member*/}
+                {/*    </button>*/}
+                {/*    <button*/}
+                {/*        className="bg-mirage-400 dark:bg-mirage-700 text-mirage-50 px-4 py-2 rounded hover:bg-mirage-700 dark:hover:bg-mirage-800"*/}
+                {/*        onClick={() => console.log("Add student member clicked")}*/}
+                {/*    >*/}
+                {/*        Add Student Member*/}
+                {/*    </button>*/}
+                {/*</div>*/}
 
                 {isModalOpen && (
                     <div className="fixed inset-0 flex items-center justify-center z-50">

@@ -101,35 +101,37 @@ const MyCalendar = () => {
         if (pastEvents.some((event) => formattedDate(new Date(event.date)) === formatted)) {
             return "bg-red-500";
         }
-        return "bg-gray-200 dark:bg-gray-700";
+        return "bg-mirage-100 dark:bg-mirage-700";
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-4 dark:bg-gray-900 dark:text-white">
+        <div className="max-w-4xl mx-auto p-4 dark:bg-mirage-900 dark:text-white">
 
             {/* Calendar Section */}
             <div className="p-4 w-full rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                <h2 className="text-lg font-bold mb-2 text-black dark:text-white text-center text-black-900 dark:text-mirage-50">Calendar</h2>
+                <h2 className="text-lg font-bold mb-2 text-mirage-900 dark:text-mirage-50 text-center">
+                    Event Calendar
+                </h2>
                 <div className="flex justify-between items-center mb-4">
                     <button
-                        className="p-2 rounded bg-gray-300 text-black dark:text-white dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
+                        className="p-2 rounded bg-mirage-300 text-mirage-950 dark:text-mirage-50 dark:bg-mirage-700 hover:bg-mirage-400 dark:hover:bg-mirage-600"
                         onClick={() => changeMonth(-1)}
                     >
                         Previous
                     </button>
-                    <h2 className="text-lg text-black dark:text-white font-semibold">
+                    <h2 className="text-lg text-mirage-950 dark:text-mirage-50 font-semibold">
                         {currentDate.toLocaleString("default", { month: "long" })}{" "}
                         {currentDate.getFullYear()}
                     </h2>
                     <button
-                        className="p-2 rounded bg-gray-300 text-black dark:text-white dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
+                        className="p-2 rounded bg-mirage-300 text-mirage-950 dark:text-mirage-50 dark:bg-mirage-700 hover:bg-mirage-400 dark:hover:bg-mirage-600"
                         onClick={() => changeMonth(1)}
                     >
                         Next
                     </button>
                 </div>
 
-                <div className="grid grid-cols-7 gap-2 text-black dark:text-white text-center border border-gray-300 dark:border-gray-700 p-2 rounded">
+                <div className="grid grid-cols-7 gap-2 text-mirage-950 dark:text-mirage-50 text-center border border-mirage-300 dark:border-mirage-700 p-2 rounded">
                     {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                         <div key={day} className="font-semibold">
                             {day}
@@ -150,8 +152,8 @@ const MyCalendar = () => {
                         return (
                             <button
                                 key={day}
-                                className={`p-2 rounded ${getEventColor(date)} ${isToday ? "border-2 text-black dark:text-white border-blue-500" : ""
-                                    } hover:bg-blue-300 text-black dark:text-white dark:hover:bg-blue-600`}
+                                className={`p-2 rounded ${getEventColor(date)} ${isToday ? "border-2 text-mirage-950 dark:text-mirage-50 border-blue-500" : ""
+                                } hover:bg-blue-300 text-mirage-950 dark:text-mirage-50 dark:hover:bg-blue-600`}
                                 onClick={() => setSelectedDate(date)}
                             >
                                 {day}
@@ -161,7 +163,7 @@ const MyCalendar = () => {
                 </div>
 
                 {selectedDate && (
-                    <div className="mt-4 p-4 text-black dark:text-white bg-gray-200 dark:bg-gray-800 rounded">
+                    <div className="mt-4 p-4 text-mirage-950 dark:text-mirage-50 bg-mirage-100 dark:bg-mirage-800 rounded">
                         <h3 className="font-semibold text-lg">
                             Events on {selectedDate.toDateString()}
                         </h3>
@@ -170,7 +172,7 @@ const MyCalendar = () => {
                                 {events.map((event, index) => (
                                     <li
                                         key={index}
-                                        className="mt-2 p-2 border text-black dark:text-white rounded bg-gray-100 dark:bg-gray-700"
+                                        className="mt-2 p-2 border text-mirage-950 dark:text-mirage-50 rounded bg-mirage-100 dark:bg-mirage-700"
                                     >
                                         <span className="font-bold">{event.eventName}</span> -{" "}
                                         <span>{event.duration}</span>
