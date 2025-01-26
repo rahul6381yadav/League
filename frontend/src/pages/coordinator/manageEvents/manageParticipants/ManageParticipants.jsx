@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import {FaCalendarAlt, FaClock, FaMapMarkerAlt} from "react-icons/fa";
-import {jwtDecode} from "jwt-decode";
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 import { Search } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { backendUrl } from "../../../../utils/routes";
 // Token decoding logic remains the same
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
@@ -24,7 +25,7 @@ const modalStyles = {
 };
 
 const ManageParticipants = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const [event, setEvent] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [winners, setWinners] = useState([]);
@@ -44,9 +45,9 @@ const ManageParticipants = () => {
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/v1/club/events`, {
-                    params: {id},
-                    headers: {Authorization: `Bearer ${token}`},
+                const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
+                    params: { id },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 setEvent(response.data.event);
             } catch (error) {
@@ -56,7 +57,7 @@ const ManageParticipants = () => {
 
         const getParticipants = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
+                const response = await axios.get(`${backendUrl}/api/v1/club/attendance`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { eventId: id },
                 });
@@ -79,7 +80,7 @@ const ManageParticipants = () => {
         const fetchTotalPoints = async (studentId) => {
             try {
                 let sumPoints = 0;
-                const response = await fetch(`http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`, {
+                const response = await fetch(`${backendUrl}/api/v1/club/attendance?studentId=${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -102,11 +103,11 @@ const ManageParticipants = () => {
             }
         };
 
-        const updateTotalPoints = async (sumPoints,studentId) => {
+        const updateTotalPoints = async (sumPoints, studentId) => {
             try {
                 // Extract the studentId from the decoded JWT token
                 // Make a GET request to the backend to fetch the user's profile, passing studentId
-                const response = await fetch(`http://localhost:4000/user/profile?id=${studentId}`, {
+                const response = await fetch(`${backendUrl}/user/profile?id=${studentId}`, {
                     method: "PUT",
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -127,7 +128,7 @@ const ManageParticipants = () => {
         const getWinners = async () => {
             try {
                 // Fetch event details to get totalWinner count
-                const eventResponse = await axios.get(`http://localhost:4000/api/v1/club/events`, {
+                const eventResponse = await axios.get(`${backendUrl}/api/v1/club/events`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { id }, // `id` refers to the eventId
                 });
@@ -141,7 +142,7 @@ const ManageParticipants = () => {
                 const totalWinners = event.totalWinner;
 
                 // Fetch attendance records sorted by pointsGiven in descending order
-                const attendanceResponse = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
+                const attendanceResponse = await axios.get(`${backendUrl}/api/v1/club/attendance`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: {
                         eventId: id,
@@ -177,7 +178,7 @@ const ManageParticipants = () => {
     const handleDeleteParticipant = async () => {
         if (selectedParticipant) {
             try {
-                const response = await axios.delete(`http://localhost:4000/api/v1/club/attendance`, {
+                const response = await axios.delete(`${backendUrl}/api/v1/club/attendance`, {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { id: selectedParticipant._id },
                 });
@@ -211,7 +212,7 @@ const ManageParticipants = () => {
     const handleEditParticipant = async () => {
         if (editedParticipant) {
             try {
-                const response = await axios.put(`http://localhost:4000/api/v1/club/attendance`, {
+                const response = await axios.put(`${backendUrl}/api/v1/club/attendance`, {
                     updates: [
                         {
                             id: editedParticipant._id,
@@ -223,22 +224,22 @@ const ManageParticipants = () => {
                 }, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                
+
                 if (response.status === 200) {
                     setParticipants((prev) =>
                         prev.map((participant) =>
                             participant._id === editedParticipant._id ? editedParticipant : participant
-                )
-            );
+                        )
+                    );
+                }
+            } catch (error) {
+                console.error("Error modifying participant:", error.response?.data || error.message);
+            } finally {
+                setEditModalOpen(false);
+                setEditedParticipant(null);
+            }
         }
-    } catch (error) {
-        console.error("Error modifying participant:", error.response?.data || error.message);
-    } finally {
-        setEditModalOpen(false);
-        setEditedParticipant(null);
-    }
-}
-};
+    };
 
     // Handler for viewing all participants
     const handleViewAllClick = () => {
@@ -264,7 +265,7 @@ const ManageParticipants = () => {
             }));
 
             const response = await axios.put(
-                'http://localhost:4000/api/v1/club/attendance',
+                `${backendUrl}/api/v1/club/attendance`,
                 { updates },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -298,7 +299,7 @@ const ManageParticipants = () => {
             }));
 
             const response = await axios.put(
-                'http://localhost:4000/api/v1/club/attendance',
+                `${backendUrl}/api/v1/club/attendance`,
                 { updates },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -334,14 +335,14 @@ const ManageParticipants = () => {
 
         return (
             <span>
-            {parts.map((part, index) =>
-                regex.test(part) ? (
-                    <span key={index} className="bg-yellow-200 dark:bg-yellow-600">{part}</span>
-                ) : (
-                    <span key={index}>{part}</span>
-                )
-            )}
-        </span>
+                {parts.map((part, index) =>
+                    regex.test(part) ? (
+                        <span key={index} className="bg-yellow-200 dark:bg-yellow-600">{part}</span>
+                    ) : (
+                        <span key={index}>{part}</span>
+                    )
+                )}
+            </span>
         );
     };
 
@@ -360,7 +361,7 @@ const ManageParticipants = () => {
             }));
 
             const response = await axios.put(
-                'http://localhost:4000/api/v1/club/attendance',
+                `${backendUrl}/api/v1/club/attendance`,
                 { updates },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -387,10 +388,10 @@ const ManageParticipants = () => {
             <div className="flex-1 flex flex-col p-8 pb-20 md:pb-8 gap-8">
                 <div className="flex flex-col md:flex-row gap-8 flex-1">
                     <div className="flex flex-col bg-white dark:bg-mirage-800 rounded-lg shadow-md flex-1">
-                        <div className="relative w-full rounded-t-lg" style={{paddingBottom: '42.8571%'}}>
+                        <div className="relative w-full rounded-t-lg" style={{ paddingBottom: '42.8571%' }}>
 
                             <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                                {event&&event.photo ? (
+                                {event && event.photo ? (
                                     <img
                                         src={event.photo}
                                         alt="Event Banner"
@@ -402,16 +403,16 @@ const ManageParticipants = () => {
                             </div>
                         </div>
                         <div className="p-6 flex-1 flex flex-col">
-                           
-                                <div className="relative flex justify-end">
+
+                            <div className="relative flex justify-end">
                                 <button
                                     onClick={() => {
                                         navigate(`/events/edit/${event._id}`)
                                     }}
                                     className="bg-blue-500 text-white px-3 py-1.5 text-sm rounded-md w-24 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                        Edit Events
-                                    </button>
-                                </div>   
+                                    Edit Events
+                                </button>
+                            </div>
                             {event ? (
                                 <>
                                     <h1 className="text-3xl font-bold text-mirage-600 dark:text-mirage-100 mb-4">{event.eventName}</h1>
@@ -421,19 +422,19 @@ const ManageParticipants = () => {
                                         <div className="space-y-2">
                                             <div
                                                 className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                <FaCalendarAlt className="mr-2 text-mirage-500"/>
+                                                <FaCalendarAlt className="mr-2 text-mirage-500" />
                                                 <span className="mr-2">Date:</span>
                                                 {new Date(event.date).toLocaleDateString()}
                                             </div>
                                             <div
                                                 className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                <FaMapMarkerAlt className="mr-2 text-mirage-500"/>
+                                                <FaMapMarkerAlt className="mr-2 text-mirage-500" />
                                                 <span className="mr-2">Venue:</span>
                                                 {event.venue}
                                             </div>
                                             <div
                                                 className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                <FaClock className="mr-2 text-mirage-500"/>
+                                                <FaClock className="mr-2 text-mirage-500" />
                                                 <span className="mr-2">Duration:</span>
                                                 {event.duration}
                                             </div>
@@ -464,7 +465,7 @@ const ManageParticipants = () => {
                                 <div className="space-y-4">
                                     {winners.map((winner, index) => (
                                         <div key={index}
-                                             className="flex items-center space-x-3 p-3 rounded-lg bg-white dark:bg-mirage-700">
+                                            className="flex items-center space-x-3 p-3 rounded-lg bg-white dark:bg-mirage-700">
                                             <div className="flex items-center space-x-3">
                                                 <img
                                                     src={winner.photo || '/api/placeholder/48/48'}
@@ -504,57 +505,57 @@ const ManageParticipants = () => {
                             <div className="overflow-x-auto bg-white dark:bg-mirage-700 rounded-lg shadow-md flex-1">
                                 <table className="min-w-full table-auto">
                                     <thead>
-                                    <tr className="bg-mirage-100 dark:bg-mirage-600">
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">#</th>
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Photo</th>
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Participant Name</th>
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Email</th>
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Status</th>
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Points</th>
-                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Actions</th>
-                                    </tr>
+                                        <tr className="bg-mirage-100 dark:bg-mirage-600">
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">#</th>
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Photo</th>
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Participant Name</th>
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Email</th>
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Status</th>
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Points</th>
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Actions</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {participants.map((participant, index) => (
-                                        <tr key={participant._id}
-                                            className="border-t border-b border-mirage-200 dark:border-mirage-500">
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">{index + 1}</td>
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                <img
-                                                    src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
-                                                    alt={participant.studentId.fullName}
-                                                    className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
-                                                />
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                {participant.studentId.fullName}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                {participant.studentId.email}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                {participant.status === "present" ? "Present" : "Absent"}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                {participant.pointsGiven || 0}
-                                            </td>
-                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                <button
-                                                    className="bg-blue-500 text-white px-2 py-1 rounded-lg mr-2"
-                                                    onClick={() => handleModifyClick(participant)}
-                                                >
-                                                    Modify
-                                                </button>
+                                        {participants.map((participant, index) => (
+                                            <tr key={participant._id}
+                                                className="border-t border-b border-mirage-200 dark:border-mirage-500">
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">{index + 1}</td>
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                    <img
+                                                        src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                        alt={participant.studentId.fullName}
+                                                        className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                    {participant.studentId.fullName}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                    {participant.studentId.email}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                    {participant.status === "present" ? "Present" : "Absent"}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                    {participant.pointsGiven || 0}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                    <button
+                                                        className="bg-blue-500 text-white px-2 py-1 rounded-lg mr-2"
+                                                        onClick={() => handleModifyClick(participant)}
+                                                    >
+                                                        Modify
+                                                    </button>
 
-                                                <button
-                                                    className="bg-red-500 text-white px-2 py-1 rounded-lg"
-                                                    onClick={() => handleDeleteClick(participant)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                    <button
+                                                        className="bg-red-500 text-white px-2 py-1 rounded-lg"
+                                                        onClick={() => handleDeleteClick(participant)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
 
                                 </table>
@@ -618,7 +619,7 @@ const ManageParticipants = () => {
             {/* Delete Confirmation Modal */}
             {deleteModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-                     style={modalStyles.deleteConfirmation}>
+                    style={modalStyles.deleteConfirmation}>
                     <div className="bg-white dark:bg-mirage-800 rounded-lg p-6 w-1/3">
                         <h2 className="text-lg font-bold mb-4">Are you sure you want to delete this participant?</h2>
                         <div className="flex justify-end gap-4">
@@ -759,58 +760,58 @@ const ManageParticipants = () => {
                         >
                             <table className="min-w-full table-auto">
                                 <thead>
-                                <tr className="bg-mirage-100 dark:bg-mirage-600">
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">#</th>
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Photo</th>
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Participant Name</th>
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Email</th>
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Status</th>
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Points</th>
-                                    <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Actions</th>
-                                </tr>
+                                    <tr className="bg-mirage-100 dark:bg-mirage-600">
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">#</th>
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Photo</th>
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Participant Name</th>
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Email</th>
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Status</th>
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Points</th>
+                                        <th className="px-4 py-2 text-left text-sm font-medium text-mirage-600 dark:text-mirage-200">Actions</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {filteredParticipants.map((participant, index) => (
-                                    <tr key={participant._id} className="border-t border-b border-mirage-200 dark:border-mirage-500">
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">{index + 1}</td>
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                            <img
-                                                src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
-                                                alt={participant.studentId.fullName}
-                                                className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                            {participant.studentId.fullName}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                            <HighlightedText
-                                                text={participant.studentId.email}
-                                                highlight={searchTerm}
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                            {participant.status === "present" ? "Present" : "Absent"}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                            {participant.pointsGiven || 0}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                            <button
-                                                className="bg-blue-500 text-white px-2 py-1 rounded-lg mr-2"
-                                                onClick={() => handleModifyClick(participant)}
-                                            >
-                                                Modify
-                                            </button>
-                                            <button
-                                                className="bg-red-500 text-white px-2 py-1 rounded-lg"
-                                                onClick={() => handleDeleteClick(participant)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                    {filteredParticipants.map((participant, index) => (
+                                        <tr key={participant._id} className="border-t border-b border-mirage-200 dark:border-mirage-500">
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">{index + 1}</td>
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                <img
+                                                    src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                    alt={participant.studentId.fullName}
+                                                    className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                {participant.studentId.fullName}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                <HighlightedText
+                                                    text={participant.studentId.email}
+                                                    highlight={searchTerm}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                {participant.status === "present" ? "Present" : "Absent"}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                {participant.pointsGiven || 0}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
+                                                <button
+                                                    className="bg-blue-500 text-white px-2 py-1 rounded-lg mr-2"
+                                                    onClick={() => handleModifyClick(participant)}
+                                                >
+                                                    Modify
+                                                </button>
+                                                <button
+                                                    className="bg-red-500 text-white px-2 py-1 rounded-lg"
+                                                    onClick={() => handleDeleteClick(participant)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

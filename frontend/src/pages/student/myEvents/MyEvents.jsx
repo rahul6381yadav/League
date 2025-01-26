@@ -4,6 +4,7 @@ import Pagination from '../clubs/events/components/Pagination';
 import EventFilters from '../clubs/events/components/EventFilter';
 import EventCard from '../clubs/events/components/EventCard';
 import { jwtDecode } from "jwt-decode";
+import { backendUrl } from '../../../utils/routes';
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -28,7 +29,7 @@ const MyEvents = () => {
         try {
             // Fetch attendance records for the current student
             const response = await axios.get(
-                'http://localhost:4000/api/v1/club/attendance',
+                `${backendUrl}/api/v1/club/attendance`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -46,7 +47,7 @@ const MyEvents = () => {
                 console.log(eventIds);
                 // Send the array of event IDs to the new backend endpoint
                 const eventResponse = await axios.post(
-                    'http://localhost:4000/api/v1/club/all-events',
+                    `${backendUrl}/api/v1/club/all-events`,
                     { "ids": eventIds },
                     {
                         headers: {

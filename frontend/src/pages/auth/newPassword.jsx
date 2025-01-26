@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {useAuth} from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+import { backendUrl } from '../../utils/routes';
 
 function NewPassword() {
     const {isOTPVerified} = useAuth();
@@ -32,7 +33,7 @@ function NewPassword() {
 
 
         try {
-            const response = await fetch(`http://localhost:4000user/reset-password`, {
+            const response = await fetch(`${backendUrl}/user/reset-password`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
-import {useAuth} from '../../context/AuthContext';
-
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { backendUrl } from '../../utils/routes';
 function VerifyOTP() {
-    const {forgotPasswordState, setisOTPVerified} = useAuth();
+    const { forgotPasswordState, setisOTPVerified } = useAuth();
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
@@ -36,9 +36,9 @@ function VerifyOTP() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const otpValue = otp.join(""); // Combine all digits into a single string
-        const {email} = location.state || {};
+        const { email } = location.state || {};
         try {
-            const response = await fetch(`http://localhost:4000/user/verify-otp`, {
+            const response = await fetch(`${backendUrl}/user/verify-otp`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -55,7 +55,7 @@ function VerifyOTP() {
 
             if (response.ok) {
                 setisOTPVerified(true);
-                navigate("/newPassword", {state: {email}}); // Redirect after successful verification
+                navigate("/newPassword", { state: { email } }); // Redirect after successful verification
                 // setMessage("OTP verified successfully. You may proceed.");
                 // setError(null);
             } else {

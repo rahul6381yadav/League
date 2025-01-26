@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-
+import { backendUrl } from "../../../../utils/routes";
 function DeleteMembers({ members = [] }) {
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +26,7 @@ function DeleteMembers({ members = [] }) {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:4000/api/v1/club?id=${decodedToken.clubId}`, {
+            const response = await fetch(`${backendUrl}/api/v1/club?id=${decodedToken.clubId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -76,41 +76,41 @@ function DeleteMembers({ members = [] }) {
             </div>
             <table className="w-full border-collapse border border-mirage-300">
                 <thead>
-                <tr>
-                    <th className="border p-2">Select</th>
-                    <th className="border p-2 w-1/3">Full Name</th>
-                    <th className="border p-2 w-1/3">Email</th>
-                    <th className="border p-2 w-1/4">Role</th>
-                    <th className="border p-2 w-1/4">Batch Code</th>
-                    <th className="border p-2 w-1/4">Student ID</th>
-                </tr>
+                    <tr>
+                        <th className="border p-2">Select</th>
+                        <th className="border p-2 w-1/3">Full Name</th>
+                        <th className="border p-2 w-1/3">Email</th>
+                        <th className="border p-2 w-1/4">Role</th>
+                        <th className="border p-2 w-1/4">Batch Code</th>
+                        <th className="border p-2 w-1/4">Student ID</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {currentItems.length === 0 ? (
-                    <tr>
-                        <td colSpan="3" className="text-center p-4">
-                            No members found.
-                        </td>
-                    </tr>
-                ) : (
-                    currentItems.map((member) => (
-                        <tr key={member._id}>
-                            <td className="border p-2 text-center">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedMembers.includes(member._id)}
-                                    onChange={() => handleCheckboxChange(member._id)}
-                                    className="bg-mirage-100"
-                                />
+                    {currentItems.length === 0 ? (
+                        <tr>
+                            <td colSpan="3" className="text-center p-4">
+                                No members found.
                             </td>
-                            <td className="border p-2 truncate">{member.fullName || "N/A"}</td>
-                            <td className="border p-2 truncate">{member.email || "N/A"}</td>
-                            <td className="border p-2">{member.role || "N/A"}</td>
-                            <td className="border p-2">{member.batchCode || "N/A"}</td>
-                            <td className="border p-2">{member.studentId || "N/A"}</td>
                         </tr>
-                    ))
-                )}
+                    ) : (
+                        currentItems.map((member) => (
+                            <tr key={member._id}>
+                                <td className="border p-2 text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedMembers.includes(member._id)}
+                                        onChange={() => handleCheckboxChange(member._id)}
+                                        className="bg-mirage-100"
+                                    />
+                                </td>
+                                <td className="border p-2 truncate">{member.fullName || "N/A"}</td>
+                                <td className="border p-2 truncate">{member.email || "N/A"}</td>
+                                <td className="border p-2">{member.role || "N/A"}</td>
+                                <td className="border p-2">{member.batchCode || "N/A"}</td>
+                                <td className="border p-2">{member.studentId || "N/A"}</td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
             <div className="mt-4 flex justify-center gap-4">

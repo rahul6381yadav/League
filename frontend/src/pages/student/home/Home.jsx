@@ -3,10 +3,11 @@ import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import { useAuth } from "../../../context/AuthContext";
 import axios from "axios"; // Import axios for making API requests
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import PastParticipants from "./PastParticipants";
 import { useNavigate } from 'react-router-dom';
 import MyCalendar from "../../coordinator/dashboard/calender";
+import { backendUrl } from "../../../utils/routes";
 
 const HomePage = () => {
     const [upcomingEvents, setUpcomingEvents] = useState([]); // State to hold upcoming events
@@ -18,7 +19,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
 
-// Token decoding logic remains the same
+    // Token decoding logic remains the same
     const token = localStorage.getItem("jwtToken");
     let decodedToken = null;
     if (token) {
@@ -58,8 +59,8 @@ const HomePage = () => {
                 const params = {
                     dateAfter
                 };
-                const response = await axios.get("http://localhost:4000/api/v1/club/events", {
-                    params:params,
+                const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
+                    params: params,
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUpcomingEvents(response.data.events); // Assuming response.data.events contains the list of events
@@ -80,8 +81,8 @@ const HomePage = () => {
                 const params = {
                     ongoing
                 };
-       
-                const response = await axios.get("http://localhost:4000/api/v1/club/events", {
+
+                const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
                     params: params,
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -97,7 +98,7 @@ const HomePage = () => {
         const fetchTotalPoints = async () => {
             try {
                 let sumPoints = 0;
-                const response = await fetch(`http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`, {
+                const response = await fetch(`${backendUrl}/api/v1/club/attendance?studentId=${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -127,7 +128,7 @@ const HomePage = () => {
                 // Extract the studentId from the decoded JWT token
 
                 // Make a GET request to the backend to fetch the user's profile, passing studentId
-                const response = await fetch(`http://localhost:4000/user/profile?id=${studentId}`, {
+                const response = await fetch(`${backendUrl}/user/profile?id=${studentId}`, {
                     method: "PUT",
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -137,7 +138,7 @@ const HomePage = () => {
                         TotalPoints: sumPoints,
                     }),
                 });
-                const result = await  response.json();
+                const result = await response.json();
                 // Check if the request was successful
                 if (response.status === 200) {
                     setLoading(false);  // Add this line
@@ -194,7 +195,7 @@ const HomePage = () => {
                                             }}
                                         >
                                             <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200 mb-2">
-                                                Date: {taskDate.getDate()}/{taskDate.getMonth()+1}/{taskDate.getFullYear()} - {taskEndDate.getDate()}/{taskEndDate.getMonth()+1}/{taskEndDate.getFullYear()}
+                                                Date: {taskDate.getDate()}/{taskDate.getMonth() + 1}/{taskDate.getFullYear()} - {taskEndDate.getDate()}/{taskEndDate.getMonth() + 1}/{taskEndDate.getFullYear()}
                                             </p>
                                             <p className="text-sm font-medium mb-2 text-mirage-700 dark:text-mirage-200">
                                                 {localStartTime} - {localEndTime}
@@ -214,8 +215,8 @@ const HomePage = () => {
                                                             className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity"
                                                             style={{ whiteSpace: "nowrap" }}
                                                         >
-                            {club.name}
-                        </span>
+                                                            {club.name}
+                                                        </span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -231,7 +232,7 @@ const HomePage = () => {
                     <MyCalendar />
                 </div>
 
-                
+
                 {/* Right Column */}
                 <div className="space-y-6">
                     {/* Student of the Year and Student of the Month in the same row */}
@@ -308,7 +309,7 @@ const HomePage = () => {
                             </tbody>
                         </table>
                     </div> */}
-                 
+
                     <PastParticipants studentId={studentId} />
                 </div>
             </div>

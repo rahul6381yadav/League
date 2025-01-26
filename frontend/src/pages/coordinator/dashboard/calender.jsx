@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { backendUrl } from "../../../utils/routes";
 
 const MyCalendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -35,15 +36,15 @@ const MyCalendar = () => {
                 const dateBefore = new Date(new Date().setHours(0, 0, 0, 0));
 
                 const [upcomingRes, ongoingRes, pastRes] = await Promise.all([
-                    axios.get("http://localhost:4000/api/v1/club/events", {
+                    axios.get(`${backendUrl}/api/v1/club/events`, {
                         params: { dateAfter: formattedDate(dateAfter) },
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get("http://localhost:4000/api/v1/club/events", {
+                    axios.get(`${backendUrl}/api/v1/club/events`, {
                         params: { ongoing: formattedDate(currentDateTime) },
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get("http://localhost:4000/api/v1/club/events", {
+                    axios.get(`${backendUrl}/api/v1/club/events`, {
                         params: { dateBefore: formattedDate(dateBefore) },
                         headers: { Authorization: `Bearer ${token}` },
                     }),
@@ -153,7 +154,7 @@ const MyCalendar = () => {
                             <button
                                 key={day}
                                 className={`p-2 rounded ${getEventColor(date)} ${isToday ? "border-2 text-mirage-950 dark:text-mirage-50 border-blue-500" : ""
-                                } hover:bg-blue-300 text-mirage-950 dark:text-mirage-50 dark:hover:bg-blue-600`}
+                                    } hover:bg-blue-300 text-mirage-950 dark:text-mirage-50 dark:hover:bg-blue-600`}
                                 onClick={() => setSelectedDate(date)}
                             >
                                 {day}

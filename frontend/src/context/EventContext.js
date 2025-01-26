@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import axios from "axios";
+import { backendUrl } from "../utils/routes";
 
 const EventContext = createContext();
 
@@ -15,7 +16,7 @@ export const EventProvider = ({children}) => {
         try {
             const token = localStorage.getItem("jwtToken");
             const response = await axios.get(
-                `http://localhost:4000/api/v1/club/events?id=${id}`,
+                `${backendUrl}/api/v1/club/events?id=${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -36,7 +37,7 @@ export const EventProvider = ({children}) => {
         try {
             const token = localStorage.getItem("jwtToken");
             const response = await axios.get(
-                `http://localhost:4000/api/v1/club/attendance?eventId=${id}`,
+                `${backendUrl}/api/v1/club/attendance?eventId=${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

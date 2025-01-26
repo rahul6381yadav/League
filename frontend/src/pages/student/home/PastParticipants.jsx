@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { backendUrl } from "../../../utils/routes";
 
 const PastParticipants = (props) => {
     const [attendanceData, setAttendanceData] = useState([]);
@@ -27,7 +28,7 @@ const PastParticipants = (props) => {
 
             try {
                 const response = await fetch(
-                    `http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`,
+                    `${backendUrl}/api/v1/club/attendance?studentId=${studentId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -138,8 +139,8 @@ const PastParticipants = (props) => {
                             onClick={handlePrevious}
                             disabled={currentPage === 1}
                             className={`px-4 py-2 rounded-lg ${currentPage === 1
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-blue-500 hover:bg-blue-600 text-white"
                                 }`}
                         >
                             Previous
@@ -148,8 +149,8 @@ const PastParticipants = (props) => {
                             onClick={handleNext}
                             disabled={currentPage * eventsPerPage >= attendanceData.length}
                             className={`px-4 py-2 rounded-lg ${currentPage * eventsPerPage >= attendanceData.length
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-blue-500 hover:bg-blue-600 text-white"
                                 }`}
                         >
                             Next

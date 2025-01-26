@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaTwitter } from "react-icons/fa";
 import { useParams } from "react-router-dom"; // To get the 'id' from the URL
 import PastParticipants from "../home/PastParticipants";
+import { backendUrl } from "../../../utils/routes";
 
 const OtherMembers = () => {
     const { id } = useParams(); // Extracting the 'id' from the URL parameter
@@ -25,7 +26,7 @@ const OtherMembers = () => {
     const fetchProfileDetails = async () => {
         try {
             console.log("id ", id);
-            const response = await fetch(`http://localhost:4000/user/profile?id=${id}`,
+            const response = await fetch(`${backendUrl}/user/profile?id=${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

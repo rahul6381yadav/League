@@ -4,6 +4,7 @@ import { Mail } from 'lucide-react';
 import { useLocation, useNavigate } from "react-router-dom";
 // decode jwt token
 import { jwtDecode } from "jwt-decode";
+import { backendUrl } from '../../../utils/routes';
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
@@ -27,7 +28,7 @@ function CreateEvents() {
         venue: '',
         duration: '',
         maxPoints: '',
-        endDate:'',
+        endDate: '',
         date: '',
         numberOfWinners: '', // New field
     });
@@ -40,8 +41,8 @@ function CreateEvents() {
 
     useEffect(() => {
         const fetchClubs = async () => {
-            try { 
-                const response = await fetch(`http://localhost:4000/api/v1/club`, {
+            try {
+                const response = await fetch(`${backendUrl}/api/v1/club`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -76,10 +77,10 @@ function CreateEvents() {
         e.preventDefault();
         const clubIds = [primaryClubId, ...selectedCollateralClubs];
         const newEvent = { ...eventData, clubIds };
-        console.log("club Events ",clubIds); 
+        console.log("club Events ", clubIds);
         console.log("new Events  ", newEvent);
         try {
-            const response = await fetch('http://localhost:4000/api/v1/club/events', {
+            const response = await fetch(`${backendUrl}/api/v1/club/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -308,9 +309,9 @@ function CreateEvents() {
                                         className={`group bg-white dark:bg-mirage-700 rounded-lg p-4 border-2 transition-all duration-200 
                                             hover:shadow-lg hover:scale-[1.02] cursor-pointer
                                             ${selectedCollateralClubs.includes(club._id)
-                                            ? 'border-mirage-500 dark:border-mirage-400 hover:border-mirage-600 dark:hover:border-mirage-300'
-                                            : 'border-transparent hover:border-mirage-300 dark:hover:border-mirage-500'
-                                        }`}
+                                                ? 'border-mirage-500 dark:border-mirage-400 hover:border-mirage-600 dark:hover:border-mirage-300'
+                                                : 'border-transparent hover:border-mirage-300 dark:hover:border-mirage-500'
+                                            }`}
                                         onClick={() => handleCheckboxChange(club._id)}
                                     >
                                         <div className="flex items-center space-x-4">
@@ -331,7 +332,7 @@ function CreateEvents() {
                                                     id={club._id}
                                                     checked={selectedCollateralClubs.includes(club._id)}
                                                     onChange={(e) => {
-                                                        e.stopPropagation(); 
+                                                        e.stopPropagation();
                                                         handleCheckboxChange(club._id);
                                                     }}
                                                     className="w-5 h-5 text-mirage-600 dark:text-mirage-400 border-mirage-300 dark:border-mirage-600 rounded cursor-pointer transition-all hover:ring-2 hover:ring-mirage-400 dark:hover:ring-mirage-500"
