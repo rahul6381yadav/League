@@ -57,16 +57,73 @@ const ManageParticipants = () => {
         const getParticipants = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/api/v1/club/attendance`, {
-                    headers: {Authorization: `Bearer ${token}`},
-                    params: {eventId: id},
+                    headers: { Authorization: `Bearer ${token}` },
+                    params: { eventId: id },
                 });
                 setParticipants(response.data.records || []);
+                // Using map to generate an array of promises
+                const promises = response.data.records.map((record) => {
+                    return fetchTotalPoints(record.studentId._id); // Assuming fetchTotalPoints is an async function
+                });
+
+                // Wait for all promises to resolve
+                await Promise.all(promises);
+
             } catch (error) {
                 console.error("Error fetching participants:", error.response?.data || error.message);
                 setError("Failed to load participants.");
             }
         };
 
+
+        const fetchTotalPoints = async (studentId) => {
+            try {
+                let sumPoints = 0;
+                const response = await fetch(`http://localhost:4000/api/v1/club/attendance?studentId=${studentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                // Check if result.records is an array
+                if (Array.isArray(result.records)) {
+                    // Iterate over the records and sum up pointsgiven
+                    result.records.forEach(record => {
+                        sumPoints += record.pointsGiven || 0;// Default to 0 if pointsgiven is undefined
+                    });
+                    updateTotalPoints(sumPoints, studentId);
+                } else {
+                    console.log("No records found or result.records is not an array");
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        };
+
+        const updateTotalPoints = async (sumPoints,studentId) => {
+            try {
+                // Extract the studentId from the decoded JWT token
+                // Make a GET request to the backend to fetch the user's profile, passing studentId
+                const response = await fetch(`http://localhost:4000/user/profile?id=${studentId}`, {
+                    method: "PUT",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        TotalPoints: sumPoints,
+                    }),
+                });
+                const result = await response.json();
+                // Check if the request was successful
+                if (response.status === 200) {
+                }
+            } catch (error) {
+                console.error('Error fetching total points:', error);  // Also add this line in the catch block
+            }
+        };
         const getWinners = async () => {
             try {
                 // Fetch event details to get totalWinner count
