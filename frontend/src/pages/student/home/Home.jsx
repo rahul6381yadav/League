@@ -15,7 +15,6 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true); // State to handle loading state
     const [error, setError] = useState(null); // State to handle errors
     const [totalPoints, setTotalPoints] = useState(null); // State to store total points
-    const { userId, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
 
