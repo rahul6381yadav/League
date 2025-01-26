@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { backendUrl } from "../../../utils/routes";
-
+import { useNavigate } from 'react-router-dom';
 const MyCalendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -9,6 +9,7 @@ const MyCalendar = () => {
     const [pastEvents, setPastEvents] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [events, setEvents] = useState([]);
+    const navigate = useNavigate();
 
     const token = localStorage.getItem("jwtToken");
 
@@ -190,6 +191,9 @@ const MyCalendar = () => {
                                             key={index}
                                             className="flex-shrink-0 p-4 rounded-lg shadow bg-mirage-100 dark:bg-mirage-700 text-mirage-800 dark:text-mirage-200"
                                             style={{ minWidth: "200px" }}
+                                            onClick={() => {
+                                                navigate(`/event-signup/${event._id}`)
+                                            }}
                                         >
                                             <p className="text-sm font-medium text-mirage-700 dark:text-mirage-200 mb-2">
                                                 Date: {eventStartDate.getDate()}/
