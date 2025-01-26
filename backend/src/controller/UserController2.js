@@ -42,7 +42,7 @@ exports.getUsers = [
             if (batchCode) filter.batchCode = batchCode;
 
             const users = await User.find(filter)
-                .limit(limit ? parseInt(limit) : 30)
+                .limit(limit ? parseInt(limit) : 500)
                 .skip(skip ? parseInt(skip) : 0);
 
             res.status(200).json({message: "Users fetched successfully", users, isError: false});
