@@ -3,6 +3,7 @@ import axios from 'axios';
 import Pagination from '../clubs/events/components/Pagination';
 import EventFilters from '../clubs/events/components/EventFilter';
 import EventCard from '../clubs/events/components/EventCard';
+import NoContentPage from "../../common/noContentPage";
 import { jwtDecode } from "jwt-decode";
 import { backendUrl } from '../../../utils/routes';
 
@@ -96,8 +97,9 @@ const MyEvents = () => {
         return <div className="text-mirage-600 dark:text-mirage-200">Loading events...</div>;
     }
 
+    // Replace the previous no events condition with the NoContentPage
     if (myEvents.length === 0) {
-        return <div className="text-mirage-600 dark:text-mirage-200">No events available.</div>;
+        return <NoContentPage />;
     }
 
     return (
