@@ -51,7 +51,6 @@ const Sidebar = ({onToggle}) => {
         { icon: <ArchiveIcon className="h-6 w-6" />, label: "All Events", path: "/all-events" },
         { icon: <SparklesIcon className="h-6 w-6" />, label: "My Batch Leaderboard", path: "/batch-leaderboard" },
         { icon: <StarIcon className="h-6 w-6" />, label: "Overall Leaderboard", path: "/leaderboard" },
-        { icon: <ChartSquareBarIcon className="h-6 w-6" />, label: "My Achievements", path: "#" },
         { icon: <UserCircleIcon className="h-6 w-6" />, label: "My Profile", path: "/myProfile" },
     ];
 
@@ -80,7 +79,7 @@ const Sidebar = ({onToggle}) => {
 
             {/* Mobile Bottom NavBar */}
             <div
-                className="z-100 fixed bottom-0 left-0 w-full bg-mirage-100 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
+                className="z-[1000] fixed bottom-0 left-0 w-full bg-mirage-100 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
                     {[{ name: "Home", icon: <FaTachometerAlt className="h-6 w-6" />, href: "/home" },
                         { name: "Clubs", icon: <FaUsers className="h-6 w-6" />, href: "/clubs" },
@@ -149,27 +148,6 @@ const Sidebar = ({onToggle}) => {
 
                 {/* Sidebar Footer */}
                 <div className="absolute bottom-4 w-full px-3">
-                    <ul className="space-y-2">
-                        {[{icon: <CogIcon className="h-6 w-6"/>, label: "Settings", path: "#"}]
-                            .map((item, idx) => (
-                                <li
-                                    key={idx}
-                                    className={`flex items-center space-x-4 p-2 rounded cursor-pointer w-full
-                                    ${location.pathname === item.path
-                                        ? "bg-mirage-600 text-mirage-50"
-                                        : "hover:bg-mirage-300 dark:hover:bg-mirage-700 text-mirage-800 dark:text-mirage-50"
-                                    }`}
-                                    onClick={() => navigate(item.path)}
-                                >
-                                    <Tooltip text={item.label} show={isCollapsed}>
-                                        <span className={`text-lg ${location.pathname === item.path ? "text-white dark:text-mirage-50" : ""}`}>
-                                            {item.icon}
-                                        </span>
-                                    </Tooltip>
-                                    {!isCollapsed && <span>{item.label}</span>}
-                                </li>
-                            ))}
-                    </ul>
 
                     {/* Dark Mode Toggle */}
                     <div

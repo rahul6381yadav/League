@@ -92,7 +92,7 @@ function Clubs() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className=" z-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {clubs.length === 0 ? (
                     <p className="text-mirage-500 dark:text-mirage-400 text-center">No clubs found</p>
                 ) : (
