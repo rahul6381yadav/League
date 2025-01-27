@@ -10,7 +10,6 @@ import { backendUrl } from '../../../utils/routes';
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
-console.log("token ", token);
 if (token) {
     try {
         decodedToken = jwtDecode(token); // Decode JWT token

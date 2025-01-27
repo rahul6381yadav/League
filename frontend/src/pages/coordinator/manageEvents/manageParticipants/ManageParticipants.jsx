@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import { Search } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { backendUrl } from "../../../../utils/routes";
+import EventBanner from "./EventBanner";
 // Token decoding logic remains the same
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
@@ -42,6 +43,55 @@ const ManageParticipants = () => {
     const [isGivingPoints, setIsGivingPoints] = useState(false);
     const navigate = useNavigate();
 
+
+    const fetchTotalPoints = async (studentId) => {
+        try {
+            let sumPoints = 0;
+            const response = await fetch(`${backendUrl}/api/v1/club/attendance?studentId=${studentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+
+            // Check if result.records is an array
+            if (Array.isArray(result.records)) {
+                // Iterate over the records and sum up pointsgiven
+                result.records.forEach(record => {
+                    sumPoints += record.pointsGiven || 0;// Default to 0 if pointsgiven is undefined
+                });
+                updateTotalPoints(sumPoints, studentId);
+            } else {
+                console.log("No records found or result.records is not an array");
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
+
+    const updateTotalPoints = async (sumPoints, studentId) => {
+        try {
+            // Extract the studentId from the decoded JWT token
+            // Make a GET request to the backend to fetch the user's profile, passing studentId
+            const response = await fetch(`${backendUrl}/user/profile?id=${studentId}`, {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    TotalPoints: sumPoints,
+                }),
+            });
+            const result = await response.json();
+            // Check if the request was successful
+            if (response.status === 200) {
+            }
+        } catch (error) {
+            console.error('Error fetching total points:', error);  // Also add this line in the catch block
+        }
+    };
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
@@ -62,67 +112,18 @@ const ManageParticipants = () => {
                     params: { eventId: id },
                 });
                 setParticipants(response.data.records || []);
+                // console.log(response.data.records);
                 // Using map to generate an array of promises
-                const promises = response.data.records.map((record) => {
-                    return fetchTotalPoints(record.studentId._id); // Assuming fetchTotalPoints is an async function
-                });
+                // const promises = response.data.records.map((record) => {
+                //     return fetchTotalPoints(record.studentId._id); // Assuming fetchTotalPoints is an async function
+                // });
 
-                // Wait for all promises to resolve
-                await Promise.all(promises);
+                // // Wait for all promises to resolve
+                // await Promise.all(promises);
 
             } catch (error) {
                 console.error("Error fetching participants:", error.response?.data || error.message);
                 setError("Failed to load participants.");
-            }
-        };
-
-
-        const fetchTotalPoints = async (studentId) => {
-            try {
-                let sumPoints = 0;
-                const response = await fetch(`${backendUrl}/api/v1/club/attendance?studentId=${studentId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const result = await response.json();
-
-                // Check if result.records is an array
-                if (Array.isArray(result.records)) {
-                    // Iterate over the records and sum up pointsgiven
-                    result.records.forEach(record => {
-                        sumPoints += record.pointsGiven || 0;// Default to 0 if pointsgiven is undefined
-                    });
-                    updateTotalPoints(sumPoints, studentId);
-                } else {
-                    console.log("No records found or result.records is not an array");
-                }
-            } catch (error) {
-                console.log("Error: ", error);
-            }
-        };
-
-        const updateTotalPoints = async (sumPoints, studentId) => {
-            try {
-                // Extract the studentId from the decoded JWT token
-                // Make a GET request to the backend to fetch the user's profile, passing studentId
-                const response = await fetch(`${backendUrl}/user/profile?id=${studentId}`, {
-                    method: "PUT",
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        TotalPoints: sumPoints,
-                    }),
-                });
-                const result = await response.json();
-                // Check if the request was successful
-                if (response.status === 200) {
-                }
-            } catch (error) {
-                console.error('Error fetching total points:', error);  // Also add this line in the catch block
             }
         };
         const getWinners = async () => {
@@ -167,7 +168,7 @@ const ManageParticipants = () => {
         fetchEventDetails();
         getParticipants();
         getWinners();
-    }, [id, token]);
+    }, [id, token,participants]);
 
     // Handler for deleting a participant
     const handleDeleteClick = (participant) => {
@@ -186,6 +187,7 @@ const ManageParticipants = () => {
                     setParticipants((prev) =>
                         prev.filter((participant) => participant._id !== selectedParticipant._id)
                     );
+                    fetchTotalPoints(selectedParticipant.studentId._id);
                 }
             } catch (error) {
                 console.error("Error deleting participant:", error.response?.data || error.message);
@@ -218,7 +220,7 @@ const ManageParticipants = () => {
                             id: editedParticipant._id,
                             status: editedParticipant.status,
                             pointsGiven: editedParticipant.points,
-                            studentId: editedParticipant.studentId
+                            studentId: editedParticipant.studentId._id
                         },
                     ],
                 }, {
@@ -226,6 +228,7 @@ const ManageParticipants = () => {
                 });
 
                 if (response.status === 200) {
+                    fetchTotalPoints(editedParticipant.studentId._id);
                     setParticipants((prev) =>
                         prev.map((participant) =>
                             participant._id === editedParticipant._id ? editedParticipant : participant
@@ -367,12 +370,13 @@ const ManageParticipants = () => {
             );
 
             if (response.status === 200) {
-                setParticipants(prevParticipants =>
-                    prevParticipants.map(participant => ({
-                        ...participant,
-                        pointsGiven: (participant.pointsGiven || 0) + pointsToAdd // Update local state to add points
-                    }))
-                );
+                const updatedParticipants = participants.map(participant => ({
+                    ...participant,
+                    pointsGiven: (participant.pointsGiven || 0) + pointsToAdd
+                }));
+
+                setParticipants(updatedParticipants);
+                updatedParticipants.forEach(participant => fetchTotalPoints(participant.studentId._id));
                 setGivePointsModalOpen(false);
                 setPointsForAll("");
             }
@@ -387,75 +391,7 @@ const ManageParticipants = () => {
         <div className="h-screen w-full flex flex-col bg-mirage-50 dark:bg-mirage-900">
             <div className="flex-1 flex flex-col p-8 pb-20 md:pb-8 gap-8">
                 <div className="flex flex-col md:flex-row gap-8 flex-1">
-                    <div className="flex flex-col bg-white dark:bg-mirage-800 rounded-lg shadow-md flex-1">
-                        <div className="relative w-full rounded-t-lg" style={{ paddingBottom: '42.8571%' }}>
-
-                            <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                                {event && event.photo ? (
-                                    <img
-                                        src={event.photo}
-                                        alt="Event Banner"
-                                        className="w-full h-full object-cover rounded-t-lg"
-                                    />
-                                ) : (
-                                    <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="p-6 flex-1 flex flex-col">
-
-                            <div className="relative flex justify-end">
-                                <button
-                                    onClick={() => {
-                                        navigate(`/events/edit/${event._id}`)
-                                    }}
-                                    className="bg-blue-500 text-white px-3 py-1.5 text-sm rounded-md w-24 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                    Edit Events
-                                </button>
-                            </div>
-                            {event ? (
-                                <>
-                                    <h1 className="text-3xl font-bold text-mirage-600 dark:text-mirage-100 mb-4">{event.eventName}</h1>
-
-
-                                    <div className="space-y-4 flex-1">
-                                        <div className="space-y-2">
-                                            <div
-                                                className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                <FaCalendarAlt className="mr-2 text-mirage-500" />
-                                                <span className="mr-2">Date:</span>
-                                                {new Date(event.date).toLocaleDateString()}
-                                            </div>
-                                            <div
-                                                className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                <FaMapMarkerAlt className="mr-2 text-mirage-500" />
-                                                <span className="mr-2">Venue:</span>
-                                                {event.venue}
-                                            </div>
-                                            <div
-                                                className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                <FaClock className="mr-2 text-mirage-500" />
-                                                <span className="mr-2">Duration:</span>
-                                                {event.duration}
-                                            </div>
-                                        </div>
-                                        <p className="text-mirage-700 dark:text-mirage-200 text-lg">{event.description}</p>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="animate-pulse">
-                                    <div className="h-8 bg-mirage-200 dark:bg-mirage-600 rounded w-1/3 mb-4"></div>
-                                    <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-full mb-4"></div>
-                                    <div className="space-y-2">
-                                        <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-2/3"></div>
-                                        <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-2/3"></div>
-                                        <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-2/3"></div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
+                    <EventBanner props={{ eventId: id }} />
                     <div className="flex flex-col bg-white dark:bg-mirage-800 rounded-lg shadow-md w-full md:w-1/3 flex-1">
                         <div className="p-6 border-b">
                             <h2 className="text-2xl font-bold text-mirage-700 dark:text-mirage-300">Winners</h2>

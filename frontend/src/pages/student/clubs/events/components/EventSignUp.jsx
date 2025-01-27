@@ -174,7 +174,7 @@ const EventSignUp = () => {
                         studentId: decodedToken.userId,
                         eventId: id,
                         pointsGiven: 0,
-                        status: "present",
+                        status: "absent",
                         isWinner: false
                     }]
                 };
