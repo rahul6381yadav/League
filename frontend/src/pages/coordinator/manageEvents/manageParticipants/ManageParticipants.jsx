@@ -324,6 +324,7 @@ const ManageParticipants = () => {
 
     // Filter participants based on search term
     const filteredParticipants = participants.filter(participant =>
+        participant.studentId.fullName.toLowerCase().includes(searchTerm.toLowerCase())||
         participant.studentId.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -644,7 +645,7 @@ const ManageParticipants = () => {
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                                     <input
                                         type="text"
-                                        placeholder="Search by email..."
+                                        placeholder="Search by name or email..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         className="w-full pl-10 pr-4 py-2 border rounded-lg bg-white dark:bg-mirage-700
