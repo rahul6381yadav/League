@@ -167,7 +167,7 @@ const EventSignUp = () => {
     }, [id, decodedToken.userId, token]);
 
     const handleSignUp = async () => {
-        if (!isParticipated) {
+        if (!isParticipated && decodedToken.userId) {
             try {
                 const participationData = {
                     participations: [{
@@ -206,6 +206,9 @@ const EventSignUp = () => {
                 console.error("Error signing up:", error.response?.data || error.message);
                 alert("Failed to sign up for the event.");
             }
+        }
+        else {
+            alert("login again to participate in event");
         }
     };
 
