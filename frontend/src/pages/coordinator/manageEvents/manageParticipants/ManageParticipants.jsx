@@ -459,16 +459,16 @@ const ManageParticipants = () => {
                                                 <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">{index + 1}</td>
                                                 <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
                                                     <img
-                                                        src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
-                                                        alt={participant.studentId.fullName}
+                                                        src={participant.studentId && participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                        alt={participant.studentId && participant.studentId.fullName}
                                                         className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
                                                     />
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                    {participant.studentId.fullName}
+                                                    {participant.studentId && participant.studentId.fullName}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
-                                                    {participant.studentId.email}
+                                                    {participant.studentId && participant.studentId.email}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-mirage-600 dark:text-mirage-200">
                                                     {participant.status === "present" ? "Present" : "Absent"}

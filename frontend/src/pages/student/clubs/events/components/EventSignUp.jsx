@@ -328,19 +328,19 @@ const EventSignUp = () => {
                                                     >
                                                         {/* Profile Picture */}
                                                         <img
-                                                            src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'} // Default fallback image
-                                                            alt={participant.studentId.fullName}
+                                                            src={participant.studentId&&participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'} // Default fallback image
+                                                            alt={participant.studentId &&participant.studentId.fullName}
                                                             className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
                                                         />
 
                                                         {/* Name and Email */}
                                                         <div className="flex-1">
                                                             <h4 className="text-sm font-medium text-mirage-600 dark:text-mirage-200">
-                                                                {participant.studentId.fullName}
+                                                                {participant.studentId &&participant.studentId.fullName}
                                                             </h4>
                                                             <div className="flex items-center space-x-2 text-xs text-mirage-500 dark:text-mirage-400">
                                                                 <Mail className="w-4 h-4" />
-                                                                <span>{participant.studentId.email}</span>
+                                                                <span>{participant.studentId &&participant.studentId.email}</span>
                                                             </div>
                                                         </div>
                                                     </div>
