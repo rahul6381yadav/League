@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../../../../context/AuthContext";
 import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
-import { Mail, Trophy } from "lucide-react";
+import { Mail, Trophy, Medal } from "lucide-react";
 // decode jwt token
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
@@ -23,27 +23,36 @@ const getTrophyStyle = (index) => {
     switch (index) {
         case 0:
             return {
-                color: '#FFD700', // Gold
+                color: '#FFD700',
                 label: '1st',
                 size: 'w-6 h-6',
-                strokeWidth: 2
+                strokeWidth: 2,
+                icon: Trophy
             };
         case 1:
             return {
-                color: '#C0C0C0', // Silver
+                color: '#C0C0C0',
                 label: '2nd',
                 size: 'w-5 h-5',
-                strokeWidth: 2
+                strokeWidth: 2,
+                icon: Trophy
             };
         case 2:
             return {
-                color: '#CD7F32', // Bronze
+                color: '#CD7F32',
                 label: '3rd',
                 size: 'w-4 h-4',
-                strokeWidth: 2
+                strokeWidth: 2,
+                icon: Trophy
             };
         default:
-            return null;
+            return {
+                color: '#6B7280',
+                label: `${index + 1}th`,
+                size: 'w-4 h-4',
+                strokeWidth: 2,
+                icon: Trophy
+            };
     }
 };
 
@@ -352,61 +361,54 @@ const EventSignUp = () => {
                                 {Array.isArray(participants) && participants.length > 0 ? (
                                     <div className="grid grid-cols-1 gap-3">
                                         {participants.map((participant, index) => {
-                                            const trophyStyle = getTrophyStyle(index);
-                                            return (
-                                                <>
-                                                    <div key={participant._id} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'
-                                                        }`}>
-                                                        {/* Profile Picture and Details */}
-                                                        <div className="flex items-center space-x-3 flex-1"
-                                                            onClick={() => {
-                                                                if (participant?.studentId?._id !== decodedToken?.userId) {
-                                                                    navigate(`/friends/${participant.studentId._id}`);
-                                                                }
-                                                            }}
-                                                        >
-                                                            {/* Profile Picture */}
-                                                            <img
-                                                                src={participant.studentId && participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
-                                                                alt={participant.studentId && participant.studentId.fullName}
-                                                                className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
-                                                            />
+                                            const style = getTrophyStyle(index);
+                                            const IconComponent = style.icon;
 
-                                                            {/* Name and Email */}
-                                                            <div className="flex-1">
-                                                                <h4 className={`text-sm font-medium ${index < 3
-                                                                        ? 'text-mirage-900 dark:text-mirage-900'
-                                                                        : 'text-mirage-600 dark:text-mirage-200'
-                                                                    }`}>
-                                                                    {participant.studentId && participant.studentId.fullName}
-                                                                </h4>
-                                                                <div className={`flex items-center space-x-2 text-xs ${index < 3
-                                                                        ? 'text-mirage-700 dark:text-mirage-700'
-                                                                        : 'text-mirage-500 dark:text-mirage-400'
-                                                                    }`}>
-                                                                    <Mail className="w-4 h-4" />
-                                                                    <span>{participant.studentId && participant.studentId.email}</span>
-                                                                </div>
+                                            return (
+                                                <div key={participant._id}
+                                                    className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'
+                                                        }`}>
+                                                    <div className="flex items-center space-x-3 flex-1"
+                                                        onClick={() => {
+                                                            if (participant?.studentId?._id !== decodedToken?.userId) {
+                                                                navigate(`/friends/${participant.studentId._id}`);
+                                                            }
+                                                        }}>
+                                                        <img
+                                                            src={participant.studentId?.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                            alt={participant.studentId?.fullName}
+                                                            className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
+                                                        />
+                                                        <div className="flex-1">
+                                                            <h4 className={`text-sm font-medium ${index < 3 ? 'text-mirage-900 dark:text-mirage-900' : 'text-mirage-600 dark:text-mirage-200'
+                                                                }`}>
+                                                                {participant.studentId?.fullName}
+                                                            </h4>
+                                                            <div className={`flex items-center space-x-2 text-xs ${index < 3 ? 'text-mirage-700 dark:text-mirage-700' : 'text-mirage-500 dark:text-mirage-400'
+                                                                }`}>
+                                                                <Mail className="w-4 h-4" />
+                                                                <span>{participant.studentId?.email}</span>
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                        {/* Trophy and Points with Capsule Background */}
-                                                        <div className="flex items-center space-x-2">
-                                                            {index < 3 && trophyStyle && (
-                                                                <div className="flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium text-mirage-600 dark:text-mirage-200 bg-mirage-100 dark:bg-mirage-600">
-                                                                    <Trophy color={trophyStyle.color} strokeWidth={trophyStyle.strokeWidth} />
-                                                                    <span className="ml-2">{participant.pointsGiven}</span>
-                                                                </div>
-                                                            )}
+                                                    {/* Points display for all participants */}
+                                                    <div className="flex items-center space-x-2">
+                                                        <div className={`flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium ${index < 3
+                                                                ? 'text-mirage-600 dark:text-mirage-200 bg-mirage-100 dark:bg-mirage-600'
+                                                                : 'text-mirage-500 dark:text-mirage-400 bg-mirage-50 dark:bg-mirage-800'
+                                                            }`}>
+                                                            <IconComponent
+                                                                color={style.color}
+                                                                strokeWidth={style.strokeWidth}
+                                                                className={style.size}
+                                                            />
+                                                            <span className="ml-2">{participant.pointsGiven}</span>
                                                         </div>
                                                     </div>
-                                                </>
-
-
-
+                                                </div>
                                             );
                                         })}
-
                                     </div>
                                 ) : (
                                     <div className="text-mirage-500 dark:text-mirage-400 text-center">No participants yet</div>

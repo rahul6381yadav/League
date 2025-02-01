@@ -5,7 +5,7 @@ import Pagination from '../../../student/clubs/events/components/Pagination';
 import EventFilters from '../../../student/clubs/events/components/EventFilter';
 import { backendUrl } from "../../../../utils/routes";
 import { jwtDecode } from "jwt-decode";
-function ViewEvents() {
+function ViewEvents(props) {
     const [allEvents, setAllEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ function ViewEvents() {
     const fetchAllEvents = async () => {
         try {
             const response = await axios.get(
-                `${backendUrl}/api/v1/club/events?clubId=${decodedToken.clubId}`,
+                `${backendUrl}/api/v1/club/events?clubId=${props.props.primaryClubId}`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -44,7 +44,7 @@ function ViewEvents() {
 
     useEffect(() => {
         fetchAllEvents();
-    }, [decodedToken.clubId, pagination]);
+    }, [props.props.primaryClubId, pagination]);
 
     useEffect(() => {
         const filtered = allEvents.filter(event => {
