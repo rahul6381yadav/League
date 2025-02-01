@@ -516,7 +516,7 @@ const ManageParticipants = () => {
                                     name="status"
                                     value={editedParticipant.status}
                                     onChange={handleInputChange}
-                                    className="block w-full p-2 border rounded"
+                                    className="block text-black w-full p-2 border rounded"
                                 >
                                     <option value="present">Present</option>
                                     <option value="absent">Absent</option>
@@ -529,7 +529,7 @@ const ManageParticipants = () => {
                                     name="points"
                                     value={editedParticipant.points}
                                     onChange={handleInputChange}
-                                    className="block w-full p-2 border rounded"
+                                    className="block w-full text-black p-2 border rounded"
                                 />
                             </div>
                             <div className="flex justify-end gap-4">

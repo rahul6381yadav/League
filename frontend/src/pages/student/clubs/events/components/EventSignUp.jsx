@@ -354,47 +354,53 @@ const EventSignUp = () => {
                                         {participants.map((participant, index) => {
                                             const trophyStyle = getTrophyStyle(index);
                                             return (
-                                                <div key={participant._id} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'}`}>
-                                                    {/* Profile Picture and Details */}
-                                                    <div className="flex items-center space-x-3 flex-1"
-                                                        onClick={() => {
-                                                            if (participant?.studentId?._id !== decodedToken?.userId) {
-                                                                navigate(`/friends/${participant.studentId._id}`);
-                                                            }
-                                                        }}
-                                                    >
-                                                        {/* Profile Picture */}
-                                                        <img
-                                                            src={participant.studentId&&participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'} // Default fallback image
-                                                            alt={participant.studentId &&participant.studentId.fullName}
-                                                            className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
-                                                        />
+                                                <>
+                                                    <div key={participant._id} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'
+                                                        }`}>
+                                                        {/* Profile Picture and Details */}
+                                                        <div className="flex items-center space-x-3 flex-1"
+                                                            onClick={() => {
+                                                                if (participant?.studentId?._id !== decodedToken?.userId) {
+                                                                    navigate(`/friends/${participant.studentId._id}`);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {/* Profile Picture */}
+                                                            <img
+                                                                src={participant.studentId && participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                                alt={participant.studentId && participant.studentId.fullName}
+                                                                className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
+                                                            />
 
-                                                        {/* Name and Email */}
-                                                        <div className="flex-1">
-                                                            <h4 className="text-sm font-medium text-mirage-600 dark:text-mirage-200">
-                                                                {participant.studentId &&participant.studentId.fullName}
-                                                            </h4>
-                                                            <div className="flex items-center space-x-2 text-xs text-mirage-500 dark:text-mirage-400">
-                                                                <Mail className="w-4 h-4" />
-                                                                <span>{participant.studentId &&participant.studentId.email}</span>
+                                                            {/* Name and Email */}
+                                                            <div className="flex-1">
+                                                                <h4 className={`text-sm font-medium ${index < 3
+                                                                        ? 'text-mirage-900 dark:text-mirage-900'
+                                                                        : 'text-mirage-600 dark:text-mirage-200'
+                                                                    }`}>
+                                                                    {participant.studentId && participant.studentId.fullName}
+                                                                </h4>
+                                                                <div className={`flex items-center space-x-2 text-xs ${index < 3
+                                                                        ? 'text-mirage-700 dark:text-mirage-700'
+                                                                        : 'text-mirage-500 dark:text-mirage-400'
+                                                                    }`}>
+                                                                    <Mail className="w-4 h-4" />
+                                                                    <span>{participant.studentId && participant.studentId.email}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
+
+                                                        {/* Trophy and Points with Capsule Background */}
+                                                        <div className="flex items-center space-x-2">
+                                                            {index < 3 && trophyStyle && (
+                                                                <div className="flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium text-mirage-600 dark:text-mirage-200 bg-mirage-100 dark:bg-mirage-600">
+                                                                    <Trophy color={trophyStyle.color} strokeWidth={trophyStyle.strokeWidth} />
+                                                                    <span className="ml-2">{participant.pointsGiven}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
-
-                                                    {/* Trophy and Points with Capsule Background */}
-                                                    <div className="flex items-center space-x-2">
-                                                        {index < 3 && trophyStyle && (
-                                                            <div className="flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium text-mirage-600 dark:text-mirage-200 bg-mirage-100 dark:bg-mirage-600">
-                                                                <Trophy color={trophyStyle.color} strokeWidth={trophyStyle.strokeWidth} />
-                                                                <span className="ml-2">{participant.pointsGiven}</span> {/* Adding margin-left for spacing */}
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-
-                                                </div>
-
+                                                </>
 
 
 
