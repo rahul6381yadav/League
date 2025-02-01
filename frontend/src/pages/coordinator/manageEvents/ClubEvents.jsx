@@ -15,7 +15,7 @@ const ClubEvents = () => {
             <div className="p-4 flex-grow w-full">
                 <h1 className="text-3xl font-bold text-gray dark:text-white text-center mb-4">{clubName}</h1>
                 <div className="flex flex-wrap gap-6">
-                    <ViewEvents primaryClubId={clubId}/>
+                    <ViewEvents/>
                 </div>
             </div>
         </div>

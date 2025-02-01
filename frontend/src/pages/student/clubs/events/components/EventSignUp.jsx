@@ -167,7 +167,7 @@ const EventSignUp = () => {
     }, [id, decodedToken.userId, token]);
 
     const handleSignUp = async () => {
-        if (!isParticipated) {
+        if (!isParticipated && decodedToken.userId) {
             try {
                 const participationData = {
                     participations: [{
@@ -207,6 +207,9 @@ const EventSignUp = () => {
                 alert("Failed to sign up for the event.");
             }
         }
+        else {
+            alert("login again to participate in event");
+        }
     };
 
 
@@ -225,7 +228,44 @@ const EventSignUp = () => {
                                     className="w-full h-full object-cover rounded-t-lg"
                                 />
                             ) : (
-                                <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
+                                    // Replace the existing SVG in your code (around line 320) with:
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 600" className="w-full h-full">
+                                        <rect width="1400" height="600" fill="#1a1a1a" />
+                                        <path d="M0 540 L1400 420 L1400 600 L0 600 Z" fill="#2d2d2d" />
+                                        <path d="M0 480 L1400 360 L1400 540 L0 540 Z" fill="#3d3d3d" />
+
+                                        <filter id="glow">
+                                            <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+
+                                        <text x="700" y="300"
+                                            font-family="Arial Black, sans-serif"
+                                            font-size="120"
+                                            fill="#ffffff"
+                                            text-anchor="middle"
+                                            filter="url(#glow)">
+                                            IIITR
+                                        </text>
+
+                                        <text x="700" y="380"
+                                            font-family="Arial, sans-serif"
+                                            font-size="40"
+                                            fill="#cccccc"
+                                            text-anchor="middle">
+                                            LEAGUE
+                                        </text>
+
+                                        <line x1="400" y1="340" x2="1000" y2="340"
+                                            stroke="#4a4a4a"
+                                            stroke-width="3" />
+
+                                        <circle cx="380" cy="340" r="6" fill="#6366f1" />
+                                        <circle cx="1020" cy="340" r="6" fill="#6366f1" />
+                                    </svg>
                             )}
                         </div>
                     </div>
@@ -314,47 +354,53 @@ const EventSignUp = () => {
                                         {participants.map((participant, index) => {
                                             const trophyStyle = getTrophyStyle(index);
                                             return (
-                                                <div key={participant._id} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'}`}>
-                                                    {/* Profile Picture and Details */}
-                                                    <div className="flex items-center space-x-3 flex-1"
-                                                        onClick={() => {
-                                                            if (participant?.studentId?._id !== decodedToken?.userId) {
-                                                                navigate(`/friends/${participant.studentId._id}`);
-                                                            }
-                                                        }}
-                                                    >
-                                                        {/* Profile Picture */}
-                                                        <img
-                                                            src={participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'} // Default fallback image
-                                                            alt={participant.studentId.fullName}
-                                                            className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
-                                                        />
+                                                <>
+                                                    <div key={participant._id} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${index < 3 ? 'bg-gradient-to-r from-mirage-200 to-mirage-300' : 'bg-white dark:bg-mirage-700'
+                                                        }`}>
+                                                        {/* Profile Picture and Details */}
+                                                        <div className="flex items-center space-x-3 flex-1"
+                                                            onClick={() => {
+                                                                if (participant?.studentId?._id !== decodedToken?.userId) {
+                                                                    navigate(`/friends/${participant.studentId._id}`);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {/* Profile Picture */}
+                                                            <img
+                                                                src={participant.studentId && participant.studentId.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                                alt={participant.studentId && participant.studentId.fullName}
+                                                                className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
+                                                            />
 
-                                                        {/* Name and Email */}
-                                                        <div className="flex-1">
-                                                            <h4 className="text-sm font-medium text-mirage-600 dark:text-mirage-200">
-                                                                {participant.studentId.fullName}
-                                                            </h4>
-                                                            <div className="flex items-center space-x-2 text-xs text-mirage-500 dark:text-mirage-400">
-                                                                <Mail className="w-4 h-4" />
-                                                                <span>{participant.studentId.email}</span>
+                                                            {/* Name and Email */}
+                                                            <div className="flex-1">
+                                                                <h4 className={`text-sm font-medium ${index < 3
+                                                                        ? 'text-mirage-900 dark:text-mirage-900'
+                                                                        : 'text-mirage-600 dark:text-mirage-200'
+                                                                    }`}>
+                                                                    {participant.studentId && participant.studentId.fullName}
+                                                                </h4>
+                                                                <div className={`flex items-center space-x-2 text-xs ${index < 3
+                                                                        ? 'text-mirage-700 dark:text-mirage-700'
+                                                                        : 'text-mirage-500 dark:text-mirage-400'
+                                                                    }`}>
+                                                                    <Mail className="w-4 h-4" />
+                                                                    <span>{participant.studentId && participant.studentId.email}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
+
+                                                        {/* Trophy and Points with Capsule Background */}
+                                                        <div className="flex items-center space-x-2">
+                                                            {index < 3 && trophyStyle && (
+                                                                <div className="flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium text-mirage-600 dark:text-mirage-200 bg-mirage-100 dark:bg-mirage-600">
+                                                                    <Trophy color={trophyStyle.color} strokeWidth={trophyStyle.strokeWidth} />
+                                                                    <span className="ml-2">{participant.pointsGiven}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
-
-                                                    {/* Trophy and Points with Capsule Background */}
-                                                    <div className="flex items-center space-x-2">
-                                                        {index < 3 && trophyStyle && (
-                                                            <div className="flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium text-mirage-600 dark:text-mirage-200 bg-mirage-100 dark:bg-mirage-600">
-                                                                <Trophy color={trophyStyle.color} strokeWidth={trophyStyle.strokeWidth} />
-                                                                <span className="ml-2">{participant.pointsGiven}</span> {/* Adding margin-left for spacing */}
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-
-                                                </div>
-
+                                                </>
 
 
 
