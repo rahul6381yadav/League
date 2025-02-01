@@ -4,8 +4,8 @@ import EventCard from '../../../student/clubs/events/components/EventCard';
 import Pagination from '../../../student/clubs/events/components/Pagination';
 import EventFilters from '../../../student/clubs/events/components/EventFilter';
 import { backendUrl } from "../../../../utils/routes";
-
-function ViewEvents(props) {
+import { jwtDecode } from "jwt-decode";
+function ViewEvents() {
     const [allEvents, setAllEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,12 +14,19 @@ function ViewEvents(props) {
     const [selectedEvent, setSelectedEvent] = useState(null); // Track the selected event
     const [isPopupOpen, setIsPopupOpen] = useState(false); // Control the popup visibility
     const token = localStorage.getItem("jwtToken");
-
+    let decodedToken = null;
+    if (token) {
+        try {
+            decodedToken = jwtDecode(token); // Decode JWT token
+        } catch (error) {
+            console.error("Error decoding JWT token:", error.message);
+        }
+    }
 
     const fetchAllEvents = async () => {
         try {
             const response = await axios.get(
-                `${backendUrl}/api/v1/club/events?clubId=${props.primaryClubId}`,
+                `${backendUrl}/api/v1/club/events?clubId=${decodedToken.clubId}`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -37,7 +44,7 @@ function ViewEvents(props) {
 
     useEffect(() => {
         fetchAllEvents();
-    }, [props.primaryClubId, pagination]);
+    }, [decodedToken.clubId, pagination]);
 
     useEffect(() => {
         const filtered = allEvents.filter(event => {

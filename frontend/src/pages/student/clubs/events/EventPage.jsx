@@ -11,26 +11,25 @@ import { backendUrl } from '../../../../utils/routes';
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
-let decodedToken = null;
-if (token) {
-    try {
-        decodedToken = jwtDecode(token); // Decode JWT token
-    } catch (error) {
-        console.error("Error decoding JWT token:", error.message);
-    }
-}
 
 const EventPage = () => {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
+    const [email, setEmail] = useState('');
     const [filters, setFilters] = useState({});
     const [pagination, setPagination] = useState({ limit: 6, skip: 0 });
     const [primaryClubId, setPrimaryClubId] = useState('');
     const [primaryClubName, setPrimaryClubName] = useState('');
     const [clubDetails, setClubDetails] = useState([]);
     const token = localStorage.getItem("jwtToken");
-    const email = decodedToken.email;
-
+    let decodedToken = null;
+    if (token) {
+        try {
+            decodedToken = jwtDecode(token); // Decode JWT token
+        } catch (error) {
+            console.error("Error decoding JWT token:", error.message);
+        }
+    }
     const fetchClubDetails = async () => {
         try {
             if (!token) {
@@ -62,7 +61,7 @@ const EventPage = () => {
                 return;
             }
             const { limit, skip } = pagination;
-            const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
+            const response = await axios.get(`${backendUrl}/api/v1/club/events?clubId=${decodedToken.clubId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -228,7 +228,44 @@ const EventSignUp = () => {
                                     className="w-full h-full object-cover rounded-t-lg"
                                 />
                             ) : (
-                                <span className="text-mirage-600 dark:text-mirage-300">Banner Placeholder</span>
+                                    // Replace the existing SVG in your code (around line 320) with:
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 600" className="w-full h-full">
+                                        <rect width="1400" height="600" fill="#1a1a1a" />
+                                        <path d="M0 540 L1400 420 L1400 600 L0 600 Z" fill="#2d2d2d" />
+                                        <path d="M0 480 L1400 360 L1400 540 L0 540 Z" fill="#3d3d3d" />
+
+                                        <filter id="glow">
+                                            <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+
+                                        <text x="700" y="300"
+                                            font-family="Arial Black, sans-serif"
+                                            font-size="120"
+                                            fill="#ffffff"
+                                            text-anchor="middle"
+                                            filter="url(#glow)">
+                                            IIITR
+                                        </text>
+
+                                        <text x="700" y="380"
+                                            font-family="Arial, sans-serif"
+                                            font-size="40"
+                                            fill="#cccccc"
+                                            text-anchor="middle">
+                                            LEAGUE
+                                        </text>
+
+                                        <line x1="400" y1="340" x2="1000" y2="340"
+                                            stroke="#4a4a4a"
+                                            stroke-width="3" />
+
+                                        <circle cx="380" cy="340" r="6" fill="#6366f1" />
+                                        <circle cx="1020" cy="340" r="6" fill="#6366f1" />
+                                    </svg>
                             )}
                         </div>
                     </div>

@@ -166,7 +166,6 @@ function CreateEvents() {
                                         value={eventData.photo}
                                         onChange={handleInputChange}
                                         className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                        required
                                     />
                                 </div>
 
