@@ -14,6 +14,17 @@ const userSchema = new mongoose.Schema({
     studentId: {
         type: String,
         required: false,
+        set: function (value) {
+            if (this.role === 'student' && this.email) {
+                // Extract the student ID from the email (e.g., "cs23b1059@iiitr.ac.in")
+                const emailPrefix = this.email.split('@')[0]; // Get the part before '@'
+                const extractedStudentId = emailPrefix.replace(/^(cs|mc|ad)(\d{2})(\d{4})$/i, (_, year, id) => {
+                    return `${year.toUpperCase()}${id.toUpperCase()}`;
+                });
+                return extractedStudentId; // Set the studentId to the formatted value
+            }
+            return value; // If not a student, return the value as it is
+        },
     },
     email: {
         type: String,
@@ -24,6 +35,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    TotalPoints: {
+        type: Number,
+        default: 0,
+        required: false,   
+    },
     joiningDate: {
         type: Date,
         default: Date.now()
@@ -32,6 +48,26 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: false,
         enum: batchCodeEnum,
+    },
+    linkedin: {
+        type: String,
+        required: false,
+    },
+    twitter: {
+        type: String,
+        required: false,
+    },
+    phone: {
+        type: String,
+        required: false,
+    },
+    instagram: {
+        type: String,
+        required: false,
+    },
+    github: {
+        type: String,
+        required: false,
     },
     resetOtp: {
         type: String,
@@ -48,9 +84,10 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum: ["student", "admin", "cosa","faculty"],
+        enum: ["student", "admin", "cosa", "faculty"],
         default: "student"
     },
+
 });
 
 
@@ -74,5 +111,21 @@ userSchema.methods.comparePassword = async function (userPassword) {
         throw error;
     }
 };
+
+userSchema.methods.addPoints = function (points) {
+    this.TotalPoints += points;
+    return this.save(); // Save updated points to the database
+};
+
+userSchema.methods.subtractPoints = function (points) {
+    this.TotalPoints = Math.max(0, this.TotalPoints - points); // Ensure points don't go negative
+    return this.save();
+};
+
+userSchema.methods.resetPoints = function () {
+    this.TotalPoints = 0;
+    return this.save();
+};
+
 
 module.exports = mongoose.model("User", userSchema);

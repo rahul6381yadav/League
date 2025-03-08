@@ -1,6 +1,7 @@
 // React Component
-import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import React, {useState} from "react";
+import {useAuth} from "../../context/AuthContext";
+import { backendUrl } from '../../utils/routes';
 const AdminPanel = () => {
     const [users, setUsers] = useState([
         {
@@ -14,7 +15,7 @@ const AdminPanel = () => {
             resetOtpExpiry: "",
         },
     ]);
-    const { setIsAuthenticated } = useAuth();
+    const {setIsAuthenticated} = useAuth();
     const batchCodeEnum = [19, 20, 21, 22, 23, 24, 25, 26, 27];
     const rolesEnum = ["student", "coordinator", "admin", "cosa", "faculty"];
     const handleLogout = () => {
@@ -60,7 +61,7 @@ const AdminPanel = () => {
     const handleSubmit = async () => {
         try {
             const promises = users.map(async (user) => {
-                const response = await fetch(`http://localhost:4000/user/signup`, {
+                const response = await fetch(`${backendUrl}/user/signup`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -105,103 +106,103 @@ const AdminPanel = () => {
             </button>
             <table className="min-w-full text-black bg-white border border-gray-200">
                 <thead>
-                    <tr>
-                        <th className="px-4 py-2 border">Full Name</th>
-                        <th className="px-4 py-2 border">Student ID</th>
-                        <th className="px-4 py-2 border">Email</th>
-                        <th className="px-4 py-2 border">Password</th>
-                        <th className="px-4 py-2 border">Batch Code</th>
-                        <th className="px-4 py-2 border">Roles</th>
-                        <th className="px-4 py-2 border">Actions</th>
-                    </tr>
+                <tr>
+                    <th className="px-4 py-2 border">Full Name</th>
+                    <th className="px-4 py-2 border">Student ID</th>
+                    <th className="px-4 py-2 border">Email</th>
+                    <th className="px-4 py-2 border">Password</th>
+                    <th className="px-4 py-2 border">Batch Code</th>
+                    <th className="px-4 py-2 border">Roles</th>
+                    <th className="px-4 py-2 border">Actions</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
-                        <tr key={index}>
-                            <td className="px-4 py-2 border">
-                                <input
-                                    type="text"
-                                    value={user.fullName}
-                                    placeholder="Enter full name"
-                                    onChange={(e) =>
-                                        handleChange(index, "fullName", e.target.value)
-                                    }
-                                    className="w-full text-black  px-2 py-1 border rounded"
-                                />
-                            </td>
-                            <td className="px-4 py-2 border">
-                                <input
-                                    type="text"
-                                    value={user.studentId}
-                                    placeholder="Enter student Id"
-                                    onChange={(e) =>
-                                        handleChange(index, "studentId", e.target.value)
-                                    }
-                                    className="w-full text-black px-2 py-1 border rounded"
-                                />
-                            </td>
-                            <td className="px-4 py-2 border">
-                                <input
-                                    type="email"
-                                    value={user.email}
-                                    placeholder="Enter Email"
-                                    onChange={(e) => handleChange(index, "email", e.target.value)}
-                                    className="w-full text-black px-2 py-1 border rounded"
-                                />
-                            </td>
-                            <td className="px-4 py-2 border">
-                                <input
-                                    type="password"
-                                    value={user.password}
-                                    placeholder="Enter Password"
-                                    onChange={(e) =>
-                                        handleChange(index, "password", e.target.value)
-                                    }
-                                    className="w-full text-black px-2 py-1 border rounded"
-                                />
-                            </td>
-                            <td className="px-4 py-2 border">
-                                <select
-                                    value={user.batchCode}
-                                    placeholder="Enter Batch code"
-                                    onChange={(e) =>
-                                        handleChange(index, "batchCode", e.target.value)
-                                    }
-                                    className="w-full text-black px-2 py-1 border rounded"
-                                >
-                                    <option value="">Select</option>
-                                    {batchCodeEnum.map((code) => (
-                                        <option key={code} value={code}>
-                                            {code}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td className="px-4 py-2 border">
-                                {rolesEnum.map((role) => (
-                                    <label key={role} className="block">
-                                        <input
-                                            type="radio"
-                                            name={`roles-${index}`}
-                                            value={role}
-                                            checked={user.roles === role}
-                                            onChange={() => handleRoleChange(index, role)}
-                                            className="mr-2"
-                                        />
-                                        {role}
-                                    </label>
+                {users.map((user, index) => (
+                    <tr key={index}>
+                        <td className="px-4 py-2 border">
+                            <input
+                                type="text"
+                                value={user.fullName}
+                                placeholder="Enter full name"
+                                onChange={(e) =>
+                                    handleChange(index, "fullName", e.target.value)
+                                }
+                                className="w-full text-black  px-2 py-1 border rounded"
+                            />
+                        </td>
+                        <td className="px-4 py-2 border">
+                            <input
+                                type="text"
+                                value={user.studentId}
+                                placeholder="Enter student Id"
+                                onChange={(e) =>
+                                    handleChange(index, "studentId", e.target.value)
+                                }
+                                className="w-full text-black px-2 py-1 border rounded"
+                            />
+                        </td>
+                        <td className="px-4 py-2 border">
+                            <input
+                                type="email"
+                                value={user.email}
+                                placeholder="Enter Email"
+                                onChange={(e) => handleChange(index, "email", e.target.value)}
+                                className="w-full text-black px-2 py-1 border rounded"
+                            />
+                        </td>
+                        <td className="px-4 py-2 border">
+                            <input
+                                type="password"
+                                value={user.password}
+                                placeholder="Enter Password"
+                                onChange={(e) =>
+                                    handleChange(index, "password", e.target.value)
+                                }
+                                className="w-full text-black px-2 py-1 border rounded"
+                            />
+                        </td>
+                        <td className="px-4 py-2 border">
+                            <select
+                                value={user.batchCode}
+                                placeholder="Enter Batch code"
+                                onChange={(e) =>
+                                    handleChange(index, "batchCode", e.target.value)
+                                }
+                                className="w-full text-black px-2 py-1 border rounded"
+                            >
+                                <option value="">Select</option>
+                                {batchCodeEnum.map((code) => (
+                                    <option key={code} value={code}>
+                                        {code}
+                                    </option>
                                 ))}
-                            </td>
-                            <td className="px-4 py-2 border text-center">
-                                <button
-                                    onClick={() => removeRow(index)}
-                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                >
-                                    Remove
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                            </select>
+                        </td>
+                        <td className="px-4 py-2 border">
+                            {rolesEnum.map((role) => (
+                                <label key={role} className="block">
+                                    <input
+                                        type="radio"
+                                        name={`roles-${index}`}
+                                        value={role}
+                                        checked={user.roles === role}
+                                        onChange={() => handleRoleChange(index, role)}
+                                        className="mr-2"
+                                    />
+                                    {role}
+                                </label>
+                            ))}
+                        </td>
+                        <td className="px-4 py-2 border text-center">
+                            <button
+                                onClick={() => removeRow(index)}
+                                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                            >
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
 

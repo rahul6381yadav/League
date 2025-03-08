@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase";
+import React, {memo, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useAuth} from '../../context/AuthContext';
+import {sendPasswordResetEmail} from "firebase/auth";
+import {auth} from "../../firebase";
 
-function Forget() {
-    const { setForgotPasswordState } = useAuth();
+const Forget = memo(() =>{
+    const {setForgotPasswordState} = useAuth();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
@@ -15,20 +15,21 @@ function Forget() {
     const handleReset = async (e) => {
         e.preventDefault();
         try {
-          await sendPasswordResetEmail(auth, email);
-          setMessage("Password reset email sent! Check your inbox.");
-          setError("");
+            await sendPasswordResetEmail(auth, email);
+            setMessage("Password reset email sent! Check your inbox.");
+            setEmail("");
+            setError("");
         } catch (err) {
-          setError(err.message);
-          setMessage("");
+            setError(err.message);
+            setMessage("");
         }
-      };
+    };
 
 
     useEffect(() => {
-        const token = localStorage.getItem("jwtToken");
+        const token = localStorage.getItem("authToken");
         if (token) {
-            navigate("/home"); // Redirect to Home if already logged in
+            navigate("/home"); 
         }
     }, [navigate]);
 
@@ -93,7 +94,7 @@ function Forget() {
                         <div className="flex justify-center items-center mt-4">
                             <button
                                 type="button"
-                                onClick={() => navigate('/')}
+                                onClick={() => navigate('/login')}
                                 className="text-sm text-blue-500 hover:underline"
                             >
                                 Back to Login
@@ -104,6 +105,6 @@ function Forget() {
             </div>
         </>
     );
-}
+})
 
 export default Forget;

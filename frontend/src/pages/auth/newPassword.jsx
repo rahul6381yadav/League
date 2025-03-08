@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { backendUrl } from '../../utils/routes';
 
 function NewPassword() {
-    const { isOTPVerified } = useAuth();
+    const {isOTPVerified} = useAuth();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
-    const { email } = location.state || {};
+    const {email} = location.state || {};
 
     useEffect(() => {
         if (!email) {
@@ -32,12 +33,12 @@ function NewPassword() {
 
 
         try {
-            const response = await fetch(`http://localhost:4000user/reset-password`, {
+            const response = await fetch(`${backendUrl}/user/reset-password`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email: email, newPassword: newPassword }),
+                body: JSON.stringify({email: email, newPassword: newPassword}),
             });
 
             let result = await response.json();
