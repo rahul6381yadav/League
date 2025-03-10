@@ -10,6 +10,9 @@ const path = require('path');
 const jwtMiddleware = require("./src/middleware/jwtMiddleware");
 const authRoute = require('./src/routes/authRoutes');
 const morgan = require('morgan');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const S3 = require('./src/config/AwsConfig');
 const logger = require('./src/config/logger');
 const PORT = process.env.PORT || 3000;
 connectDB();
@@ -27,7 +30,7 @@ app.use(morgan((tokens, req, res) => {
 }, {stream: {write: (msg) => logger.info(msg.trim())}}));
 
 app.use((req, res, next) => {
-    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password", "/user/reset-password", "/user/verify-otp", "/user/create-user"];
+    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password", "/user/reset-password", "/user/verify-otp", "/user/create-user","/user/profilephoto"];
     if (excludedRoutes.includes(req.path)) {
         return next(); // Skip token verification for excluded routes
     }

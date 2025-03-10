@@ -6,14 +6,15 @@ import {
     UserCircleIcon,
     UserGroupIcon,
 } from "@heroicons/react/outline";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDarkMode } from "../../context/ThemeContext";
 import Tooltip from '../common/Tooltip_sidebar';
 import { FaMoon, FaSun } from "react-icons/fa";
 
-const CoordinatorSidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, toggleMobileSidebar }) => {
+const CoordinatorSidebar = ({ onToggle }) => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const { logout } = useAuth();
     const { isDarkMode, toggleDarkMode } = useDarkMode();
     const navigate = useNavigate();
@@ -21,6 +22,7 @@ const CoordinatorSidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, toggleM
 
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
+        onToggle(!isCollapsed);
     };
 
     const handleLogout = async () => {
@@ -39,7 +41,7 @@ const CoordinatorSidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, toggleM
     };
 
     const menuItems = [
-        { icon: <HomeIcon className="h-6 w-6" />, label: "Dashboard", path: "/dashboard" },
+        { icon: <HomeIcon className="h-6 w-6" />, label: "Home", path: "/dashboard" },
         { icon: <UserGroupIcon className="h-6 w-6" />, label: "Club Details", path: "/my-club" },
         { icon: <ClipboardListIcon className="h-6 w-6" />, label: "Manage Events", path: "/manage-events" },
         { icon: <BellIcon className="h-6 w-6" />, label: "Notifications", path: "#" },
@@ -68,19 +70,6 @@ const CoordinatorSidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, toggleM
             <div className={`hidden md:block bg-mirage-50 dark:bg-mirage-800 shadow-md fixed h-full`}>
                 {renderSidebar()}
             </div>
-
-            {/* Mobile Sidebar */}
-            {isMobileOpen && (
-                <div className="fixed inset-0 z-50 flex fixed">
-                <div className="w-64 bg-white dark:bg-gray-800 shadow-md h-full">
-                    {renderSidebar()}
-                </div>
-                <div
-                    className="flex-1 bg-black bg-opacity-50"
-                    onClick={toggleMobileSidebar}
-                ></div>
-                </div>
-            )}
 
             <div className="z-100 fixed bottom-0 left-0 w-full bg-mirage-50 dark:bg-mirage-800 shadow-md md:hidden lg:hidden">
                 <div className="flex justify-between px-4 py-2">
