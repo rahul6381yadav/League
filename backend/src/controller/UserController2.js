@@ -1,6 +1,6 @@
 const {verifyToken, authorize} = require("../middleware/jwtMiddleware");
 const User = require("../model/UserModel");
-
+const s3 = require('../config/AwsConfig');
 exports.createUser = [
     verifyToken, // Replaced authenticate with verifyToken
     authorize("admin", "coordinator"), // Only admins or coordinators
@@ -42,7 +42,7 @@ exports.getUsers = [
             if (batchCode) filter.batchCode = batchCode;
 
             const users = await User.find(filter)
-                .limit(limit ? parseInt(limit) : 500)
+                .limit(limit ? parseInt(limit) : 30)
                 .skip(skip ? parseInt(skip) : 0);
 
             res.status(200).json({message: "Users fetched successfully", users, isError: false});
@@ -90,3 +90,29 @@ exports.deleteUser = [
         }
     },
 ];
+
+//upload the profile photo of the user and upgrad the photo field in the user model and use the multer middleware to upload the image
+exports.uploadProfilePhoto = 
+    async (req, res) => {
+        try {
+            const {id} = req.query;
+            const user = await User.findById(id);
+            if (!user) return res.status(404).json({message: "User not found", isError: true});
+
+            const file = req.file.location; //s3 config
+            if (!file) return res.status(400).json({message: "Please upload a file", isError: true});
+
+            const updateData = {
+                photo: file,
+                lastUpdated: Date.now()
+            };
+
+            const updatedUser = await User.findByIdAndUpdate(id, updateData, {new: true});
+            if (!updatedUser) return res.status(404).json({message: "User not found", isError: true});
+
+            res.status(200).json({message: "Profile photo updated successfully", user: updatedUser, isError: false});
+        } catch (error) {
+            console.error("Error:", error.message);
+            res.status(500).json({message: "Internal Server Error", isError: true});
+        }
+    };

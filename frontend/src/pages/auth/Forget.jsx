@@ -1,10 +1,10 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../../context/AuthContext';
 import {sendPasswordResetEmail} from "firebase/auth";
 import {auth} from "../../firebase";
 
-const Forget = memo(() =>{
+function Forget() {
     const {setForgotPasswordState} = useAuth();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState(null);
@@ -17,7 +17,6 @@ const Forget = memo(() =>{
         try {
             await sendPasswordResetEmail(auth, email);
             setMessage("Password reset email sent! Check your inbox.");
-            setEmail("");
             setError("");
         } catch (err) {
             setError(err.message);
@@ -27,9 +26,9 @@ const Forget = memo(() =>{
 
 
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("jwtToken");
         if (token) {
-            navigate("/home"); 
+            navigate("/home"); // Redirect to Home if already logged in
         }
     }, [navigate]);
 
@@ -94,7 +93,7 @@ const Forget = memo(() =>{
                         <div className="flex justify-center items-center mt-4">
                             <button
                                 type="button"
-                                onClick={() => navigate('/login')}
+                                onClick={() => navigate('/')}
                                 className="text-sm text-blue-500 hover:underline"
                             >
                                 Back to Login
@@ -105,6 +104,6 @@ const Forget = memo(() =>{
             </div>
         </>
     );
-})
+}
 
 export default Forget;
