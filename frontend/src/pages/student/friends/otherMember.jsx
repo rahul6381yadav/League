@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaTwitter } from "react-icons/fa";
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone } from "react-icons/fa";
+import { SiLeetcode } from "react-icons/si";
 import { useParams } from "react-router-dom"; // To get the 'id' from the URL
 import PastParticipants from "../home/PastParticipants";
 import { backendUrl } from "../../../utils/routes";
@@ -114,7 +115,7 @@ const OtherMembers = () => {
                             isPhone
                         />
                         <ContactItem
-                            icon={<FaTwitter />}
+                            icon={<SiLeetcode />}
                             label="Leetcode"
                             value={profile.Leetcode}
                             isLink

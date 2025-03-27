@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaTwitter, FaPencilAlt } from "react-icons/fa";
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone,FaPencilAlt } from "react-icons/fa";
+import { SiLeetcode } from "react-icons/si";
 import { jwtDecode } from "jwt-decode";
 import EditProfile from "./EditProfile";
 import { backendUrl } from "../../../utils/routes";
@@ -216,7 +217,7 @@ const MyProfile = () => {
                         <ContactItem icon={<FaLinkedin />} label="LinkedIn" value={profile.linkedin} isLink />
                         <ContactItem icon={<FaEnvelope />} label="Email" value={profile.email} isEmail />
                         <ContactItem icon={<FaPhone />} label="Phone" value={profile.phone} isPhone />
-                        <ContactItem icon={<FaTwitter />} label="Leetcode" value={profile.Leetcode} isLink />
+                        <ContactItem icon={<SiLeetcode />} label="Leetcode" value={profile.Leetcode} isLink />
                         <ContactItem icon={<FaInstagram />} label="Instagram" value={profile.instagram} isLink />
                         <ContactItem icon={<FaGithub />} label="GitHub" value={profile.github} isLink />
                     </div>
