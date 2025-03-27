@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    twitter: {
+    Leetcode: {
         type: String,
         required: false,
     },

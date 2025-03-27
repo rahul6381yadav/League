@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaTwitter, FaPencilAlt } from "react-icons/fa";
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaLeetcode, FaPencilAlt } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import EditProfile from "./EditProfile";
 import { backendUrl } from "../../../utils/routes";
@@ -14,7 +14,7 @@ const MyProfile = () => {
         linkedin: "",
         email: "",
         phone: "",
-        twitter: "",
+        Leetcode: "",
         instagram: "",
         github: "",
     });
@@ -57,7 +57,7 @@ const MyProfile = () => {
                     linkedin: result.user.linkedin,
                     email: result.user.email,
                     phone: result.user.phone,
-                    twitter: result.user.twitter,
+                    Leetcode: result.user.Leetcode,
                     instagram: result.user.instagram,
                     github: result.user.github,
                 });
@@ -89,7 +89,7 @@ const MyProfile = () => {
                         photo: updatedProfile.photo,
                         linkedin: updatedProfile.linkedin,
                         phone: updatedProfile.phone,
-                        twitter: updatedProfile.twitter,
+                        Leetcode: updatedProfile.Leetcode,
                         instagram: updatedProfile.instagram,
                         github: updatedProfile.github,
                     }),
@@ -216,7 +216,7 @@ const MyProfile = () => {
                         <ContactItem icon={<FaLinkedin />} label="LinkedIn" value={profile.linkedin} isLink />
                         <ContactItem icon={<FaEnvelope />} label="Email" value={profile.email} isEmail />
                         <ContactItem icon={<FaPhone />} label="Phone" value={profile.phone} isPhone />
-                        <ContactItem icon={<FaTwitter />} label="Twitter" value={profile.twitter} isLink />
+                        <ContactItem icon={<FaLeetcode />} label="Leetcode" value={profile.Leetcode} isLink />
                         <ContactItem icon={<FaInstagram />} label="Instagram" value={profile.instagram} isLink />
                         <ContactItem icon={<FaGithub />} label="GitHub" value={profile.github} isLink />
                     </div>
@@ -250,7 +250,7 @@ const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
     if (isPhone) href = `tel:${value}`;
     if (isLink) {
         if (label === "LinkedIn") href = `https://www.linkedin.com/in/${value}`;
-        if (label === "Twitter") href = `https://twitter.com/${value}`;
+        if (label === "Leetcode") href = `https://leetcode.com/${value}`;
         if (label === "Instagram") href = `https://www.instagram.com/${value}`;
         if (label === "GitHub") href = `https://github.com/${value}`;
     }

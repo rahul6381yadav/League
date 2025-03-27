@@ -112,14 +112,14 @@ const EditProfile = ({ profile, onSave, onClose }) => {
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Twitter Username
+                                Leetcode Username
                             </label>
                             <input
                                 type="text"
-                                name="twitter"
-                                value={updatedProfile.twitter || ""}
+                                name="Leetcode"
+                                value={updatedProfile.Leetcode || ""}
                                 onChange={handleInputChange}
-                                placeholder="Enter Twitter Username "
+                                placeholder="Enter Leetcode Username "
                                 className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
                                          bg-mirage-50 dark:bg-mirage-900
                                          text-mirage-900 dark:text-mirage-50

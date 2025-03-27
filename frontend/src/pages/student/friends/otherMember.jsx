@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaTwitter } from "react-icons/fa";
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaLeetcode } from "react-icons/fa";
 import { useParams } from "react-router-dom"; // To get the 'id' from the URL
 import PastParticipants from "../home/PastParticipants";
 import { backendUrl } from "../../../utils/routes";
@@ -16,7 +16,7 @@ const OtherMembers = () => {
         linkedin: "",
         email: "",
         phone: "",
-        twitter: "",
+        Leetcode: "",
         instagram: "",
         github: "",
     });
@@ -44,7 +44,7 @@ const OtherMembers = () => {
                     linkedin: result.user.linkedin,
                     email: result.user.email,
                     phone: result.user.phone,
-                    twitter: result.user.twitter,
+                    Leetcode: result.user.Leetcode,
                     instagram: result.user.instagram,
                     github: result.user.github,
                 });
@@ -114,9 +114,9 @@ const OtherMembers = () => {
                             isPhone
                         />
                         <ContactItem
-                            icon={<FaTwitter />}
-                            label="Twitter"
-                            value={profile.twitter}
+                            icon={<FaLeetcode />}
+                            label="Leetcode"
+                            value={profile.Leetcode}
                             isLink
                         />
                         <ContactItem
@@ -149,8 +149,8 @@ const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
     } else if (isLink) {
         if (label === "LinkedIn") {
             href = `https://www.linkedin.com/in/${value}`;
-        } else if (label === "Twitter") {
-            href = `https://twitter.com/${value}`;
+        } else if (label === "Leetcode") {
+            href = `https://leetcode.com/${value}`;
         } else if (label === "Instagram") {
             href = `https://www.instagram.com/${value}`;
         } else if (label === "GitHub") {
