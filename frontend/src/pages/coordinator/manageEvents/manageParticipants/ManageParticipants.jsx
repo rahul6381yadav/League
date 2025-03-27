@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { backendUrl } from "../../../../utils/routes";
 import EventBanner from "./EventBanner";
+import AddStudent from "./AddStudent";
 // Token decoding logic remains the same
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
@@ -41,6 +42,7 @@ const ManageParticipants = () => {
     const [givePointsModalOpen, setGivePointsModalOpen] = useState(false);
     const [pointsForAll, setPointsForAll] = useState("");
     const [isGivingPoints, setIsGivingPoints] = useState(false);
+    const [isAddingParticipant, setIsAddingParticipant] = useState(false);
     const navigate = useNavigate();
 
 
@@ -428,6 +430,15 @@ const ManageParticipants = () => {
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold text-mirage-700 dark:text-mirage-300">Manage Participants</h2>
                             <span className="flex items-center gap-2">
+                                <button className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                                    onClick={
+                                        
+                                        () => {
+                                            setIsAddingParticipant(true);                                        }
+                                        }
+                                >
+                                    Add Participant
+                                </button>
                                 <span className="bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300 text-sm font-medium px-3 py-1 rounded-full">
                                     {participants.length} Registered
                                 </span>
@@ -578,7 +589,31 @@ const ManageParticipants = () => {
             )}
 
             {/* Give Points to All Modal */}
-
+            {
+                            isAddingParticipant && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                                    <div className="bg-white dark:bg-mirage-800 rounded-lg p-6 w-2/3 max-h-[90vh] overflow-y-auto">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h2 className="text-xl font-bold">Add Participants</h2>
+                                            <button 
+                                                className="text-gray-500 hover:text-gray-700" 
+                                                onClick={() => setIsAddingParticipant(false)}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                        <AddStudent 
+                                            eventId={id} 
+                                            participants={participants}
+                                            setParticipants={setParticipants}
+                                            onClose={() => {
+                                                setIsAddingParticipant(false);
+                                            }} 
+                                        />
+                                    </div>
+                                </div>
+                            )
+                        }
             {givePointsModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" style={modalStyles.givePointsAll}>
                     <div className="bg-white dark:bg-mirage-800 rounded-lg p-6 w-1/3">

@@ -354,6 +354,19 @@ const EventSignUp = () => {
                         </div>
                     </div>
 
+                    {/* Fixed Button Section */}
+                    <div className="p-6 border-t">
+                        <button
+                            className={`w-full bg-mirage-600 dark:bg-mirage-400 text-white rounded-lg py-2 transition-colors 
+        hover:bg-mirage-700 dark:hover:bg-mirage-300 
+        ${isParticipated ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handleSignUp}
+                            disabled={isParticipated}
+                        >
+                            {isParticipated ? 'Participated' : 'Participate'}
+                        </button>
+
+                    </div>
                     {/* Scrollable Participants List */}
                     <div className="flex-1 min-h-0">
                         <div className="h-full overflow-y-auto">
@@ -417,19 +430,6 @@ const EventSignUp = () => {
                         </div>
                     </div>
 
-                    {/* Fixed Button Section */}
-                    <div className="p-6 border-t">
-                        <button
-                            className={`w-full bg-mirage-600 dark:bg-mirage-400 text-white rounded-lg py-2 transition-colors 
-        hover:bg-mirage-700 dark:hover:bg-mirage-300 
-        ${isParticipated ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            onClick={handleSignUp}
-                            disabled={isParticipated}
-                        >
-                            {isParticipated ? 'Participated' : 'Participate'}
-                        </button>
-
-                    </div>
                 </div>
             </div>
         </div>

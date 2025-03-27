@@ -12,7 +12,6 @@ function AddMembers({ alreadyMemberIds = [] }) {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const token = localStorage.getItem("jwtToken");
     const decodedToken = jwtDecode(token);
-
     const fetchAllUsers = async () => {
         try {
             const response = await fetch(
