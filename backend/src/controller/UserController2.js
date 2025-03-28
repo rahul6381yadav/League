@@ -1,5 +1,6 @@
 const {verifyToken, authorize} = require("../middleware/jwtMiddleware");
 const User = require("../model/UserModel");
+const bcrypt = require('bcrypt');
 const s3 = require('../config/AwsConfig');
 exports.createUser = [
     verifyToken, // Replaced authenticate with verifyToken
@@ -59,13 +60,12 @@ exports.updateUser = [
             const {id} = req.query;
             const updates = req.body;
 
+            if (updates.LeeTrack) {
+                const salt = await bcrypt.genSalt(10);
+                updates.LeeTrack = await bcrypt.hash(updates.LeeTrack, salt);
+            }
             const updatedUser = await User.findByIdAndUpdate(id, updates, {new: true});
             if (!updatedUser) return res.status(404).json({ message: "User not found", isError: true });
-            //if the user is updating the leeTrack password then hashed it
-            // if (updates.LeeTrack) {
-            //     const salt = await bcrypt.genSalt(10);
-            //     updates.LeeTrack = await bcrypt.hash(updates.LeeTrack, salt);
-            // }
             res.status(200).json({message: "User updated successfully", user: updatedUser, isError: false});
         } catch (error) {
             console.error("Error:", error.message);

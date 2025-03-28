@@ -181,7 +181,11 @@ exports.leeTrackLogin = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        if(password==user.LeeTrack)
+        //compare leetrack password in user with passwords in request body
+        const isMatch = await bcrypt.compare(password, user.LeeTrack);
+        if (!isMatch) {
+            return res.status(400).json({message: "Invalid credentials"});
+        }
         if (user.role != "student") {
             return res.status(403).json({message: "Access denied"});
         }
