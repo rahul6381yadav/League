@@ -14,20 +14,20 @@ exports.verifyToken = async (req, res, next) => {
 
     try {
         // Verify token using the secret from environment variables
-        // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // let user;
-        //
-        // if(decoded.clubId){
-        //     user = await ClubModel.findById(decoded.clubId); // Fetch user details (exclude password)
-        // }else{
-        //     user = await User.findById(decoded.userId); // Fetch user details (exclude password)
-        // }
-        //
-        // if (!user) {
-        //     return res.status(404).json({ message: "User not found", isError: true });
-        // }
-        //
-        // req.user = user; // Attach the full user object to the request
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        let user;
+        
+        if(decoded.clubId){
+            user = await ClubModel.findById(decoded.clubId); // Fetch user details (exclude password)
+        }else{
+            user = await User.findById(decoded.userId); // Fetch user details (exclude password)
+        }
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found", isError: true });
+        }
+        
+        req.user = user; // Attach the full user object to the request
         next(); // Proceed to the next middleware or controller
     } catch (error) {
         console.error("Token verification failed:", error.message);
