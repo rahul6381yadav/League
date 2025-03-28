@@ -30,6 +30,7 @@ import LeaderboardLanding from './pages/landing/landingPage';
 import Leaderboard from "./pages/student/leaderboards/overallLeaderboard";
 import BatchLeaderboard from "./pages/student/leaderboards/batchLeaderboard";
 import EditEvents from './pages/coordinator/manageEvents/EditEvents';
+import Contest from './pages/coordinator/manangeContest/Contest';
 import ErrorPage from "./pages/common/errorPage"; // Import the new ErrorPage component
 
 function AppRoutes() {
@@ -60,6 +61,7 @@ function AppRoutes() {
             <Route path="/my-club" element={<LayoutCoordinator><MyClub /></LayoutCoordinator>} />
             <Route path="/events/create" element={<LayoutCoordinator><CreateEvents /></LayoutCoordinator>} />
             <Route path="/events/edit/:id" element={<LayoutCoordinator><EditEvents /></LayoutCoordinator>} />
+            <Route path="/contest" element={<LayoutCoordinator><Contest /></LayoutCoordinator>} />
 
             {/* Admin Routes */}
             <Route path="/admin-panel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
