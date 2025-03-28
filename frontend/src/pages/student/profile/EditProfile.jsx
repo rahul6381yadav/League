@@ -34,142 +34,143 @@ const EditProfile = ({ profile, onSave, onClose }) => {
                     <h2 className="text-xl font-bold text-mirage-900 dark:text-mirage-50">Edit Profile</h2>
                 </div>
 
-                {/* Form Content */}
+                /* Form Content */
                 <div className="p-6">
                     <div className="flex flex-col gap-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={updatedProfile.name || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter your full name"
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={updatedProfile.name || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter your full name"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                LeeTrack Password
-                            </label>
-                            <input
-                                type="password" 
-                                name="LeeTrack"
-                                value={updatedProfile.LeeTrack || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter LeeTrack Password"
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    LeeTrack Password
+                                </label>
+                                <input
+                                    type="password"
+                                    name="LeeTrack"
+                                    value={updatedProfile.LeeTrack || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter LeeTrack Password"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    Linkedin Username
+                                </label>
+                                <input
+                                    type="text"
+                                    name="linkedin"
+                                    value={updatedProfile.linkedin || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Linkedin Username"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Linkedin Username
-                            </label>
-                            <input
-                                type="text"
-                                name="linkedin"
-                                value={updatedProfile.linkedin || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter Linkedin Username"
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={updatedProfile.phone || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Phone Number(10 digits)"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    Leetcode Username
+                                </label>
+                                <input
+                                    type="text"
+                                    name="Leetcode"
+                                    value={updatedProfile.Leetcode || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Leetcode Username"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Phone Number
-                            </label>
-                            <input
-                                type="text"
-                                name="phone"
-                                value={updatedProfile.phone || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter Phone Number(10 digits) "
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    Instagram Username
+                                </label>
+                                <input
+                                    type="text"
+                                    name="instagram"
+                                    value={updatedProfile.instagram || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Instagram Username"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
+                                    Github Username
+                                </label>
+                                <input
+                                    type="text"
+                                    name="github"
+                                    value={updatedProfile.github || ""}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Github Username"
+                                    className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
+                                             bg-mirage-50 dark:bg-mirage-900
+                                             text-mirage-900 dark:text-mirage-50
+                                             placeholder-mirage-400 dark:placeholder-mirage-500
+                                             focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
+                                             transition-colors"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Leetcode Username
-                            </label>
-                            <input
-                                type="text"
-                                name="Leetcode"
-                                value={updatedProfile.Leetcode || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter Leetcode Username "
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Instagram Username
-                            </label>
-                            <input
-                                type="text"
-                                name="instagram"
-                                value={updatedProfile.instagram || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter Instagram Username "
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Github Username
-                            </label>
-                            <input
-                                type="text"
-                                name="github"
-                                value={updatedProfile.github || ""}
-                                onChange={handleInputChange}
-                                placeholder="Enter Github Username "
-                                className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
-                                         bg-mirage-50 dark:bg-mirage-900
-                                         text-mirage-900 dark:text-mirage-50
-                                         placeholder-mirage-400 dark:placeholder-mirage-500
-                                         focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:focus:ring-mirage-500
-                                         transition-colors"
-                            />
-                        </div>
-
-
-
                     </div>
                 </div>
-
-                {/* Footer with Actions */}
                 <div className="p-6 border-t border-mirage-200 dark:border-mirage-700 flex justify-end space-x-4">
                     <button
                         onClick={onClose}
