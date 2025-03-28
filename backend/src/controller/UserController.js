@@ -170,7 +170,33 @@ exports.verifyOtp = async (req, res) => {
         res.status(500).json({message: "Internal Server Error"});
     }
 };
+exports.leeTrackLogin = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        if (!email || !password) {
+            return res.status(400).json({message: "Email and password are required"});
+        }
 
+        let user = await User.findOne({email});
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if(password==user.LeeTrack)
+        if (user.role != "student") {
+            return res.status(403).json({message: "Access denied"});
+        }
+        const token = jwt.sign({
+            userId: user._id,
+            role: user.role,
+            email: user.email,
+            fullName: user.fullName
+        }, process.env.JWT_SECRET, {expiresIn: '1d'});
+        res.status(200).json({message: "Login successful", token, user  : user});
+    } catch (error) {
+        console.error("Error:", error.message);
+        res.status(500).json({message: "Internal Server Error"});
+    }
+}
 exports.resetPassword = async (req, res) => {
     try {
         const {email, newPassword} = req.body;

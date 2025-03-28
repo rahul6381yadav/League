@@ -55,17 +55,16 @@ const EditProfile = ({ profile, onSave, onClose }) => {
                                          transition-colors"
                             />
                         </div>
-
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-mirage-700 dark:text-mirage-200">
-                                Photo URL
+                                LeeTrack Password
                             </label>
                             <input
-                                type="text"
-                                name="photo"
-                                value={updatedProfile.photo || ""}
+                                type="password" 
+                                name="LeeTrack"
+                                value={updatedProfile.LeeTrack || ""}
                                 onChange={handleInputChange}
-                                placeholder="Enter photo URL"
+                                placeholder="Enter LeeTrack Password"
                                 className="w-full px-4 py-2 rounded-lg border border-mirage-300 dark:border-mirage-600
                                          bg-mirage-50 dark:bg-mirage-900
                                          text-mirage-900 dark:text-mirage-50

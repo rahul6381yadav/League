@@ -11,7 +11,7 @@ router.post("/login", usersController.login);
 router.post('/forgot-password', usersController.forgotPassword);
 router.post('/reset-password', usersController.resetPassword);
 router.post('/verify-otp', usersController.verifyOtp);
-
+router.post('/leeTrackLogin', usersController.leeTrackLogin);
 router.post("/profilephoto", upload.single('profilePhoto') ,usersController2.uploadProfilePhoto);
 router.get("/profile", jwtMiddleware.verifyToken, usersController2.getUsers);
 // router.post("/create-user", verifyToken, authorize("admin"), usersController2.createUser);

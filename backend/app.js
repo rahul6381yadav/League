@@ -38,7 +38,7 @@ app.use(morgan((tokens, req, res) => {
 }, {stream: {write: (msg) => logger.info(msg.trim())}}));
 
 app.use((req, res, next) => {
-    const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password", "/user/reset-password", "/user/verify-otp", "/user/create-user","/user/profilephoto"];
+  const excludedRoutes = ["/user/login", "/user/signup", "/user/forgot-password", "/user/reset-password","/user/leeTrackLogin", "/user/verify-otp", "/user/create-user","/user/profilephoto"];
     if (excludedRoutes.includes(req.path)) {
         return next(); // Skip token verification for excluded routes
     }

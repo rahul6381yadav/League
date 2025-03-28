@@ -57,6 +57,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    LeeTrack: {
+        type: String,
+        required: false,
+    },
     phone: {
         type: String,
         required: false,
