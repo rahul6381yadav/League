@@ -12,7 +12,7 @@ function AddStudent({ eventId }) {
     const [error, setError] = useState(null);
     const [selectedStudents, setSelectedStudents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); // Increased to 10 students per page
+    const [itemsPerPage] = useState(7); // Increased to 10 students per page
     
     const token = localStorage.getItem("jwtToken");
     
@@ -111,6 +111,7 @@ function AddStudent({ eventId }) {
         } catch (error) {
             setError("Error adding students: " + error.response?.data || error.message);
             console.error("Error adding students:", error.response?.data || error.message);
+            alert("Error adding students:", error.response?.data || error.message);
         } finally {
             setIsLoading(false);
         }
@@ -190,7 +191,7 @@ function AddStudent({ eventId }) {
                     placeholder="Search by name or roll number..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    className="p-2 border rounded w-1/3 bg-mirage-100 dark:bg-mirage-700 text-mirage-50 border-mirage-300"
+                    className="p-2 border rounded w-1/3 bg-mirage-100 text-black-50 dark:bg-mirage-700 dark:text-mirage-50 border-mirage-300"
                 />
                 <div className="ml-auto">
                     Selected {selectedStudents.length} students

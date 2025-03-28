@@ -596,10 +596,10 @@ const ManageParticipants = () => {
                                         <div className="flex justify-between items-center mb-4">
                                             <h2 className="text-xl font-bold">Add Participants</h2>
                                             <button 
-                                                className="text-gray-500 hover:text-gray-700" 
+                                    className="bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300 text-sm font-medium px-4 py-2 rounded-lg hover:bg-mirage-200 dark:hover:bg-mirage-500" 
                                                 onClick={() => setIsAddingParticipant(false)}
                                             >
-                                                ✕
+                                                Close
                                             </button>
                                         </div>
                                         <AddStudent 
