@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const mongoose = require("mongoose");
+const saveContestLog = require("./src/utils/saveContestLog");
 
 //Web Sockets
 // const setupWebsocket = require('./src/websocket/webSocketServer');
@@ -59,7 +60,7 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
-// In server.js
+// WebSocket setup
 const clients = new Set(); // Track all connected clients
 
 wss.on("connection", (socket) => {
@@ -67,10 +68,11 @@ wss.on("connection", (socket) => {
   clients.add(socket);
   socket.isAlive = true;
 
-  socket.on("message", (data) => {
+  socket.on("message", async (data) => {
     try {
       const message = JSON.parse(data);
       console.log("Received message:", message);
+      await saveContestLog(message); 
 
       // Broadcast to all connected clients
       broadcastToAll(message);
@@ -114,5 +116,3 @@ setInterval(() => {
 server.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
 });
-
-// setupWebsocket(server);
