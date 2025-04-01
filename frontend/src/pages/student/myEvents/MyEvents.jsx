@@ -5,7 +5,7 @@ import EventFilters from '../clubs/events/components/EventFilter';
 import EventCard from '../clubs/events/components/EventCard';
 import { jwtDecode } from "jwt-decode";
 import { backendUrl } from '../../../utils/routes';
-
+import EventCardSkeleton from '../clubs/events/components/EventCardSkeleton';
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
@@ -56,8 +56,10 @@ const MyEvents = () => {
                     }
                 );
                 if (eventResponse.data.events && eventResponse.status === 200) {
-                    setMyEvents(eventResponse.data.events);
-                    setFilteredEvents(eventResponse.data.events);
+                    // Sort events by date in descending order
+                    const sortedEvents = eventResponse.data.events.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    setMyEvents(sortedEvents);
+                    setFilteredEvents(sortedEvents);
                 }
             } else {
                 // No attendance records
@@ -92,9 +94,6 @@ const MyEvents = () => {
 
     const filteredEventsPaginated = filteredEvents.slice(pagination.skip, pagination.skip + pagination.limit);
 
-    if (loading) {
-        return <div className="text-mirage-600 dark:text-mirage-200">Loading events...</div>;
-    }
 
     if (myEvents.length === 0) {
         return <div className="text-mirage-600 dark:text-mirage-200">No events available.</div>;
@@ -104,24 +103,34 @@ const MyEvents = () => {
         <div className="h-screen w-full flex bg-mirage-50 dark:bg-mirage-900">
             <div className="h-full w-full flex flex-col p-8">
                 <h1 className="text-3xl font-bold text-mirage-700 dark:text-mirage-100 mb-6 text-center">My Events</h1>
-
+                
                 <EventFilters setFilters={setFilters} />
+                {loading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, index) => (
+                            <EventCardSkeleton key={index} />
+                        ))}
+                    </div>
+                ) : (
+                        
+                    
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredEventsPaginated.length > 0 ? (
-                        filteredEventsPaginated.map((event) => (
-                            <EventCard
-                                key={event._id}
-                                event={event}
-                                className="bg-white dark:bg-mirage-800 border border-mirage-300 dark:border-mirage-600 rounded-lg p-4 shadow-md"
-                            />
-                        ))
-                    ) : (
-                        <p className="text-center text-mirage-600 dark:text-mirage-400 font-semibold">
-                            No events found for the selected filters.
-                        </p>
-                    )}
-                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredEventsPaginated.length > 0 ? (
+                            filteredEventsPaginated.map((event) => (
+                                <EventCard
+                                    key={event._id}
+                                    event={event}
+                                    className="bg-white dark:bg-mirage-800 border border-mirage-300 dark:border-mirage-600 rounded-lg p-4 shadow-md"
+                                />
+                            ))
+                        ) : (
+                            <p className="text-center text-mirage-600 dark:text-mirage-400 font-semibold">
+                                No events found for the selected filters.
+                            </p>
+                        )}
+                    </div>
+                )};
 
                 <Pagination
                     pagination={pagination}

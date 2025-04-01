@@ -24,8 +24,10 @@ const AllEvents = () => {
                     },
                 }
             );
-            setAllEvents(response.data.events);
-            setFilteredEvents(response.data.events);
+            // i want to fetch all events and set them to allEvents and filteredEvents in sorted order of the date
+            const sortedEvents = response.data.events.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setAllEvents(sortedEvents);
+            setFilteredEvents(sortedEvents);
         } catch (err) {
             console.error('Error fetching events:', err);
         } finally {
@@ -67,9 +69,10 @@ const AllEvents = () => {
 
                 <EventFilters setFilters={setFilters} />
                 {loading ? (
-                    <div className=" text-mirage-600 dark:text-mirage-200">
-                        <EventCardSkeleton />
-                        <EventCardSkeleton />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, index) => (
+                            <EventCardSkeleton key={index} />
+                        ))}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -88,7 +91,6 @@ const AllEvents = () => {
                         )}
                     </div>
                 )}
-
 
                 <Pagination
                     pagination={pagination}
