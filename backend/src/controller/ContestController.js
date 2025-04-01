@@ -1,4 +1,5 @@
 const Contest = require('../model/ContestModel');
+const ContestLog = require('../model/ContestLogsModel');
 const User = require('../model/UserModel');
 
 exports.createContest = async (req, res) => {
@@ -157,3 +158,34 @@ exports.getActiveContests = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch active contests', error });
     }
 };
+
+// Get paginated logs
+exports.getContestLogs = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    
+    const logs = await ContestLog.find()
+      .sort({ timestamp: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get logs by room
+exports.getLogsByRoom =  async (req, res) => {
+  try {
+    const logs = await ContestLog.find({ roomCode: req.params.roomCode })
+      .sort({ timestamp: -1 })
+      .limit(100);
+
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
