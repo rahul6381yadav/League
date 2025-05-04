@@ -382,11 +382,11 @@ export default function CodeFlowShowdown() {
                     <div className="p-4">
                     <CodeSnippet code={snippet.code} />
                       
-                      {snippet.hint && (
+                      {/* {snippet.hint && (
                         <div className="mt-3 p-2 bg-blue-900/20 border border-blue-900/30 rounded text-xs text-gray-300">
                           <span className="font-medium text-blue-400">Hint:</span> {snippet.hint}
                         </div>
-                      )}
+                      )} */}
                       
                       {snippet.expectedOutput && (
                         <div className="mt-3">
