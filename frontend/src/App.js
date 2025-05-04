@@ -32,6 +32,7 @@ import BatchLeaderboard from "./pages/student/leaderboards/batchLeaderboard";
 import EditEvents from './pages/coordinator/manageEvents/EditEvents';
 import Contest from './pages/coordinator/manangeContest/Contest';
 import ErrorPage from "./pages/common/errorPage"; // Import the new ErrorPage component
+import CodeFlow1v1ShowdownPage from './pages/static_pages/codeflow1v1Showdown';
 
 function AppRoutes() {
     return (
@@ -40,6 +41,7 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
+            <Route path="/code-flow/:id" element={<CodeFlow1v1ShowdownPage />} />
 
             {/* Student Routes */}
             <Route path="/home" element={<Layout><HomePage /></Layout>} />

@@ -1,0 +1,18 @@
+[
+    {
+      "id": 1,
+      "title": "Binary Search Bug",
+      "language": "Python",
+      "code": "def binary_search(arr, target):\n    left = 0\n    right = len(arr)\n    \n    while left < right:\n        mid = (left + right) // 2\n        \n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid\n        else:\n            right = mid - 1\n    \n    return -1",
+      "hint": "The binary search has an infinite loop issue. Check how the left pointer is updated.",
+      "expectedOutput": "For array [1, 2, 3, 4, 5] and target 3, should return index 2"
+    },
+    {
+      "id": 2,
+      "title": "Merge Sort Implementation",
+      "language": "JavaScript",
+      "code": "function mergeSort(arr) {\n    if (arr.length <= 1) {\n        return arr;\n    }\n    \n    const mid = Math.floor(arr.length / 2);\n    const left = mergeSort(arr.slice(0, mid));\n    const right = mergeSort(arr.slice(mid));\n    \n    return merge(left, right);\n}\n\nfunction merge(left, right) {\n    let result = [];\n    let i = 0;\n    let j = 0;\n    \n    while (i < left.length && j < right.length) {\n        if (left[i] < right[j]) {\n            result.push(left[i]);\n            i++;\n        } else {\n            result.push(right[j]);\n            j++;\n        }\n    }\n    \n    return result;\n}",
+      "hint": "Something is missing at the end of the merge function. Think about what happens when one array is exhausted but the other still has elements.",
+      "expectedOutput": "For array [38, 27, 43, 3, 9, 82, 10], should return [3, 9, 10, 27, 38, 43, 82]"
+    }
+  ]
