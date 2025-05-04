@@ -7,7 +7,150 @@
       "tags": ["Array", "Two Pointers"],
       "timeLimit": 10,
       "link": "https://leetcode.com/problems/sort-array-by-parity/"
+    },
+    {
+      "id": 6,
+      "title": "Sort Array By Parity II",
+      "description": "Rearrange the array so that even indices have even numbers and odd indices have odd numbers.",
+      "category": "Arrays",
+      "tags": ["Array", "Sorting"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/sort-array-by-parity-ii/"
+    },
+    {
+      "id": 7,
+      "title": "Height Checker",
+      "description": "Count how many indices would change if the array was sorted.",
+      "category": "Arrays",
+      "tags": ["Array", "Sorting"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/height-checker/"
+    },
+    {
+      "id": 8,
+      "title": "Rank Transform of an Array",
+      "description": "Assign ranks to elements based on their value.",
+      "category": "Arrays",
+      "tags": ["Array", "Sorting"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/rank-transform-of-an-array/"
+    },
+    {
+      "id": 9,
+      "title": "Widest Vertical Area Between Two Points Containing No Points",
+      "description": "Find the maximum width between vertical lines that doesn't contain any points.",
+      "category": "Geometry",
+      "tags": ["Array", "Sorting"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/widest-vertical-area-between-two-points-containing-no-points/"
+    },
+    {
+      "id": 10,
+      "title": "Sort Array by Increasing Frequency",
+      "description": "Sort elements by increasing frequency and decreasing value.",
+      "category": "Arrays",
+      "tags": ["Array", "Hash Table", "Sorting"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/sort-array-by-increasing-frequency/"
+    },
+    {
+      "id": 11,
+      "title": "Number of Equivalent Domino Pairs",
+      "description": "Count pairs of dominoes that are equivalent.",
+      "category": "Math",
+      "tags": ["Array", "Hash Table"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/number-of-equivalent-domino-pairs/"
+    },
+    {
+      "id": 12,
+      "title": "Relative Sort Array",
+      "description": "Sort an array relative to the order defined by another array.",
+      "category": "Sorting",
+      "tags": ["Array", "Sorting", "Hash Table"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/relative-sort-array/"
+    },
+    {
+      "id": 13,
+      "title": "Defanging an IP Address",
+      "description": "Replace every period '.' in an IP address with '[.]'.",
+      "category": "Strings",
+      "tags": ["String"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/defanging-an-ip-address/"
+    },
+    {
+      "id": 14,
+      "title": "Reverse String",
+      "description": "Reverse the characters of the string in-place.",
+      "category": "Strings",
+      "tags": ["Two Pointers", "String"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/reverse-string/"
+    },
+    {
+      "id": 15,
+      "title": "Reverse Vowels of a String",
+      "description": "Reverse only the vowels in the input string.",
+      "category": "Strings",
+      "tags": ["Two Pointers", "String"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/reverse-vowels-of-a-string/"
+    },
+    {
+      "id": 16,
+      "title": "Contains Duplicate",
+      "description": "Check if any value appears at least twice in the array.",
+      "category": "Arrays",
+      "tags": ["Array", "Hash Table", "Sorting"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/contains-duplicate/"
+    },
+    {
+      "id": 17,
+      "title": "Contains Duplicate II",
+      "description": "Check for duplicate elements within k distance.",
+      "category": "Arrays",
+      "tags": ["Array", "Hash Table", "Sliding Window"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/contains-duplicate-ii/"
+    },
+    {
+      "id": 18,
+      "title": "Intersection of Two Arrays",
+      "description": "Return the intersection of two arrays as a set.",
+      "category": "Arrays",
+      "tags": ["Array", "Hash Table", "Two Pointers", "Binary Search"],
+      "timeLimit": 10,
+      "link": "https://leetcode.com/problems/intersection-of-two-arrays/"
+    },
+    {
+      "id": 19,
+      "title": "Intersection of Two Arrays II",
+      "description": "Return the intersection of two arrays including duplicates.",
+      "category": "Arrays",
+      "tags": ["Array", "Hash Table", "Two Pointers", "Sorting"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/intersection-of-two-arrays-ii/"
+    },
+    {
+      "id": 20,
+      "title": "Arithmetic Subarrays",
+      "description": "Check if each query subarray can form an arithmetic sequence after sorting.",
+      "category": "Arrays",
+      "tags": ["Array", "Sorting", "Prefix Sum"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/arithmetic-subarrays/"
+    },
+    {
+      "id": 21,
+      "title": "Moving Stones Until Consecutive",
+      "description": "Determine the minimum and maximum number of moves needed to make stones consecutive.",
+      "category": "Math",
+      "tags": ["Math", "Greedy", "Sorting"],
+      "timeLimit": 15,
+      "link": "https://leetcode.com/problems/moving-stones-until-consecutive/"
     }
-    
   ]
   
