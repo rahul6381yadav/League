@@ -632,8 +632,8 @@ export default function CodeFlowShowdown() {
       {/* Footer */}
       <footer className="border-t border-gray-800 py-6 px-4">
         <div className="max-w-5xl mx-auto text-center text-gray-400 text-sm">
-          <p>For queries, contact us at organizers@codeflow.edu • Organized by CodeFlow Club</p>
-          <p className="mt-2">© {new Date().getFullYear()} CodeFlow 1v1 Showdown. All rights reserved.</p>
+          <p>For queries, contact us at scitech.sec@students.iiitr.ac.in • Organized by Shubham Dubey</p>
+          <p className="mt-2">© {new Date().getFullYear()} CodeFlow. All rights reserved.</p>
         </div>
       </footer>
     </div>
