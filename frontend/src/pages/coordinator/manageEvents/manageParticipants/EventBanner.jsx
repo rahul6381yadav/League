@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaEdit, FaTrophy } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { backendUrl } from "../../../../utils/routes";
 import { useNavigate } from 'react-router-dom';
@@ -33,114 +33,123 @@ const EventBanner = (props) => {
             }
         };
         fetchEventDetails();
-    }, [id,token]);
+    }, [id, token]);
+
     return (
-        <div className="flex flex-col bg-white dark:bg-mirage-800 rounded-lg shadow-md flex-1">
-                                <div className="relative w-full rounded-t-lg" style={{ paddingBottom: '42.8571%' }}>
-        
-                                    <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                                        {event && event.photo ? (
-                                            <img
-                                                src={event.photo}
-                                                alt="Event Banner"
-                                                className="w-full h-full object-cover rounded-t-lg"
-                                            />
-                                        ) : (
-                            // Replace the existing SVG in your code (around line 320) with:
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 600" className="w-full h-full">
-                                <rect width="1400" height="600" fill="#1a1a1a" />
-                                <path d="M0 540 L1400 420 L1400 600 L0 600 Z" fill="#2d2d2d" />
-                                <path d="M0 480 L1400 360 L1400 540 L0 540 Z" fill="#3d3d3d" />
+        <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 dark:border-violet-900/30 overflow-hidden transition-transform hover:shadow-xl">
+            {/* Event Banner Image */}
+            <div className="relative w-full" style={{ paddingBottom: '40%' }}>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-violet-600/20">
+                    {event && event.photo ? (
+                        <img
+                            src={event.photo}
+                            alt="Event Banner"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center">
+                            <div className="text-center">
+                                <FaTrophy className="text-white/80 text-6xl mb-4 animate-pulse" />
+                                <h3 className="text-white text-xl font-bold tracking-wider">{event?.eventName || "LEAGUE EVENT"}</h3>
+                               
+                            </div>
+                        </div>
+                    )}
 
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="6" result="coloredBlur" />
-                                    <feMerge>
-                                        <feMergeNode in="coloredBlur" />
-                                        <feMergeNode in="SourceGraphic" />
-                                    </feMerge>
-                                </filter>
+                    {/* Overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
 
-                                <text x="700" y="300"
-                                    font-family="Arial Black, sans-serif"
-                                    font-size="120"
-                                    fill="#ffffff"
-                                    text-anchor="middle"
-                                    filter="url(#glow)">
-                                    IIITR
-                                </text>
+                    {/* Edit Button */}
+                    {event && (
+                        <button
+                            onClick={() => navigate(`/events/edit/${event._id}`)}
+                            className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all hover:scale-105 active:scale-95 group"
+                        >
+                            <FaEdit className="text-lg group-hover:text-indigo-200" />
+                        </button>
+                    )}
+                </div>
+            </div>
 
-                                <text x="700" y="380"
-                                    font-family="Arial, sans-serif"
-                                    font-size="40"
-                                    fill="#cccccc"
-                                    text-anchor="middle">
-                                    LEAGUE
-                                </text>
-
-                                <line x1="400" y1="340" x2="1000" y2="340"
-                                    stroke="#4a4a4a"
-                                    stroke-width="3" />
-
-                                <circle cx="380" cy="340" r="6" fill="#6366f1" />
-                                <circle cx="1020" cy="340" r="6" fill="#6366f1" />
-                            </svg>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="p-6 flex-1 flex flex-col">
-        
-
-                                    {event ? (
+            {/* Event Details */}
+            <div className="p-6">
+                {event ? (
                     <>
-                                            <div className="relative flex justify-end">
-                                                <button
-                                                    onClick={() => {
-                                                        navigate(`/events/edit/${event._id}`)
-                                                    }}
-                                                    className="bg-blue-500 text-white px-3 py-1.5 text-sm rounded-md w-24 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                                    Edit Events
-                                                </button>
-                                            </div>
-                                            <h1 className="text-3xl font-bold text-mirage-600 dark:text-mirage-100 mb-4">{event.eventName}</h1>
-        
-        
-                                            <div className="space-y-4 flex-1">
-                                                <div className="space-y-2">
-                                                    <div
-                                                        className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                        <FaCalendarAlt className="mr-2 text-mirage-500" />
-                                                        <span className="mr-2">Date:</span>
-                                                        {new Date(event.date).toLocaleDateString()}
-                                                    </div>
-                                                    <div
-                                                        className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                        <FaMapMarkerAlt className="mr-2 text-mirage-500" />
-                                                        <span className="mr-2">Venue:</span>
-                                                        {event.venue}
-                                                    </div>
-                                                    <div
-                                                        className="flex items-center text-mirage-600 dark:text-mirage-200 text-sm">
-                                                        <FaClock className="mr-2 text-mirage-500" />
-                                                        <span className="mr-2">Duration:</span>
-                                                        {event.duration}
-                                                    </div>
-                                                </div>
-                                                <p className="text-mirage-700 dark:text-mirage-200 text-lg">{event.description}</p>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="animate-pulse">
-                                            <div className="h-8 bg-mirage-200 dark:bg-mirage-600 rounded w-1/3 mb-4"></div>
-                                            <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-full mb-4"></div>
-                                            <div className="space-y-2">
-                                                <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-2/3"></div>
-                                                <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-2/3"></div>
-                                                <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-2/3"></div>
-                                            </div>
-                                        </div>
-                                    )}
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                                {event.eventName}
+                            </h1>
+
+                            <div className="flex flex-wrap gap-2">
+                                <span className="bg-gradient-to-r from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 text-indigo-800 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-medium border border-indigo-200/50 dark:border-violet-700/30">
+                                    {event.category || "Event"}
+                                </span>
+                                {event.totalWinner > 0 && (
+                                    <span className="bg-gradient-to-r from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/30 text-amber-800 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-medium border border-amber-200/50 dark:border-amber-700/30">
+                                        {event.totalWinner} {event.totalWinner === 1 ? "Winner" : "Winners"}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                    <FaCalendarAlt className="text-indigo-500 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Date</span>
+                                    <span>{new Date(event.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                 </div>
                             </div>
+                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                    <FaMapMarkerAlt className="text-indigo-500 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Venue</span>
+                                    <span>{event.venue}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                    <FaClock className="text-indigo-500 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Duration</span>
+                                    <span>{event.duration}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {event.description && (
+                            <div className="mt-4 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
+                                <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">
+                                    {event.description}
+                                </p>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="animate-pulse space-y-4">
+                        <div className="h-8 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-2/3"></div>
+                        <div className="grid grid-cols-3 gap-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex items-center">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-200/50 dark:bg-indigo-800/30 mr-3"></div>
+                                    <div className="space-y-2">
+                                        <div className="h-2 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-12"></div>
+                                        <div className="h-3 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-20"></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="h-16 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-full"></div>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }
+
 export default EventBanner;
