@@ -26,7 +26,7 @@ const modalStyles = {
     givePointsAll: { zIndex: 130 },
 };
 
-const ManageParticipants = () => {
+const EventManagementPage = () => {
     const { id } = useParams();
     const [event, setEvent] = useState(null);
     const [participants, setParticipants] = useState([]);
@@ -796,4 +796,4 @@ const ManageParticipants = () => {
     );
 };
 
-export default ManageParticipants;
+export default EventManagementPage;

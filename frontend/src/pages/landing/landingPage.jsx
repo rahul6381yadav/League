@@ -1,7 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {motion} from 'framer-motion';
-import {useDarkMode} from "../../context/ThemeContext";
-import {useLocation, useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useDarkMode } from "../../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
+
+// Import necessary icons
+import { Home, LogIn, Sun, Moon, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 const clubs = [
     {
@@ -9,260 +12,773 @@ const clubs = [
         description: "Robotics Club of IIIT Raichur.",
         email: "electrogeeks@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/electrogeeks-inverted.png",
+        color: "#3498db"
     },
     {
         name: "Codesoc",
         description: "Coding club of IIIT Raichur",
         email: "code_soc@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/codesoc-inverted.png",
+        color: "#2ecc71"
     },
     {
         name: "Finesse",
         description: "The Cultural Club",
         email: "finesse@students.iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/finesse-inverted.png",
+        color: "#e74c3c"
     },
     {
         name: "Finspiration",
         description: "Finance Club",
         email: "finspiration@students.iiitr.ac.in",
-        image: "https://students.iiitr.ac.in/assets/images/club/finspiration-inverted…",
+        image: "https://students.iiitr.ac.in/assets/images/club/finspiration-inverted.png",
+        color: "#f39c12"
     },
     {
         name: "Xposure",
         description: "Photography Club",
         email: "xposure@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/xposure-inverted.png",
+        color: "#9b59b6"
     },
     {
         name: "NSO",
-        description: "",
+        description: "National Sports Organization",
         email: "sports@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/nso-inverted.png",
+        color: "#1abc9c"
     },
     {
         name: "NSS",
-        description: "",
+        description: "National Service Scheme",
         email: "nss@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/nss-inverted.png",
+        color: "#d35400"
     },
     {
         name: "EBSB",
-        description: "",
+        description: "Ek Bharat Shreshtha Bharat",
         email: "ebsb@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/ebsb-inverted.png",
+        color: "#27ae60"
     },
     {
         name: "Stage&Studio",
         description: "Dance drama and drawing Club",
         email: "d3@students.iiitr.ac.in",
         image: "https://i.postimg.cc/PJMsKvnc/Stage-Studio-Logo.png",
+        color: "#8e44ad"
     },
     {
         name: "E-HaCs",
         description: "Cyber Security and Ethical Hacking Society",
         email: "E-HaCs@students.iiitr.ac.in",
         image: "https://i.ibb.co/hCLr1sf/EHa-CS-Logo.jpg",
+        color: "#2980b9"
     },
     {
         name: "Deep-Labs",
         description: "AIML Society",
         email: "deep_labs@students.iiitr.ac.in",
         image: "https://i.ibb.co/XVz1zJ8/Deep-Labs-logo.png",
+        color: "#c0392b"
     },
     {
         name: "DevX",
         description: "Web/app development society",
         email: "DevX@students.iiitr.ac.in",
         image: "https://i.ibb.co/R7KhDVV/devx-logo.png",
+        color: "#16a085"
     }
 ];
 
 const LeaderboardLanding = () => {
-    const { isDarkMode, toggleDarkMode } = useDarkMode();  // Access dark mode state
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [visibleClubs, setVisibleClubs] = useState(3);
-    const [activeClub, setActiveClub] = useState(null);
+    const { isDarkMode, toggleDarkMode } = useDarkMode();
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isScrolling, setIsScrolling] = useState(false);
     const navigate = useNavigate();
+    const [isMobile, setIsMobile] = useState(false);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-    const updateVisibleClubs = () => {
-        if (window.innerWidth <= 640) {
-            setVisibleClubs(1);
-        } else if (window.innerWidth <= 1024) {
-            setVisibleClubs(2);
-        } else {
-            setVisibleClubs(3);
-        }
-    };
-
+    // Check screen size for responsive design
     useEffect(() => {
-        updateVisibleClubs();
-        window.addEventListener('resize', updateVisibleClubs);
-
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
         return () => {
-            window.removeEventListener('resize', updateVisibleClubs);
+            window.removeEventListener('resize', checkMobile);
         };
     }, []);
 
+    // Auto-scroll clubs carousel
+    useEffect(() => {
+        if (isScrolling) return;
+        
+        const interval = setInterval(() => {
+            setActiveIndex((prevIndex) => (prevIndex + 1) % clubs.length);
+        }, 5000);
+        
+        return () => clearInterval(interval);
+    }, [isScrolling]);
+
+    // Handle club navigation
+    const handleNextClub = () => {
+        setIsScrolling(true);
+        setActiveIndex((prevIndex) => (prevIndex + 1) % clubs.length);
+        setTimeout(() => setIsScrolling(false), 1000);
+    };
+
+    const handlePrevClub = () => {
+        setIsScrolling(true);
+        setActiveIndex((prevIndex) => (prevIndex - 1 + clubs.length) % clubs.length);
+        setTimeout(() => setIsScrolling(false), 1000);
+    };
+
+    // Calculate visible clubs based on window size
+    const getVisibleClubs = () => {
+        const currentIndex = activeIndex;
+        if (isMobile) {
+            return [clubs[currentIndex]];
+        }
+        
+        return [
+            clubs[currentIndex],
+            clubs[(currentIndex + 1) % clubs.length],
+            clubs[(currentIndex + 2) % clubs.length]
+        ];
+    };
+
+    const handleHomePage = () => {
+        const token = localStorage.getItem("authToken");
+        const role = localStorage.getItem("role");
+        if (token) {
+          if (role === "student") {
+            navigate("/home");
+          } else if (role === "coordinator") {
+            navigate("/dashboard");
+          } else if (role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/login");
+          }
+        } else {
+            navigate("/login");
+        }
+    };
+
+    // Get gradient based on theme
+    const getGradient = () => {
+        return isDarkMode 
+            ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900'
+            : 'bg-gradient-to-b from-blue-50 via-white to-blue-50';
+    };
+
     return (
-        <>
-            <iframe
-                src={isDarkMode ? "./background-dark.html" : "./background.html"}  // Dynamically change background HTML file based on dark mode
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "200vh",
-                    border: "none",
-                    zIndex: -1,
-                }}
-                title="Background Design"
-            />
-            <div className={`min-h-screen ${isDarkMode ? './background-dark.html text-white' : './background.html text-black'} relative`}>
-                {/* Header */}
-                <div className={`flex items-center fixed top-6 left-6 ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                    <img
-                        src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
-                        alt="IIITR Logo"
-                        className="w-12 h-12 rounded-full"
-                    />
-                    <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-mirage-50' : 'text-mirage-950'} ml-4`}>
-                        League of IIITR
-                    </h1>
-                </div>
-                <div className="absolute top-6 right-6">
-                    <button
-                        onClick={() =>navigate('/login')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-                    >
-                        Login
-                    </button>
-                </div>
-
-                <div className="text-2xl flex justify-center items-center h-screen">
-                    <h1 className={`text-9xl font-sans font-bold text-center ${isDarkMode ? 'text-mirage-50' : 'text-mirage-950'}`}>
-                        League of IIITR
-                    </h1>
-                </div>
-
-                {/* 3D Clubs Slider */}
-                <div className="min-h-screen p-6">
-                    <div className="container mx-auto">
-                        <h2 className={`text-4xl font-bold text-center ${isDarkMode ? 'text-white' : 'text-black'} mb-12`}>
-                            Our Clubs
-                        </h2>
+        <div className={`min-h-screen ${isDarkMode ? 'text-white bg-gray-900' : 'text-gray-900 bg-white'} relative`}>
+            {/* Modern Particle Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className={`absolute inset-0 opacity-20 ${isDarkMode ? 'bg-blue-900' : 'bg-blue-100'}`}>
+                    {[...Array(20)].map((_, i) => (
                         <motion.div
+                            key={i}
+                            className={`absolute rounded-full ${isDarkMode ? 'bg-blue-400' : 'bg-blue-600'}`}
                             style={{
-                                overflowX: "scroll",
-                                scrollbarWidth: "thin", // Firefox: makes the scrollbar thinner
-                                scrollbarColor: "#4672b1 #253555", // Firefox: thumb and track colors
+                                width: Math.random() * 10 + 5,
+                                height: Math.random() * 10 + 5,
+                                left: `${Math.random() * 100}%`,
+                                top: `${Math.random() * 100}%`,
                             }}
-                            className="flex pb-10 scroll-smooth snap-x styled-scrollbar"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
+                            animate={{
+                                x: [0, Math.random() * 100 - 50],
+                                y: [0, Math.random() * 100 - 50],
+                            }}
+                            transition={{
+                                duration: Math.random() * 10 + 20,
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Header with Navigation */}
+            <motion.header
+                className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900/80' : 'bg-white/80'} backdrop-blur-md shadow-md`}
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <div className="container mx-auto px-6 py-4">
+                    <div className="flex justify-between items-center">
+                        {/* Logo and Site Title */}
+                        <div className="flex items-center space-x-3">
+                            <img
+                                src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
+                                alt="IIITR Logo"
+                                className="w-10 h-10 rounded-full shadow-md"
+                            />
+                            <h1 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                League of IIITR
+                            </h1>
+                        </div>
+
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center space-x-6">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick= {handleHomePage}
+                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                                    isDarkMode 
+                                        ? 'bg-gray-800 hover:bg-gray-700 text-white' 
+                                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                } transition-all`}
+                            >
+                                <Home size={18} />
+                                <span>Dashboard</span>
+                            </motion.button>
+                            
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => navigate('/login')}
+                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                                    isDarkMode 
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                } transition-all`}
+                            >
+                                <LogIn size={18} />
+                                <span>Login</span>
+                            </motion.button>
+                            
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={toggleDarkMode}
+                                className={`p-2 rounded-full ${
+                                    isDarkMode 
+                                        ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
+                                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                } transition-all`}
+                                aria-label="Toggle dark mode"
+                            >
+                                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                            </motion.button>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <div className="md:hidden">
+                            <button 
+                                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'}`}
+                            >
+                                <span className="block w-6 h-0.5 bg-current mb-1.5"></span>
+                                <span className="block w-6 h-0.5 bg-current mb-1.5"></span>
+                                <span className="block w-6 h-0.5 bg-current"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mobile Menu */}
+                <AnimatePresence>
+                    {showMobileMenu && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className={`md:hidden overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
                         >
-                            <style>
-                                {`
-                                    /* WebKit browsers (Chrome, Safari, etc.) */
-                                    .styled-scrollbar::-webkit-scrollbar {
-                                        height: 8px; /* Height for horizontal scrollbar */
-                                    }
+                            <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
+                                <button
+                                    onClick={() => {
+                                        handleHomePage();
+                                        setShowMobileMenu(false);
+                                    }}
+                                    className={`flex items-center space-x-2 px-4 py-3 rounded-lg ${
+                                        isDarkMode 
+                                            ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                                            : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                    } transition-all`}
+                                >
+                                    <Home size={18} />
+                                    <span>Dashboard</span>
+                                </button>
+                                
+                                <button
+                                    onClick={() => {
+                                        navigate('/login');
+                                        setShowMobileMenu(false);
+                                    }}
+                                    className={`flex items-center space-x-2 px-4 py-3 rounded-lg ${
+                                        isDarkMode 
+                                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    } transition-all`}
+                                >
+                                    <LogIn size={18} />
+                                    <span>Login</span>
+                                </button>
+                                
+                                <button
+                                    onClick={() => {
+                                        toggleDarkMode();
+                                        setShowMobileMenu(false);
+                                    }}
+                                    className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg ${
+                                        isDarkMode 
+                                            ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' 
+                                            : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                    } transition-all`}
+                                >
+                                    {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                                    <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </motion.header>
 
-                                    .styled-scrollbar::-webkit-scrollbar-track {
-                                        background: ${isDarkMode ? '#253555' : '#e2e2e2'}; /* Track color */
-                                        border-radius: 4px;
-                                    }
-
-                                    .styled-scrollbar::-webkit-scrollbar-thumb {
-                                        background-color: #4672b1; /* Thumb color */
-                                        border-radius: 4px;
-                                    }
-
-                                    .styled-scrollbar::-webkit-scrollbar-thumb:hover {
-                                        background-color: #6990c7; /* Thumb color on hover */
-                                    }
-                                `}
-                            </style>
-
-                            <div className="flex gap-8 mx-auto">
-                                {clubs.map((club, index) => (
-                                    <motion.div
-                                        key={club.name}
-                                        className={`relative group transition-all duration-300 ease-in-out
-                                            w-72 min-w-[18rem] p-6 rounded-2xl
-                                            ${activeClub === club.name
-                                            ? 'scale-105 shadow-2xl bg-mirage-500/70 border-2 border-mirage-600'
-                                            : 'scale-95 bg-mirage-400/50 hover:bg-mirage-400/70'}
-                                            snap-center cursor-pointer
-                                        `}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => setActiveClub(club.name)}
-                                        onMouseEnter={() => setActiveClub(club.name)}
-                                        onMouseLeave={() => setActiveClub(null)}
+            {/* Hero Section with Advanced Animation */}
+            <section className="relative pt-32 lg:pl-12 pb-0 min-h-screen flex items-center">
+                <div className="container mx-auto px-6">
+                    <div className="flex flex-col md:flex-row items-center">
+                        <motion.div 
+                            className="md:w-1/2 text-center md:text-left mb-12 md:mb-0"
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <motion.h1 
+                                className={`text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-6 
+                                    ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3, duration: 0.8 }}
+                            >
+                                <span className="block">Welcome to the</span>
+                                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                                    League of IIITR
+                                </span>
+                            </motion.h1>
+                            
+                            <motion.p 
+                                className={`text-xl mb-8 max-w-lg mx-auto md:mx-0 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6, duration: 0.8 }}
+                            >
+                                Explore, connect, and participate with the vibrant clubs and societies of IIIT Raichur.
+                            </motion.p>
+                            
+                            <motion.div 
+                                className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.9, duration: 0.8 }}
+                            >
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={handleHomePage}
+                                    className="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all"
+                                >
+                                    Dashboard
+                                </motion.button>
+                                
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => navigate('/login')}
+                                    className={`px-8 py-3 rounded-lg font-medium
+                                        ${isDarkMode 
+                                            ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'} 
+                                        transition-all`}
+                                >
+                                    Login
+                                </motion.button>
+                            </motion.div>
+                        </motion.div>
+                        
+                        <motion.div 
+                            className="md:w-1/2"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <div className="relative h-64 sm:h-80 md:h-96 w-full">
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className={`relative w-48 h-48 sm:w-64 sm:h-64 rounded-full 
+                                        ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'} 
+                                        flex items-center justify-center overflow-hidden`}
                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-br from-mirage-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                        <div className="relative z-10">
-                                            <div className="flex justify-center mb-6">
-                                                <img
-                                                    src={club.image}
-                                                    alt={`${club.name} Logo`}
-                                                    className={`w-32 h-32 rounded-full object-cover
-                                                        transition-all duration-300
-                                                        ${activeClub === club.name
-                                                        ? 'border-4 border-mirage-600 shadow-lg'
-                                                        : 'border-2 border-mirage-900'}
-                                                    `}
+                                        <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                                            className="absolute inset-0"
+                                        >
+                                            {[...Array(8)].map((_, i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    className="absolute w-3 h-3 rounded-full bg-blue-500"
+                                                    style={{
+                                                        top: '50%',
+                                                        left: '50%',
+                                                        transform: `rotate(${i * 45}deg) translateY(-100px)`,
+                                                    }}
                                                 />
-                                            </div>
-                                            <h2 className={`text-3xl font-bold text-center mb-4
-                                                ${activeClub === club.name
-                                                ? 'text-mirage-200'
-                                                : 'text-mirage-300'}
-                                                transition-colors duration-300
-                                            `}>
-                                                {club.name}
-                                            </h2>
-                                            <p className={`text-center text-sm
-                                                ${activeClub === club.name
-                                                ? 'text-mirage-50'
-                                                : 'text-mirage-800'}
-                                                transition-colors duration-300
-                                            `}>
-                                                {club.description}
-                                            </p>
-                                            <p className={`text-center text-sm
-                                                ${activeClub === club.name
-                                                ? 'text-mirage-50'
-                                                : 'text-mirage-800'}
-                                                transition-colors duration-300
-                                            `}>
-                                                {club.email}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                            ))}
+                                        </motion.div>
+                                        
+                                        <motion.img
+                                            src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
+                                            alt="IIITR Logo"
+                                            className="w-28 h-28 sm:w-40 sm:h-40 rounded-full z-10 shadow-lg"
+                                            animate={{ 
+                                                scale: [1, 1.05, 1],
+                                            }}
+                                            transition={{ 
+                                                repeat: Infinity, 
+                                                duration: 3, 
+                                                ease: "easeInOut" 
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
                 </div>
+            </section>
 
-                {/* Dark Mode Toggle */}
-                <button onClick={toggleDarkMode} className="fixed bottom-10 right-10 bg-blue-600 text-white p-4 rounded-full">
-                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-                </button>
+            {/* Call to Action Section */}
+            <section className={`py-20 ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'}`}>
+                <div className="container mx-auto px-6">
+                    <div className="max-w-4xl mx-auto">
+                        <motion.div
+                            className={`rounded-2xl p-10 ${isDarkMode ? 'bg-gradient-to-r from-blue-900 to-purple-900' : 'bg-gradient-to-r from-blue-500 to-purple-600'} text-white shadow-2xl`}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            viewport={{ once: true }}
+                        >
+                            <div className="flex flex-col md:flex-row items-center justify-between">
+                                <div className="md:w-2/3 mb-8 md:mb-0 text-center md:text-left">
+                                    <h2 className="text-3xl font-bold mb-4">Ready to Join the League?</h2>
+                                    <p className="text-lg opacity-90 mb-6">
+                                        Become part of IIIT Raichur's vibrant community today and unlock endless opportunities.
+                                    </p>
+                                </div>
+                                <div className="md:w-1/3 flex justify-center md:justify-end">
+                                    <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => navigate('/register')}
+                                        className="px-8 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-gray-100 transition-all shadow-md"
+                                    >
+                                        Register Now
+                                    </motion.button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
 
-                {/* Footer */}
-                <footer className="bg-gray-800 p-6 text-center">
-                    <p className="text-gray-400">
-                        2024 League of IIITR
-                    </p>
-                </footer>
-            </div>
-        </>
+            {/* Advanced Clubs Showcase */}
+            <section className={`py-20 ${getGradient()}`}>
+                <div className="container mx-auto px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                            Discover Our Vibrant Clubs
+                        </h2>
+                        <p className={`max-w-2xl mx-auto text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Join and participate in IIIT Raichur's diverse community of clubs and organizations.
+                        </p>
+                    </motion.div>
+
+                    {/* Club Carousel Controls */}
+                    <div className="flex justify-center mb-8">
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={handlePrevClub}
+                            className={`mx-2 p-3 rounded-full ${
+                                isDarkMode 
+                                    ? 'bg-gray-800 hover:bg-gray-700 text-white' 
+                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                            } transition-all`}
+                        >
+                            <ChevronLeft size={20} />
+                        </motion.button>
+                        
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={handleNextClub}
+                            className={`mx-2 p-3 rounded-full ${
+                                isDarkMode 
+                                    ? 'bg-gray-800 hover:bg-gray-700 text-white' 
+                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                            } transition-all`}
+                        >
+                            <ChevronRight size={20} />
+                        </motion.button>
+                    </div>
+
+                    {/* Advanced Club Cards Carousel */}
+                    <div className="relative overflow-hidden py-8">
+                        <motion.div 
+                            className="flex flex-wrap justify-center gap-8"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            {getVisibleClubs().map((club, idx) => (
+                                <motion.div
+                                    key={club.name}
+                                    className={`w-full sm:w-72 rounded-2xl overflow-hidden shadow-xl ${
+                                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                                    }`}
+                                    initial={{ opacity: 0, y: 50 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.2, duration: 0.6 }}
+                                    whileHover={{ 
+                                        y: -10,
+                                        boxShadow: isDarkMode 
+                                            ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' 
+                                            : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                                    }}
+                                >
+                                    {/* Club Card Header */}
+                                    <div 
+                                        className="h-24 p-4 flex items-center justify-center"
+                                        style={{ backgroundColor: club.color }}
+                                    >
+                                        <div className="relative">
+                                            <img
+                                                src={club.image}
+                                                alt={`${club.name} Logo`}
+                                                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md absolute -bottom-12 left-1/2 transform -translate-x-1/2"
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Club Card Content */}
+                                    <div className="pt-16 pb-6 px-6">
+                                        <h3 className={`text-xl font-bold text-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {club.name}
+                                        </h3>
+                                        <p className={`text-center text-sm mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                            {club.description}
+                                        </p>
+                                        <div className={`text-center text-xs mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {club.email}
+                                        </div>
+                                        
+                                        {/* Club Action Buttons */}
+                                        <div className="flex justify-center">
+                                            <motion.button
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 bg-blue-600 text-white hover:bg-blue-700 transition-all"
+                                            >
+                                                <span>View Details</span>
+                                                <ExternalLink size={14} />
+                                            </motion.button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </div>
+                    
+                    {/* Club Navigation Indicators */}
+                    <div className="flex justify-center mt-10">
+                        {clubs.map((_, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => {
+                                    setIsScrolling(true);
+                                    setActiveIndex(idx);
+                                    setTimeout(() => setIsScrolling(false), 1000);
+                                }}
+                                className={`w-2 h-2 mx-1 rounded-full transition-all ${
+                                    idx === activeIndex
+                                        ? isDarkMode
+                                            ? 'bg-blue-500 w-6'
+                                            : 'bg-blue-600 w-6'
+                                        : isDarkMode
+                                            ? 'bg-gray-700'
+                                            : 'bg-gray-300'
+                                }`}
+                                aria-label={`Go to slide ${idx + 1}`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Benefits/Features Section */}
+            <section className={`py-20 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+                <div className="container mx-auto px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                            Why Join the League?
+                        </h2>
+                        <p className={`max-w-2xl mx-auto text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Experience the benefits of being part of IIIT Raichur's vibrant community.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: "Connect & Network",
+                                description: "Build valuable relationships with peers, faculty, and industry professionals.",
+                                icon: "👥"
+                            },
+                            {
+                                title: "Develop Skills",
+                                description: "Enhance your technical and soft skills through hands-on projects and team activities.",
+                                icon: "🚀"
+                            },
+                            {
+                                title: "Showcase Talent",
+                                description: "Participate in events, competitions, and showcase your unique abilities.",
+                                icon: "🏆"
+                            }
+                                                    ].map((feature, idx) => (
+                            <motion.div
+                                key={idx}
+                                className={`p-6 rounded-xl ${
+                                    isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
+                                } text-center relative overflow-hidden`}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.2, duration: 0.6 }}
+                                whileHover={{ 
+                                    scale: 1.03,
+                                    boxShadow: isDarkMode 
+                                        ? '0 20px 25px -5px rgba(0, 0, 0, 0.5)' 
+                                        : '0 20px 25px -5px rgba(0, 0, 0, 0.15)'
+                                }}
+                            >
+                                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color}`}></div>
+                                <div className="mb-4">
+                                    <span className="text-4xl">{feature.icon}</span>
+                                </div>
+                                <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {feature.title}
+                                </h3>
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                    {feature.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className={`py-12 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-800'} text-white`}>
+                <div className="container mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div>
+                            <div className="flex items-center mb-4">
+                                <img
+                                    src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
+                                    alt="IIITR Logo"
+                                    className="w-10 h-10 rounded-full mr-3"
+                                />
+                                <h3 className="text-xl font-bold">League of IIITR</h3>
+                            </div>
+                            <p className="text-gray-400 mb-4">
+                                Connecting clubs and students across the IIIT Raichur campus.
+                            </p>
+                        </div>
+                        
+                        {/* <div>
+                            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+                            <ul className="space-y-2">
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Clubs</a></li>
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Events</a></li>
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Leaderboard</a></li>
+                            </ul>
+                        </div> */}
+                        
+                        {/* <div>
+                            <h4 className="text-lg font-semibold mb-4">Resources</h4>
+                            <ul className="space-y-2">
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+                            </ul>
+                        </div> */}
+                        
+                        {/* <div>
+                            <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
+                            <div className="flex space-x-4 mb-4">
+                                <a href="#" className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                                    <span className="sr-only">Facebook</span>
+                                    
+                                    f
+                                </a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-blue-400 transition-colors">
+                                    <span className="sr-only">Twitter</span>
+                                  
+                                    t
+                                </a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-pink-600 transition-colors">
+                                    <span className="sr-only">Instagram</span>
+                                  
+                                    i
+                                </a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-blue-800 transition-colors">
+                                    <span className="sr-only">LinkedIn</span>
+                                    
+                                    in
+                                </a>
+                            </div>
+                            <p className="text-gray-400">
+                                Email: league@iiitr.ac.in
+                            </p>
+                        </div> */}
+                    </div>
+                    
+                    <div className="border-t border-gray-700 mt-8 pt-8 text-center">
+                        <p className="text-gray-400">
+                            © {new Date().getFullYear()} League of IIITR. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            </footer>
+        </div>
     );
-};
+}
 
 export default LeaderboardLanding;

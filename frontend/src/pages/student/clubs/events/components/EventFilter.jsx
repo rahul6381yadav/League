@@ -1,63 +1,118 @@
 import React, { useState } from 'react';
-import { FaCalendarAlt, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaCalendarAlt, FaTimes, FaFilter } from 'react-icons/fa';
 
 const EventFilters = ({ setFilters }) => {
-    const [search, setSearch] = useState('');
-    const [date, setDate] = useState('');
+  const [search, setSearch] = useState('');
+  const [date, setDate] = useState('');
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
-    const applyFilters = () => {
-        setFilters({ search, date });
-    };
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setFilters(prev => ({ ...prev, search: e.target.value }));
+  };
 
-    const clearFilters = () => {
-        setSearch('');
-        setDate('');
-        setFilters({ search: '', date: '' });
-    };
+  const handleDateChange = (e) => {
+    setDate(e.target.value);
+    setFilters(prev => ({ ...prev, date: e.target.value }));
+  };
 
-    return (
-        <div className="bg-mirage-50 dark:bg-mirage-900 p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row md:space-x-4">
-            <div className="flex-grow mb-2 md:mb-0">
-                <div className="relative">
-                    <FaSearch className="absolute left-3 top-2 text-mirage-500" />
-                    <input
-                        type="text"
-                        placeholder="Search events..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:bg-mirage-800 dark:text-mirage-200"
-                    />
-                </div>
-            </div>
-            <div className="flex-grow mb-2 md:mb-0">
-                <div className="relative">
-                    <FaCalendarAlt className="absolute left-3 top-2 text-mirage-500" />
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="pl-10 p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-mirage-400 dark:bg-mirage-800 dark:text-mirage-200"
-                    />
-                </div>
-            </div>
-            <div className="flex flex-col md:flex-row md:space-x-2">
-                <button
-                    onClick={applyFilters}
-                    className="w-full md:w-auto p-2 bg-mirage-600 text-white rounded flex items-center space-x-2 shadow-md hover:bg-mirage-700 transition mb-2 md:mb-0"
-                >
-                    <FaSearch />
-                    <span>Apply</span>
-                </button>
-                <button
-                    onClick={clearFilters}
-                    className="w-full md:w-auto p-2 bg-mirage-500 text-white rounded flex items-center space-x-2 shadow-md hover:bg-mirage-600 transition"
-                >
-                    <FaTimes />
-                    <span>Clear</span>
-                </button>
-            </div>
+  const clearFilters = () => {
+    setSearch('');
+    setDate('');
+    setFilters({});
+  };
+
+  const toggleFilterMenu = () => {
+    setIsFilterMenuOpen(!isFilterMenuOpen);
+  };
+
+  return (
+    <div className="mb-4">
+      {/* Desktop view - show all filters inline */}
+      <div className="hidden md:flex items-center space-x-3">
+        <div className="relative flex-1">
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mirage-400" />
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={search}
+            onChange={handleSearchChange}
+            className="w-full pl-10 pr-4 py-2 border border-mirage-200 dark:border-mirage-600 rounded-full bg-white dark:bg-mirage-700 focus:outline-none focus:ring-2 focus:ring-mirage-500 text-mirage-800 dark:text-mirage-50"
+          />
         </div>
-    );
+        
+        <div className="relative w-48">
+          <FaCalendarAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mirage-400" />
+          <input
+            type="date"
+            value={date}
+            onChange={handleDateChange}
+            className="w-full pl-10 pr-4 py-2 border border-mirage-200 dark:border-mirage-600 rounded-full bg-white dark:bg-mirage-700 focus:outline-none focus:ring-2 focus:ring-mirage-500 text-mirage-800 dark:text-mirage-50"
+          />
+        </div>
+        
+        {(search || date) && (
+          <button
+            onClick={clearFilters}
+            className="px-4 py-2 bg-mirage-100 dark:bg-mirage-700 text-mirage-600 dark:text-mirage-300 rounded-full hover:bg-mirage-200 dark:hover:bg-mirage-600 flex items-center gap-2"
+          >
+            <FaTimes size={12} />
+            <span>Clear</span>
+          </button>
+        )}
+      </div>
+
+      {/* Mobile view - collapsible filter menu */}
+      <div className="md:hidden">
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mirage-400" />
+            <input
+              type="text"
+              placeholder="Search events..."
+              value={search}
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-4 py-2 border border-mirage-200 dark:border-mirage-600 rounded-full bg-white dark:bg-mirage-700 focus:outline-none focus:ring-2 focus:ring-mirage-500 text-mirage-800 dark:text-mirage-50"
+            />
+          </div>
+          
+          <button
+            onClick={toggleFilterMenu}
+            className={`p-2 ${isFilterMenuOpen ? 'bg-mirage-500 text-white' : 'bg-mirage-100 dark:bg-mirage-700 text-mirage-600 dark:text-mirage-300'} rounded-full hover:bg-mirage-500 hover:text-white transition-colors`}
+            aria-label="Toggle filters"
+          >
+            <FaFilter size={14} />
+          </button>
+          
+          {(search || date) && (
+            <button
+              onClick={clearFilters}
+              className="p-2 bg-mirage-100 dark:bg-mirage-700 text-mirage-600 dark:text-mirage-300 rounded-full hover:bg-mirage-200 dark:hover:bg-mirage-600"
+              aria-label="Clear filters"
+            >
+              <FaTimes size={14} />
+            </button>
+          )}
+        </div>
+        
+        {/* Collapsible date filter */}
+        {isFilterMenuOpen && (
+          <div className="mt-2 p-3 bg-white dark:bg-mirage-700 rounded-lg shadow-md border border-mirage-200 dark:border-mirage-600">
+            <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-1">Date</label>
+            <div className="relative">
+              <FaCalendarAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mirage-400" />
+              <input
+                type="date"
+                value={date}
+                onChange={handleDateChange}
+                className="w-full pl-10 pr-4 py-2 border border-mirage-200 dark:border-mirage-600 rounded-lg bg-white dark:bg-mirage-700 focus:outline-none focus:ring-2 focus:ring-mirage-500 text-mirage-800 dark:text-mirage-50"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default EventFilters;

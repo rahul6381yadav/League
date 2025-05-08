@@ -1,404 +1,422 @@
 import React, { useEffect, useState } from 'react';
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaTrophy, FaInfoCircle } from 'react-icons/fa';
-import { Mail } from 'lucide-react';
-import { useLocation, useNavigate } from "react-router-dom";
-// decode jwt token
-import { jwtDecode } from "jwt-decode";
+import { Calendar, Clock, MapPin, Trophy, Info, Upload, Mail, Plus, X, Check, ChevronLeft } from 'lucide-react';
 import { backendUrl } from '../../../utils/routes';
+import { jwtDecode } from "jwt-decode";
 
 // Ensure token exists before attempting to decode it
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
 if (token) {
-    try {
-        decodedToken = jwtDecode(token); // Decode JWT token
-    } catch (error) {
-        console.error("Error decoding JWT token:", error.message);
-    }
+  try {
+    decodedToken = jwtDecode(token);
+  } catch (error) {
+    console.error("Error decoding JWT token:", error.message);
+  }
 }
 
-function CreateEvents() {
-    const [collateralClubs, setCollateralClubs] = useState([]);
-    const [selectedCollateralClubs, setSelectedCollateralClubs] = useState([]);
-    const token = localStorage.getItem("jwtToken");
-    const [eventData, setEventData] = useState({
-        eventName: '',
-        photo: '',
-        description: '',
-        venue: '',
-        duration: '',
-        maxPoints: '',
-        endDate: '',
-        date: '',
-        numberOfWinners: '', // New field
-    });
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { clubId: primaryClubId, clubName: primaryClubName } = decodedToken || {};
-    const handleBack = () => {
-        navigate('/manage-events');
-    };
+export default function CreateEventPage() {
+  const [collateralClubs, setCollateralClubs] = useState([]);
+  const [selectedCollateralClubs, setSelectedCollateralClubs] = useState([]);
+  const token = localStorage.getItem("jwtToken");
+  const [eventData, setEventData] = useState({
+    eventName: '',
+    photo: '',
+    description: '',
+    venue: '',
+    duration: '',
+    maxPoints: '',
+    endDate: '',
+    date: '',
+    numberOfWinners: '',
+  });
+  const [tab, setTab] = useState('details'); // 'details' or 'clubs'
+  const { clubId: primaryClubId, clubName: primaryClubName } = decodedToken || {};
 
-    useEffect(() => {
-        const fetchClubs = async () => {
-            try {
-                const response = await fetch(`${backendUrl}/api/v1/club`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const data = await response.json();
-                const filteredClubs = data.clubs.filter((club) => club._id !== primaryClubId);
-                setCollateralClubs(filteredClubs);
-            } catch (error) {
-                console.error('Error fetching clubs:', error);
-            }
-        };
+  const handleBack = () => {
+    window.history.back();
+  };
 
-        fetchClubs();
-    }, [primaryClubId]);
-
-    const handleInputChange = (e) => {
-        setEventData({ ...eventData, [e.target.name]: e.target.value });
-    };
-
-    const handleCheckboxChange = (clubId) => {
-        setSelectedCollateralClubs((prev) => {
-            if (prev.includes(clubId)) {
-                return prev.filter((id) => id !== clubId);
-            }
-            return [...prev, clubId];
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/v1/club`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
+        const data = await response.json();
+        const filteredClubs = data.clubs.filter((club) => club._id !== primaryClubId);
+        setCollateralClubs(filteredClubs);
+      } catch (error) {
+        console.error('Error fetching clubs:', error);
+      }
     };
 
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        const clubIds = [primaryClubId, ...selectedCollateralClubs];
-        const newEvent = { ...eventData, clubIds };
-        console.log("club Events ", clubIds);
-        console.log("new Events  ", newEvent);
-        try {
-            const response = await fetch(`${backendUrl}/api/v1/club/events`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(newEvent),
-            });
+    fetchClubs();
+  }, [primaryClubId]);
 
-            const data = await response.json();
-            if (data.isError) {
-                alert('Error creating event: ' + data.message);
-            } else {
-                setEventData({
-                    eventName: '',
-                    photo: '',
-                    description: '',
-                    venue: '',
-                    duration: '',
-                    maxPoints: '',
-                    endDate: '',
-                    date: '',
-                    numberOfWinners: '', // Reset new field
-                });
-                setSelectedCollateralClubs([]);
-                alert('Event created successfully!');
-            }
-        } catch (error) {
-            console.error('Error creating event:', error);
-        }
-    };
+  const handleInputChange = (e) => {
+    setEventData({ ...eventData, [e.target.name]: e.target.value });
+  };
 
-    return (
-        <div className="h-screen w-full flex bg-mirage-50 dark:bg-mirage-900">
-            <div className="h-full w-full grid grid-cols-1 md:grid-cols-[1fr,auto] gap-8 p-8 pb-20 md:pb-8">
-                {/* Left Side - Event Creation and Collaborating Clubs */}
-                <div className="flex flex-col space-y-8">
-                    {/* Event Creation Form */}
-                    <div className="bg-white dark:bg-mirage-800 rounded-lg shadow-md">
-                        {/* Banner Section */}
-                        <div className="relative w-full rounded-t-lg" style={{ paddingBottom: '25%' }}>
-                            <div className="absolute top-0 left-0 w-full h-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center rounded-t-lg">
-                                <span className="text-mirage-600 dark:text-mirage-300">Event Banner Upload (Coming Soon)</span>
-                            </div>
-                        </div>
+  const handleCheckboxChange = (clubId) => {
+    setSelectedCollateralClubs((prev) => {
+      if (prev.includes(clubId)) {
+        return prev.filter((id) => id !== clubId);
+      }
+      return [...prev, clubId];
+    });
+  };
 
-                        {/* Form Content */}
-                        <form onSubmit={handleFormSubmit} className="p-6">
-                            <h1 className="text-3xl font-bold text-mirage-600 dark:text-mirage-100 mb-6">Create New Event</h1>
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const clubIds = [primaryClubId, ...selectedCollateralClubs];
+    const newEvent = { ...eventData, clubIds };
+    
+    try {
+      const response = await fetch(`${backendUrl}/api/v1/club/events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newEvent),
+      });
 
-                            <div className="space-y-4 mb-6">
-                                {/* Event Name */}
-                                <div>
-                                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Event Name</label>
-                                    <input
-                                        type="text"
-                                        name="eventName"
-                                        value={eventData.eventName}
-                                        onChange={handleInputChange}
-                                        className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                        required
-                                    />
-                                </div>
+      const data = await response.json();
+      if (data.isError) {
+        alert('Error creating event: ' + data.message);
+      } else {
+        setEventData({
+          eventName: '',
+          photo: '',
+          description: '',
+          venue: '',
+          duration: '',
+          maxPoints: '',
+          endDate: '',
+          date: '',
+          numberOfWinners: '',
+        });
+        setSelectedCollateralClubs([]);
+        alert('Event created successfully!');
+      }
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
+  };
 
-                                {/* Description */}
-                                <div>
-                                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Description</label>
-                                    <textarea
-                                        name="description"
-                                        value={eventData.description}
-                                        onChange={handleInputChange}
-                                        rows="4"
-                                        className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                        required
-                                    />
-                                </div>
+  // Custom form field component for consistent styling
+  const FormField = ({ label, icon, children }) => (
+    <div className="relative">
+      <label className="text-xs font-medium text-indigo-900 dark:text-indigo-200 mb-1 flex items-center">
+        {icon && <span className="mr-1">{icon}</span>}
+        {label}
+      </label>
+      {children}
+    </div>
+  );
 
-                                {/* banner of events */}
-                                <div>
-                                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Banner Link</label>
-                                    <input
-                                        type="text"
-                                        name="photo"
-                                        value={eventData.photo}
-                                        onChange={handleInputChange}
-                                        className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                    />
-                                </div>
-
-                                {/* Event Details Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                                            <FaCalendarAlt className="inline mr-2" />
-                                            Start Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="date"
-                                            value={eventData.date}
-                                            onChange={handleInputChange}
-                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                                            <FaCalendarAlt className="inline mr-2" />
-                                            End Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="endDate"
-                                            value={eventData.endDate}
-                                            onChange={handleInputChange}
-                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                                            <FaClock className="inline mr-2" />
-                                            Duration
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="duration"
-                                            value={eventData.duration}
-                                            onChange={handleInputChange}
-                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                                            <FaMapMarkerAlt className="inline mr-2" />
-                                            Venue
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="venue"
-                                            value={eventData.venue}
-                                            onChange={handleInputChange}
-                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                                            <FaTrophy className="inline mr-2" />
-                                            Maximum Points
-                                        </label>
-                                        <input
-                                            type="number"
-                                            name="maxPoints"
-                                            value={eventData.maxPoints}
-                                            onChange={handleInputChange}
-                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                                            Number of Winners
-                                        </label>
-                                        <input
-                                            type="number"
-                                            name="numberOfWinners"
-                                            value={eventData.numberOfWinners}
-                                            onChange={handleInputChange}
-                                            className="w-full p-3 rounded-lg border border-mirage-200 dark:border-mirage-600 bg-white dark:bg-mirage-700 text-mirage-600 dark:text-mirage-200"
-                                            required
-                                        />
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full bg-mirage-600 dark:bg-mirage-400 text-white rounded-lg py-3 transition-colors hover:bg-mirage-700 dark:hover:bg-mirage-300"
-                            >
-                                Create Event
-                            </button>
-                        </form>
-                    </div>
-
-                    {/* Collaborating Clubs Section */}
-                    <div className="bg-white dark:bg-mirage-800 rounded-lg shadow-md">
-                        <div className="p-6 border-b border-mirage-200 dark:border-mirage-700">
-                            <div className="flex justify-between items-center">
-                                <h2 className="text-2xl font-bold text-mirage-700 dark:text-mirage-300">Collaborating Clubs</h2>
-                                <span className="bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300 text-sm font-medium px-3 py-1 rounded-full">
-                                    {selectedCollateralClubs.length + 1} Selected
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {/* Primary Club Card */}
-                                <div className="bg-gradient-to-r from-mirage-200 to-mirage-300 dark:from-mirage-600 dark:to-mirage-700 rounded-lg p-4 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-12 rounded-full bg-mirage-400 dark:bg-mirage-500 flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
-                                            <Mail className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div className="flex-grow">
-                                            <h4 className="text-sm font-medium text-mirage-600 dark:text-mirage-200">
-                                                {primaryClubName}
-                                            </h4>
-                                            <span className="text-xs bg-mirage-100 dark:bg-mirage-800 text-mirage-500 dark:text-mirage-300 px-2 py-0.5 rounded-full">
-                                                Primary
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Collateral Club Cards */}
-                                {collateralClubs.map((club) => (
-                                    <div
-                                        key={club._id}
-                                        className={`group bg-white dark:bg-mirage-700 rounded-lg p-4 border-2 transition-all duration-200 
-                                            hover:shadow-lg hover:scale-[1.02] cursor-pointer
-                                            ${selectedCollateralClubs.includes(club._id)
-                                                ? 'border-mirage-500 dark:border-mirage-400 hover:border-mirage-600 dark:hover:border-mirage-300'
-                                                : 'border-transparent hover:border-mirage-300 dark:hover:border-mirage-500'
-                                            }`}
-                                        onClick={() => handleCheckboxChange(club._id)}
-                                    >
-                                        <div className="flex items-center space-x-4">
-                                            <div className="w-12 h-12 rounded-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
-                                                <Mail className="w-6 h-6 text-mirage-600 dark:text-mirage-300 transition-colors group-hover:text-mirage-700 dark:group-hover:text-mirage-200" />
-                                            </div>
-                                            <div className="flex-grow">
-                                                <h4 className="text-sm font-medium text-mirage-600 dark:text-mirage-200 transition-colors group-hover:text-mirage-700 dark:group-hover:text-mirage-100">
-                                                    {club.name}
-                                                </h4>
-                                                <span className="text-xs bg-mirage-100 dark:bg-mirage-800 text-mirage-500 dark:text-mirage-300 px-2 py-0.5 rounded-full transition-colors group-hover:bg-mirage-200 dark:group-hover:bg-mirage-700">
-                                                    Collaborator
-                                                </span>
-                                            </div>
-                                            <div className="flex-shrink-0">
-                                                <input
-                                                    type="checkbox"
-                                                    id={club._id}
-                                                    checked={selectedCollateralClubs.includes(club._id)}
-                                                    onChange={(e) => {
-                                                        e.stopPropagation();
-                                                        handleCheckboxChange(club._id);
-                                                    }}
-                                                    className="w-5 h-5 text-mirage-600 dark:text-mirage-400 border-mirage-300 dark:border-mirage-600 rounded cursor-pointer transition-all hover:ring-2 hover:ring-mirage-400 dark:hover:ring-mirage-500"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Side - Guidelines Card */}
-                <div className="bg-white dark:bg-mirage-800 rounded-lg shadow-md w-full md:w-96">
-                    <div className="p-6 border-b border-mirage-200 dark:border-mirage-700">
-                        <div className="flex items-center space-x-2">
-                            <FaInfoCircle className="text-mirage-600 dark:text-mirage-300" />
-                            <h2 className="text-2xl font-bold text-mirage-700 dark:text-mirage-300">Guidelines</h2>
-                        </div>
-                    </div>
-
-                    <div className="p-6 space-y-4">
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200">Event Name</h3>
-                            <p className="text-sm text-mirage-500 dark:text-mirage-300">Choose a clear, descriptive name that reflects the event's purpose.</p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200">Description</h3>
-                            <p className="text-sm text-mirage-500 dark:text-mirage-300">Include key details about the event, its objectives, and what participants can expect.</p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200">Date & Duration</h3>
-                            <p className="text-sm text-mirage-500 dark:text-mirage-300">Specify the event date and expected duration. Use format: "X hours" or "X days".</p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200">Venue</h3>
-                            <p className="text-sm text-mirage-500 dark:text-mirage-300">Provide specific location details including building/room number if applicable.</p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200">Maximum Points</h3>
-                            <p className="text-sm text-mirage-500 dark:text-mirage-300">Set the maximum points participants can earn. Consider event duration and complexity.</p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200">Collaborating Clubs</h3>
-                            <p className="text-sm text-mirage-500 dark:text-mirage-300">Select relevant clubs for collaboration. This helps in broader reach and resource sharing.</p>
-                        </div>
-
-                        <div className="mt-6 p-4 bg-mirage-50 dark:bg-mirage-700 rounded-lg">
-                            <h3 className="font-semibold text-mirage-600 dark:text-mirage-200 mb-2">Tips</h3>
-                            <ul className="text-sm text-mirage-500 dark:text-mirage-300 space-y-2">
-                                <li>• Keep descriptions concise but informative</li>
-                                <li>• Double-check date and venue availability</li>
-                                <li>• Consider time zones for online events</li>
-                                <li>• Coordinate with collaborating clubs before finalizing</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-2">
+            
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white ml-2">Create Event</h1>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs px-3 py-1 bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-200 rounded-full">
+              {selectedCollateralClubs.length + 1} Club{selectedCollateralClubs.length ? 's' : ''}
+            </span>
+            <button
+              onClick={() => handleFormSubmit(new Event('submit'))}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all flex items-center"
+            >
+              <Plus size={16} className="mr-1" />
+              Create Event
+            </button>
+          </div>
         </div>
-    );
-}
 
-export default CreateEvents;
+        {/* Main content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left section */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Tabs */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+              <div className="flex border-b border-gray-200 dark:border-gray-700">
+                <button
+                  className={`flex-1 px-4 py-3 text-sm font-medium ${
+                    tab === 'details'
+                      ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
+                  }`}
+                  onClick={() => setTab('details')}
+                >
+                  Event Details
+                </button>
+                <button
+                  className={`flex-1 px-4 py-3 text-sm font-medium ${
+                    tab === 'clubs'
+                      ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
+                  }`}
+                  onClick={() => setTab('clubs')}
+                >
+                  Collaborating Clubs ({selectedCollateralClubs.length + 1})
+                </button>
+              </div>
+
+              {/* Tab content */}
+              {tab === 'details' ? (
+                <form className="p-6 space-y-6">
+                  {/* Banner upload */}
+                  <div className="relative h-32 w-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-lg overflow-hidden group">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-white flex flex-col items-center">
+                        <Upload size={24} />
+                        <span className="text-sm mt-1">Upload Banner</span>
+                      </div>
+                    </div>
+                    {eventData.photo ? (
+                      <img 
+                        src={eventData.photo} 
+                        alt="Event banner" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-sm">Banner Image</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Banner URL input */}
+                  <FormField label="Banner URL" icon={<Upload size={14} />}>
+                    <input
+                      type="text"
+                      name="photo"
+                      value={eventData.photo}
+                      onChange={handleInputChange}
+                      placeholder="Enter image URL for event banner"
+                      className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                    />
+                  </FormField>
+                  
+                  {/* Event Name */}
+                  <FormField label="Event Name">
+                    <input
+                      type="text"
+                      name="eventName"
+                      value={eventData.eventName}
+                      onChange={handleInputChange}
+                      placeholder="Enter event name"
+                      className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                      required
+                    />
+                  </FormField>
+
+                  {/* Description */}
+                  <FormField label="Description">
+                    <textarea
+                      name="description"
+                      value={eventData.description}
+                      onChange={handleInputChange}
+                      rows="3"
+                      placeholder="Describe your event"
+                      className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                      required
+                    />
+                  </FormField>
+
+                  {/* Grid layout for event details */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField label="Start Date" icon={<Calendar size={14} />}>
+                      <input
+                        type="date"
+                        name="date"
+                        value={eventData.date}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        required
+                      />
+                    </FormField>
+
+                    <FormField label="End Date" icon={<Calendar size={14} />}>
+                      <input
+                        type="date"
+                        name="endDate"
+                        value={eventData.endDate}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        required
+                      />
+                    </FormField>
+
+                    <FormField label="Duration" icon={<Clock size={14} />}>
+                      <input
+                        type="text"
+                        name="duration"
+                        value={eventData.duration}
+                        onChange={handleInputChange}
+                        placeholder="e.g. 2 hours, 3 days"
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        required
+                      />
+                    </FormField>
+
+                    <FormField label="Venue" icon={<MapPin size={14} />}>
+                      <input
+                        type="text"
+                        name="venue"
+                        value={eventData.venue}
+                        onChange={handleInputChange}
+                        placeholder="Event location"
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        required
+                      />
+                    </FormField>
+
+                    <FormField label="Maximum Points" icon={<Trophy size={14} />}>
+                      <input
+                        type="number"
+                        name="maxPoints"
+                        value={eventData.maxPoints}
+                        onChange={handleInputChange}
+                        placeholder="Maximum points"
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        required
+                      />
+                    </FormField>
+
+                    <FormField label="Number of Winners" icon={<Trophy size={14} />}>
+                      <input
+                        type="number"
+                        name="numberOfWinners"
+                        value={eventData.numberOfWinners}
+                        onChange={handleInputChange}
+                        placeholder="Number of winners"
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        required
+                      />
+                    </FormField>
+                  </div>
+                </form>
+              ) : (
+                <div className="p-6">
+                  <div className="mb-4">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selected Clubs</h3>
+                    <div className="flex items-center gap-2 mb-4 bg-indigo-50 dark:bg-indigo-900/30 p-3 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                      <div className="w-8 h-8 bg-indigo-600 dark:bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-grow">
+                        <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{primaryClubName}</h4>
+                        <span className="text-xs bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-full">
+                          Primary
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Clubs</h3>
+                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                      {collateralClubs.map((club) => (
+                        <div
+                          key={club._id}
+                          className={`flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer
+                            ${selectedCollateralClubs.includes(club._id)
+                              ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800'
+                              : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-violet-200 dark:hover:border-violet-700'
+                            }`}
+                          onClick={() => handleCheckboxChange(club._id)}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                              ${selectedCollateralClubs.includes(club._id)
+                                ? 'bg-violet-500 dark:bg-violet-600'
+                                : 'bg-gray-200 dark:bg-gray-700'
+                              }`}>
+                              <Mail className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{club.name}</h4>
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0">
+                            <div className={`w-5 h-5 rounded flex items-center justify-center
+                              ${selectedCollateralClubs.includes(club._id)
+                                ? 'bg-violet-500 text-white'
+                                : 'border border-gray-300 dark:border-gray-600'
+                              }`}>
+                              {selectedCollateralClubs.includes(club._id) && <Check size={12} />}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right section - Guidelines */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden h-fit sticky top-6">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-violet-500 to-indigo-600">
+              <div className="flex items-center space-x-2">
+                <Info className="text-white" size={18} />
+                <h2 className="text-lg font-bold text-white">Event Guidelines</h2>
+              </div>
+            </div>
+
+            <div className="p-4 space-y-4 text-sm">
+              <div className="space-y-1">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">Event Name</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Choose a clear, descriptive name that reflects the event's purpose.</p>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">Description</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Include key details about objectives and what participants can expect.</p>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">Date & Duration</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Specify start/end dates and expected duration (format: "X hours/days").</p>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">Venue</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Provide specific location details including building/room numbers.</p>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">Points & Winners</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Set maximum points based on event complexity and number of winners.</p>
+              </div>
+
+              <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                <h3 className="font-medium text-indigo-800 dark:text-indigo-300 mb-2 flex items-center">
+                  <Info size={14} className="mr-1" />
+                  Pro Tips
+                </h3>
+                <ul className="text-xs text-indigo-700 dark:text-indigo-300 space-y-1 pl-5 list-disc">
+                  <li>Keep descriptions concise but informative</li>
+                  <li>Double-check date and venue availability</li>
+                  <li>Consider time zones for online events</li>
+                  <li>Coordinate with collaborating clubs before finalizing</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
