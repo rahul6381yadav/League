@@ -39,13 +39,21 @@ function EditEventPage() {
 
   const handleBack = () => {
     window.history.back();
-  };
-
-  // Format dates for input fields
+  };  // Format dates for input fields
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    // Format to YYYY-MM-DDTHH:MM format needed by datetime-local input
+    return date.toISOString().slice(0, 16);
+  };
+
+  // Function to format date with proper timezone offset (+5:30 hours)
+  const formatDateWithOffset = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    // Add 5 hours and 30 minutes to adjust for the timezone
+    const offsetTime = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+    return offsetTime.toISOString();
   };
 
   // Fetch event data and available clubs
@@ -53,7 +61,7 @@ function EditEventPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch event data
         const eventResponse = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
           method: 'GET',
@@ -63,21 +71,21 @@ function EditEventPage() {
           },
         });
         const eventResult = await eventResponse.json();
-        
+
         // Format dates for input fields
         const formattedEvent = {
           ...eventResult.event,
           date: formatDateForInput(eventResult.event.date),
           endDate: formatDateForInput(eventResult.event.endDate)
         };
-        
+
         setEventData(formattedEvent);
-        
+
         // Filter out the primary club from the clubIds
-        const eventClubIds = eventResult.event.clubIds.map(club => 
+        const eventClubIds = eventResult.event.clubIds.map(club =>
           typeof club === 'object' ? club._id : club
         );
-        
+
         // Fetch all available clubs
         const clubsResponse = await fetch(`${backendUrl}/api/v1/club`, {
           method: "GET",
@@ -89,17 +97,17 @@ function EditEventPage() {
         const clubsData = await clubsResponse.json();
         const availableClubs = clubsData.clubs.filter(club => club._id !== primaryClubId);
         setAllClubs(availableClubs);
-        
+
         // Set collateral clubs and selected clubs
         const collateralClubIds = eventClubIds.filter(id => id !== primaryClubId);
         setSelectedCollateralClubs(collateralClubIds);
-        
+
         // Set the clubs from the event that are still available
-        const eventClubs = eventResult.event.clubIds.filter(club => 
+        const eventClubs = eventResult.event.clubIds.filter(club =>
           typeof club === 'object' && club._id !== primaryClubId
         );
         setCollateralClubs(eventClubs);
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -122,12 +130,19 @@ function EditEventPage() {
       return [...prev, clubId];
     });
   };
-
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    // Format the dates with proper timezone adjustment (+5:30 hours)
+    const formattedData = {
+      ...eventData,
+      date: eventData.date ? formatDateWithOffset(eventData.date) : '',
+      endDate: eventData.endDate ? formatDateWithOffset(eventData.endDate) : '',
+    };
+
     const clubIds = [primaryClubId, ...selectedCollateralClubs];
-    const updatedEvent = { ...eventData, clubIds };
-    
+    const updatedEvent = { ...formattedData, clubIds };
+
     try {
       const response = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
         method: 'PUT',
@@ -150,16 +165,7 @@ function EditEventPage() {
     }
   };
 
-  // Custom form field component for consistent styling
-  const FormField = ({ label, icon, children }) => (
-    <div className="relative">
-      <label className="text-xs font-medium text-indigo-900 dark:text-indigo-200 mb-1 flex items-center">
-        {icon && <span className="mr-1">{icon}</span>}
-        {label}
-      </label>
-      {children}
-    </div>
-  );
+
 
   if (isLoading) {
     return (
@@ -178,7 +184,7 @@ function EditEventPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-2">
-            
+
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white ml-2">Edit Event</h1>
           </div>
           <div className="flex items-center space-x-2">
@@ -202,21 +208,19 @@ function EditEventPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
               <div className="flex border-b border-gray-200 dark:border-gray-700">
                 <button
-                  className={`flex-1 px-4 py-3 text-sm font-medium ${
-                    tab === 'details'
-                      ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
-                  }`}
+                  className={`flex-1 px-4 py-3 text-sm font-medium ${tab === 'details'
+                    ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
+                    }`}
                   onClick={() => setTab('details')}
                 >
                   Event Details
                 </button>
                 <button
-                  className={`flex-1 px-4 py-3 text-sm font-medium ${
-                    tab === 'clubs'
-                      ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
-                  }`}
+                  className={`flex-1 px-4 py-3 text-sm font-medium ${tab === 'clubs'
+                    ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
+                    }`}
                   onClick={() => setTab('clubs')}
                 >
                   Collaborating Clubs ({selectedCollateralClubs.length + 1})
@@ -225,7 +229,7 @@ function EditEventPage() {
 
               {/* Tab content */}
               {tab === 'details' ? (
-                <form className="p-6 space-y-6">
+                <form className="p-6 space-y-6" onSubmit={handleFormSubmit}>
                   {/* Banner preview */}
                   <div className="relative h-32 w-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-lg overflow-hidden group">
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -235,9 +239,9 @@ function EditEventPage() {
                       </div>
                     </div>
                     {eventData.photo ? (
-                      <img 
-                        src={eventData.photo} 
-                        alt="Event banner" 
+                      <img
+                        src={eventData.photo}
+                        alt="Event banner"
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -245,10 +249,9 @@ function EditEventPage() {
                         <span className="text-white text-sm">Banner Image</span>
                       </div>
                     )}
-                  </div>
-
-                  {/* Banner URL input */}
-                  <FormField label="Banner URL" icon={<Upload size={14} />}>
+                  </div>                  {/* Banner URL input */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Event poster URL</label>
                     <input
                       type="text"
                       name="photo"
@@ -257,10 +260,11 @@ function EditEventPage() {
                       placeholder="Enter image URL for event banner"
                       className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                     />
-                  </FormField>
-                  
+                  </div>
+
                   {/* Event Name */}
-                  <FormField label="Event Name">
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Event Name</label>
                     <input
                       type="text"
                       name="eventName"
@@ -270,10 +274,9 @@ function EditEventPage() {
                       className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                       required
                     />
-                  </FormField>
-
-                  {/* Description */}
-                  <FormField label="Description">
+                  </div>                  {/* Description */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Description</label>
                     <textarea
                       name="description"
                       value={eventData.description || ''}
@@ -283,33 +286,39 @@ function EditEventPage() {
                       className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                       required
                     />
-                  </FormField>
-
+                  </div>
                   {/* Grid layout for event details */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField label="Start Date" icon={<Calendar size={14} />}>
+                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        Start Date & Time
+                      </label>
                       <input
-                        type="date"
+                        type="datetime-local"
                         name="date"
                         value={eventData.date || ''}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                         required
                       />
-                    </FormField>
-
-                    <FormField label="End Date" icon={<Calendar size={14} />}>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        End Date & Time
+                      </label>
                       <input
-                        type="date"
+                        type="datetime-local"
                         name="endDate"
                         value={eventData.endDate || ''}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                         required
                       />
-                    </FormField>
-
-                    <FormField label="Duration" icon={<Clock size={14} />}>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        Duration
+                      </label>
                       <input
                         type="text"
                         name="duration"
@@ -319,9 +328,11 @@ function EditEventPage() {
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                         required
                       />
-                    </FormField>
-
-                    <FormField label="Venue" icon={<MapPin size={14} />}>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        Venue
+                      </label>
                       <input
                         type="text"
                         name="venue"
@@ -331,9 +342,10 @@ function EditEventPage() {
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                         required
                       />
-                    </FormField>
-
-                    <FormField label="Maximum Points" icon={<Trophy size={14} />}>
+                    </div>                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        Maximum Points
+                      </label>
                       <input
                         type="number"
                         name="maxPoints"
@@ -343,9 +355,11 @@ function EditEventPage() {
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                         required
                       />
-                    </FormField>
-
-                    <FormField label="Number of Winners" icon={<Trophy size={14} />}>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        Number of Winners
+                      </label>
                       <input
                         type="number"
                         name="numberOfWinners"
@@ -354,7 +368,7 @@ function EditEventPage() {
                         placeholder="Number of winners"
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                       />
-                    </FormField>
+                    </div>
                   </div>
                 </form>
               ) : (
@@ -373,43 +387,44 @@ function EditEventPage() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Clubs</h3>
-                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
-                      {allClubs.map((club) => (
-                        <div
-                          key={club._id}
-                          className={`flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer
+                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">                      {allClubs.map((club) => (
+                      <label
+                        key={club._id}
+                        className={`flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer border
                             ${selectedCollateralClubs.includes(club._id)
-                              ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800'
-                              : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-violet-200 dark:hover:border-violet-700'
-                            }`}
-                          onClick={() => handleCheckboxChange(club._id)}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                            ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-400 dark:border-violet-700'
+                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-600'
+                          }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedCollateralClubs.includes(club._id)}
+                            onChange={() => handleCheckboxChange(club._id)}
+                            className="accent-violet-600 w-5 h-5 rounded border-gray-300 dark:border-gray-600 focus:ring-violet-500"
+                            onClick={e => e.stopPropagation()}
+                          />
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
                               ${selectedCollateralClubs.includes(club._id)
-                                ? 'bg-violet-500 dark:bg-violet-600'
-                                : 'bg-gray-200 dark:bg-gray-700'
-                              }`}>
-                              <Mail className="w-4 h-4 text-white" />
-                            </div>
-                            <div className="flex-grow">
-                              <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{club.name}</h4>
-                            </div>
+                              ? 'bg-violet-500 dark:bg-violet-600'
+                              : 'bg-gray-200 dark:bg-gray-700'
+                            }`}>
+                            <Mail className="w-4 h-4 text-white" />
                           </div>
-                          <div className="flex-shrink-0">
-                            <div className={`w-5 h-5 rounded flex items-center justify-center
-                              ${selectedCollateralClubs.includes(club._id)
-                                ? 'bg-violet-500 text-white'
-                                : 'border border-gray-300 dark:border-gray-600'
-                              }`}>
-                              {selectedCollateralClubs.includes(club._id) && <Check size={12} />}
-                            </div>
+                          <div>
+                            <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{club.name}</h4>
                           </div>
                         </div>
-                      ))}
+                        <div>
+                          {selectedCollateralClubs.includes(club._id) && (
+                            <Check size={18} className="text-violet-600 dark:text-violet-300" />
+                          )}
+                        </div>
+                      </label>
+                    ))}
                     </div>
                   </div>
                 </div>

@@ -32,6 +32,15 @@ export default function CreateEventPage() {
   const [tab, setTab] = useState('details'); // 'details' or 'clubs'
   const { clubId: primaryClubId, clubName: primaryClubName } = decodedToken || {};
 
+  // Function to format date with proper timezone offset (+5:30 hours)
+  const formatDateWithOffset = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    // Add 5 hours and 30 minutes to adjust for the timezone
+    const offsetTime = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+    return offsetTime.toISOString();
+  };
+
   const handleBack = () => {
     window.history.back();
   };
@@ -72,8 +81,16 @@ export default function CreateEventPage() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    // Format the dates to ISO format with proper timezone adjustment (+5:30 hours)
+    const formattedData = {
+      ...eventData,
+      date: eventData.date ? formatDateWithOffset(eventData.date) : '',
+      endDate: eventData.endDate ? formatDateWithOffset(eventData.endDate) : '',
+    };
+
     const clubIds = [primaryClubId, ...selectedCollateralClubs];
-    const newEvent = { ...eventData, clubIds };
+    const newEvent = { ...formattedData, clubIds };
 
     try {
       const response = await fetch(`${backendUrl}/api/v1/club/events`, {
@@ -139,8 +156,8 @@ export default function CreateEventPage() {
               <div className="flex border-b border-gray-200 dark:border-gray-700">
                 <button
                   className={`flex-1 px-4 py-3 text-sm font-medium ${tab === 'details'
-                      ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
+                    ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
                     }`}
                   onClick={() => setTab('details')}
                 >
@@ -148,8 +165,8 @@ export default function CreateEventPage() {
                 </button>
                 <button
                   className={`flex-1 px-4 py-3 text-sm font-medium ${tab === 'clubs'
-                      ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
+                    ? 'text-indigo-600 dark:text-indigo-300 border-b-2 border-indigo-500'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400'
                     }`}
                   onClick={() => setTab('clubs')}
                 >
@@ -226,10 +243,10 @@ export default function CreateEventPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                        Start Date
+                        Start Date & Time
                       </label>
                       <input
-                        type="date"
+                        type="datetime-local"
                         name="date"
                         value={eventData.date}
                         onChange={handleInputChange}
@@ -239,10 +256,10 @@ export default function CreateEventPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
-                        End Date
+                        End Date & Time
                       </label>
                       <input
-                        type="date"
+                        type="datetime-local"
                         name="endDate"
                         value={eventData.endDate}
                         onChange={handleInputChange}
