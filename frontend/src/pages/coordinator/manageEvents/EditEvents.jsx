@@ -39,21 +39,22 @@ function EditEventPage() {
 
   const handleBack = () => {
     window.history.back();
-  };  // Format dates for input fields
+  };
+
+  // Function to format date for form submission (without timezone adjustment)
+  const formatDateWithOffset = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    // No timezone adjustment needed
+    return date.toISOString();
+  };
+
+  // Format dates for input fields
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     // Format to YYYY-MM-DDTHH:MM format needed by datetime-local input
     return date.toISOString().slice(0, 16);
-  };
-
-  // Function to format date with proper timezone offset (+5:30 hours)
-  const formatDateWithOffset = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    // Add 5 hours and 30 minutes to adjust for the timezone
-    const offsetTime = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
-    return offsetTime.toISOString();
   };
 
   // Fetch event data and available clubs
@@ -70,6 +71,7 @@ function EditEventPage() {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const eventResult = await eventResponse.json();
 
         // Format dates for input fields
@@ -96,9 +98,9 @@ function EditEventPage() {
         });
         const clubsData = await clubsResponse.json();
         const availableClubs = clubsData.clubs.filter(club => club._id !== primaryClubId);
-        setAllClubs(availableClubs);
 
         // Set collateral clubs and selected clubs
+        setAllClubs(availableClubs);
         const collateralClubIds = eventClubIds.filter(id => id !== primaryClubId);
         setSelectedCollateralClubs(collateralClubIds);
 
@@ -107,14 +109,12 @@ function EditEventPage() {
           typeof club === 'object' && club._id !== primaryClubId
         );
         setCollateralClubs(eventClubs);
-
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setIsLoading(false);
       }
     };
-
     fetchData();
   }, [id, primaryClubId]);
 
@@ -130,6 +130,7 @@ function EditEventPage() {
       return [...prev, clubId];
     });
   };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -141,9 +142,9 @@ function EditEventPage() {
     };
 
     const clubIds = [primaryClubId, ...selectedCollateralClubs];
-    const updatedEvent = { ...formattedData, clubIds };
 
     try {
+      const updatedEvent = { ...formattedData, clubIds };
       const response = await fetch(`${backendUrl}/api/v1/club/events?id=${id}`, {
         method: 'PUT',
         headers: {
@@ -152,7 +153,6 @@ function EditEventPage() {
         },
         body: JSON.stringify(updatedEvent),
       });
-
       const data = await response.json();
       if (data.isError) {
         alert('Error updating event: ' + data.message);
@@ -164,8 +164,6 @@ function EditEventPage() {
       console.error('Error updating event:', error);
     }
   };
-
-
 
   if (isLoading) {
     return (
@@ -183,10 +181,7 @@ function EditEventPage() {
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-2">
-
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white ml-2">Edit Event</h1>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white ml-2">Edit Event</h1>
           <div className="flex items-center space-x-2">
             <span className="text-xs px-3 py-1 bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-200 rounded-full">
               {selectedCollateralClubs.length + 1} Club{selectedCollateralClubs.length ? 's' : ''}
@@ -249,7 +244,9 @@ function EditEventPage() {
                         <span className="text-white text-sm">Banner Image</span>
                       </div>
                     )}
-                  </div>                  {/* Banner URL input */}
+                  </div>
+
+                  {/* Banner URL input */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Event poster URL</label>
                     <input
@@ -274,7 +271,9 @@ function EditEventPage() {
                       className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                       required
                     />
-                  </div>                  {/* Description */}
+                  </div>
+
+                  {/* Description */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">Description</label>
                     <textarea
@@ -287,6 +286,7 @@ function EditEventPage() {
                       required
                     />
                   </div>
+
                   {/* Grid layout for event details */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -342,7 +342,8 @@ function EditEventPage() {
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                         required
                       />
-                    </div>                    <div>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
                         Maximum Points
                       </label>
@@ -387,44 +388,43 @@ function EditEventPage() {
                       </div>
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Clubs</h3>
-                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">                      {allClubs.map((club) => (
-                      <label
-                        key={club._id}
-                        className={`flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer border
+                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                      {allClubs.map((club) => (
+                        <label
+                          key={club._id}
+                          className={`flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer border
                             ${selectedCollateralClubs.includes(club._id)
-                            ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-400 dark:border-violet-700'
-                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-600'
-                          }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedCollateralClubs.includes(club._id)}
-                            onChange={() => handleCheckboxChange(club._id)}
-                            className="accent-violet-600 w-5 h-5 rounded border-gray-300 dark:border-gray-600 focus:ring-violet-500"
-                            onClick={e => e.stopPropagation()}
-                          />
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                              ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-400 dark:border-violet-700'
+                              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-600'
+                            }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedCollateralClubs.includes(club._id)}
+                              onChange={() => handleCheckboxChange(club._id)}
+                              className="accent-violet-600 w-5 h-5 rounded border-gray-300 dark:border-gray-600 focus:ring-violet-500"
+                            />
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
                               ${selectedCollateralClubs.includes(club._id)
-                              ? 'bg-violet-500 dark:bg-violet-600'
-                              : 'bg-gray-200 dark:bg-gray-700'
-                            }`}>
-                            <Mail className="w-4 h-4 text-white" />
+                                ? 'bg-violet-500 dark:bg-violet-600'
+                                : 'bg-gray-200 dark:bg-gray-700'
+                              }`}>
+                              <Mail className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{club.name}</h4>
+                            </div>
                           </div>
                           <div>
-                            <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{club.name}</h4>
+                            {selectedCollateralClubs.includes(club._id) && (
+                              <Check size={18} className="text-violet-600 dark:text-violet-300" />
+                            )}
                           </div>
-                        </div>
-                        <div>
-                          {selectedCollateralClubs.includes(club._id) && (
-                            <Check size={18} className="text-violet-600 dark:text-violet-300" />
-                          )}
-                        </div>
-                      </label>
-                    ))}
+                        </label>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -440,28 +440,23 @@ function EditEventPage() {
                 <h2 className="text-lg font-bold text-white">Edit Event Guidelines</h2>
               </div>
             </div>
-
             <div className="p-4 space-y-4 text-sm">
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">Event Name</h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Choose a clear, descriptive name that reflects the event's purpose.</p>
               </div>
-
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">Description</h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Include key details about objectives and what participants can expect.</p>
               </div>
-
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">Date & Duration</h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Specify start/end dates and expected duration (format: "X hours/days").</p>
               </div>
-
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">Venue</h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Provide specific location details including building/room numbers.</p>
               </div>
-
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">Points & Winners</h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Set maximum points based on event complexity and number of winners.</p>

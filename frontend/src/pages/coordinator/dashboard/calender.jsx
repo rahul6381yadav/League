@@ -50,7 +50,9 @@ const MyCalendar = () => {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);
-
+                console.log("upcoming events: ",upcomingRes.data.events);
+                console.log("ongoing events: ", ongoingRes.data.events);
+                console.log("past events: ", pastRes.data.events);
                 setUpcomingEvents(upcomingRes.data.events || []);
                 setOngoingEvents(ongoingRes.data.events || []);
                 setPastEvents(pastRes.data.events || []);
