@@ -11,11 +11,8 @@ const CoordinatorDashboard = () => {
   const [pastEvents, setPastEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([]);
-  const [stats, setStats] = useState({
-    totalEvents: 0,
-    totalParticipants: 0,
-    collaborativeEvents: 0
-  });
+  const [allEvents, setAllEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [participationData, setParticipationData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -70,13 +67,6 @@ const CoordinatorDashboard = () => {
         setPastEvents(pastRes.data.events || []);
         
         // Assuming the API returns stats in this format
-        setStats({
-          totalEvents: pastRes.data.events?.length || 0,
-          totalParticipants: statsRes.data.totalParticipants || 0,
-          collaborativeEvents: statsRes.data.collaborativeEvents || 
-            pastRes.data.events?.filter(event => event.clubIds?.length > 1).length || 0
-        });
-
         // Generate participation data based on past events
         generateParticipationData(pastRes.data.events || []);
       } catch (err) {
@@ -87,8 +77,8 @@ const CoordinatorDashboard = () => {
     };
 
     fetchEvents();
+    fetchAllEvents();
   }, [currentDate]);
-
   // Generate real participation data based on past events
   const generateParticipationData = (events) => {
     const last6Months = [];
@@ -103,7 +93,7 @@ const CoordinatorDashboard = () => {
         participants: 0
       });
     }
-
+  
     // Aggregate participants by month
     events.forEach(event => {
       const eventDate = new Date(event.date);
@@ -116,8 +106,45 @@ const CoordinatorDashboard = () => {
         monthData.participants += event.participants || Math.floor(Math.random() * 50) + 20; // Random if data not available
       }
     });
-
+  
     setParticipationData(last6Months);
+  };
+  
+  // Fetch all events and filtered events
+  const fetchAllEvents = async () => {
+    try {
+      const response1 = await axios.get(
+        `${backendUrl}/api/v1/club/events`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+      setAllEvents(response1.data.events);
+      // If you have clubId in token, otherwise adjust accordingly
+      let clubId = null;
+      try {
+        clubId = JSON.parse(atob(token.split('.')[1])).clubId;
+      } catch (e) {
+        clubId = null;
+      }
+      if (clubId) {
+        const response2 = await axios.get(
+          `${backendUrl}/api/v1/club/events?clubId=${clubId}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
+        );
+        setFilteredEvents(response2.data.events);
+      } else {
+        setFilteredEvents([]);
+      }
+    } catch (err) {
+      console.error("Error fetching events:", err);
+    } 
   };
 
   useEffect(() => {
@@ -170,7 +197,7 @@ const CoordinatorDashboard = () => {
         </div>
         <div className="flex space-x-3">
           <button 
-            onClick={() => navigate('/add-event')}
+            onClick={() => navigate('/events/create')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center transition-colors duration-300"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -179,7 +206,7 @@ const CoordinatorDashboard = () => {
             Add Event
           </button>
           <button 
-            onClick={() => navigate('/club-settings')}
+            onClick={() => navigate('/my-club')}
             className="px-4 py-2 bg-mirage-300 dark:bg-mirage-700 text-mirage-900 dark:text-white rounded-lg hover:bg-mirage-400 dark:hover:bg-mirage-600 transition-colors duration-300"
           >
             <div className="flex items-center">
@@ -204,7 +231,7 @@ const CoordinatorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium opacity-80">Total Events</p>
-                  <h3 className="text-3xl font-bold mt-1">{stats.totalEvents}</h3>
+                  <h3 className="text-3xl font-bold mt-1">{allEvents.length}</h3>
                 </div>
                 <div className="p-3 bg-white bg-opacity-30 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -228,7 +255,7 @@ const CoordinatorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium opacity-80">Total Participants</p>
-                  <h3 className="text-3xl font-bold mt-1">{stats.totalParticipants}</h3>
+                  <h3 className="text-3xl font-bold mt-1">{0}</h3>
                 </div>
                 <div className="p-3 bg-white bg-opacity-30 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -252,7 +279,7 @@ const CoordinatorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium opacity-80">Collaborative Events</p>
-                  <h3 className="text-3xl font-bold mt-1">{stats.collaborativeEvents}</h3>
+                  <h3 className="text-3xl font-bold mt-1">{filteredEvents.length}</h3>
                 </div>
                 <div className="p-3 bg-white bg-opacity-30 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -276,7 +303,7 @@ const CoordinatorDashboard = () => {
           {/* Action Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div
-              onClick={() => navigate('/add-event')}
+                onClick={() => navigate('/events/create')}
               className="bg-blue-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-blue-500 flex items-center"
             >
               <div className="p-3 bg-blue-500 rounded-lg mr-4">
@@ -306,7 +333,7 @@ const CoordinatorDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate('/club-settings')}
+                onClick={() => navigate('/my-club')}
               className="bg-green-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-green-500 flex items-center"
             >
               <div className="p-3 bg-green-500 rounded-lg mr-4">
