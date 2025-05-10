@@ -94,7 +94,7 @@ const CoordinatorDashboard = () => {
         );
         setFilteredEvents(filteredEventsOfClub || []);
         // Generate participation data based on past events
-        generateParticipationData(filteredEventsOfClub || []);
+        generateParticipationData(filteredPastEvents || []);
       } catch (err) {
         console.error("Failed to fetch data:", err);
       } finally {
