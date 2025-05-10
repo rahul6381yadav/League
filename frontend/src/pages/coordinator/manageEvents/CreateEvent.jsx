@@ -32,13 +32,12 @@ export default function CreateEventPage() {
   const [tab, setTab] = useState('details'); // 'details' or 'clubs'
   const { clubId: primaryClubId, clubName: primaryClubName } = decodedToken || {};
 
-  // Function to format date with proper timezone offset (+5:30 hours)
+  // Function to format date without timezone adjustment
   const formatDateWithOffset = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    // Add 5 hours and 30 minutes to adjust for the timezone
-    const offsetTime = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
-    return offsetTime.toISOString();
+    // No timezone adjustment needed
+    return date.toISOString();
   };
 
   const handleBack = () => {
@@ -82,7 +81,7 @@ export default function CreateEventPage() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Format the dates to ISO format with proper timezone adjustment (+5:30 hours)
+    // Format the dates to ISO format without timezone adjustment
     const formattedData = {
       ...eventData,
       date: eventData.date ? formatDateWithOffset(eventData.date) : '',

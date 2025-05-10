@@ -53,8 +53,8 @@ const CoordinatorSidebar = ({ onToggle }) => {
     { icon: <Home size={18} />, label: "Dashboard", path: "/dashboard" },
     { icon: <Users size={18} />, label: "Club Details", path: "/my-club" },
     { icon: <Calendar size={18} />, label: "Manage Events", path: "/manage-events" },
-    { icon: <Bell size={18} />, label: "Notifications", path: "/notifications" },
-    { icon: <User size={18} />, label: "Members", path: "/members" },
+    { icon: <Bell size={18} />, label: "Notifications", path: "#" },
+    { icon: <User size={18} />, label: "Members", path: "#" },
   ];
 
   const studentMenuItems = [
@@ -76,8 +76,8 @@ const CoordinatorSidebar = ({ onToggle }) => {
         { icon: <Home size={18} />, label: "Home", path: "/home" },
         { icon: <Users size={18} />, label: "Clubs", path: "/clubs" },
         { icon: <Calendar size={18} />, label: "My Events", path: "/my-events" },
-        { icon: <Archive size={18} />, label: "All Events", path: "/all-events" },
-        { icon: <User size={18} />, label: "Profile", path: "/myProfile" }
+        { icon: <Archive size={18} />, label: "All Events", path: "#" },
+        { icon: <User size={18} />, label: "Profile", path: "#" }
       ];
 
   useEffect(() => {
@@ -212,7 +212,7 @@ const CoordinatorSidebar = ({ onToggle }) => {
 
             {/* Settings Button (optional) */}
             <div
-              onClick={() => navigate("/settings")}
+              onClick={() => navigate("#")}
               className={`
                 flex items-center cursor-pointer rounded-lg
                 text-gray-700 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-mirage-800

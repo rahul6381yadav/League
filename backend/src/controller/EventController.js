@@ -59,14 +59,13 @@ exports.getEvents = async (req, res) => {
             filter.date = {...(filter.date || {}), $lte: new Date(dateBefore)};
         }
         if (ongoing && !isNaN(new Date(ongoing).getTime())) {
-            filter.date = { $lte: new Date(ongoing) };
-            filter.endDate = { $gte: new Date(ongoing) };
+            const ongoingDate = new Date(ongoing);
+            filter.$and = filter.$and || [];
+            filter.$and.push({ date: { $lte: ongoingDate } });
+            filter.$and.push({ endDate: { $gte: ongoingDate } });
         }
-
         if (status) {
-            if (statusValues) {
-                filter.status = {$in: status.split(',')};
-            }
+            filter.status = {$in: status.split(',')};
         }
 
         const events = await EventModel.find(filter)
