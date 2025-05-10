@@ -85,7 +85,7 @@ const CoordinatorDashboard = () => {
         setOngoingEvents(ongoingEvents || []);
 
         // Generate participation data based on past events
-        generateParticipationData(pastEvents || []);
+        generateParticipationData(filteredPastEvents || []);
       } catch (err) {
         console.error("Failed to fetch data:", err);
       } finally {
