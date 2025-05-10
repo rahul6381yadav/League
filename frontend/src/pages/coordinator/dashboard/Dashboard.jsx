@@ -84,8 +84,17 @@ const CoordinatorDashboard = () => {
         );
         setOngoingEvents(ongoingEvents || []);
 
+        const filteredEventsOfClub = allRes.data.events.filter(
+          event => {
+            if (event.clubIds && event.clubIds.length > 0) {
+              return event.clubIds.some(club => club._id === JSON.parse(atob(token.split('.')[1])).clubId);
+            }
+            return false; // Return false for events without clubIds
+          }
+        );
+        setFilteredEvents(filteredEventsOfClub || []);
         // Generate participation data based on past events
-        generateParticipationData(filteredPastEvents || []);
+        generateParticipationData(filteredEventsOfClub || []);
       } catch (err) {
         console.error("Failed to fetch data:", err);
       } finally {
@@ -337,7 +346,7 @@ const CoordinatorDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate('/all-events')}
+                onClick={() => navigate('/allEventCoordinator')}
               className="bg-purple-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-purple-500 flex items-center"
             >
               <div className="p-3 bg-purple-500 rounded-lg mr-4">
@@ -396,7 +405,7 @@ const CoordinatorDashboard = () => {
                     Event Calendar
                   </h2>
                   <button
-                    onClick={() => navigate('/all-events')}
+                      onClick={() => navigate('/allEventCoordinator')}
                     className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center transition-colors"
                   >
                     View All Events
@@ -496,13 +505,13 @@ const CoordinatorDashboard = () => {
                           >
                             <div className="flex justify-between items-start">
                               <h4 className="font-medium text-mirage-950 dark:text-mirage-50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{event.eventName || event.name}</h4>
-                              <div className={`px-2 py-1 text-xs font-medium rounded-full ${new Date(event.date) < new Date()
+                              <div className={`px-2 py-1 text-xs font-medium rounded-full ${new Date(event.endDate) < new Date()
                                 ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                                 : new Date(event.date).toDateString() === new Date().toDateString()
                                   ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                                   : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                                 }`}>
-                                {new Date(event.date) < new Date()
+                                {new Date(event.endDate) < new Date()
                                   ? "Past"
                                   : new Date(event.date).toDateString() === new Date().toDateString()
                                     ? "Today"
@@ -596,7 +605,7 @@ const CoordinatorDashboard = () => {
                     Participation Trends
                   </h2>
                   <button
-                    onClick={() => navigate('/reports')}
+                    onClick={() => navigate('#')}
                     className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center transition-colors"
                   >
                     Detailed Analytics
@@ -662,7 +671,7 @@ const CoordinatorDashboard = () => {
                     )}
                   </h2>
                   <button
-                    onClick={() => navigate('/all-events')}
+                      onClick={() => navigate('/allEventCoordinator')}
                     className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center transition-colors"
                   >
                     View All

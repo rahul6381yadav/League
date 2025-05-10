@@ -33,7 +33,7 @@ import EditEvents from './pages/coordinator/manageEvents/EditEvents';
 import Contest from './pages/coordinator/manangeContest/Contest';
 import ErrorPage from "./pages/common/errorPage"; // Import the new ErrorPage component
 import CodeFlow1v1ShowdownPage from './pages/static_pages/codeflow1v1Showdown';
-
+import AllEventCoordinator from './pages/coordinator/allEventCoordinator';
 function AppRoutes() {
     return (
         <Routes>
@@ -64,6 +64,7 @@ function AppRoutes() {
             <Route path="/events/create" element={<LayoutCoordinator><CreateEvents /></LayoutCoordinator>} />
             <Route path="/events/edit/:id" element={<LayoutCoordinator><EditEvents /></LayoutCoordinator>} />
             <Route path="/contest" element={<LayoutCoordinator><Contest /></LayoutCoordinator>} />
+            <Route path="/allEventCoordinator" element={<LayoutCoordinator><AllEventCoordinator /></LayoutCoordinator>}/>
 
             {/* Admin Routes */}
             <Route path="/admin-panel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
