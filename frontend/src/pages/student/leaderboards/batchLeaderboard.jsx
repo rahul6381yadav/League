@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { Mail, Trophy } from "lucide-react";
+import { Mail, Trophy, Search, Filter, Users, ChevronDown, Medal, Award, Crown } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { backendUrl } from "../../../utils/routes";
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const BatchLeaderboard = () => {
     const [students, setStudents] = useState([]);
@@ -12,18 +14,46 @@ const BatchLeaderboard = () => {
     const [currentUserBatch, setCurrentUserBatch] = useState(null);
     const [currentUserStudentId, setCurrentUserStudentId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
-    const [filteredByInitial, setFilteredByInitial] = useState(false);
-    const navigate = useNavigate();
 
-    // Get token and user ID from decoded token
+    const [searchTerm, setSearchTerm] = useState("");
+    const [activeFilter, setActiveFilter] = useState("all");
+    const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+    const [coursePrefixes, setCoursePrefixes] = useState([]);
+    const [leaderboardView, setLeaderboardView] = useState("compact");
+
+    const navigate = useNavigate();
+    const filterRef = useRef(null);
+
     const token = localStorage.getItem("jwtToken");
     const decodedToken = token ? jwtDecode(token) : null;
     const userId = decodedToken?.userId;
 
+    const extractCoursePrefixes = (studentsList) => {
+        const prefixes = studentsList
+            .filter(s => s.studentId)
+            .map(s => s.studentId.slice(0, 2).toUpperCase())
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .sort();
+        return prefixes;
+    };
+
+    const getHighestScore = () => {
+        if (!students.length) return 100;
+        const maxScore = Math.max(...students.map(s => s.TotalPoints || 0));
+        return maxScore > 0 ? maxScore : 100;
+    };
+
+    const maxPoints = getHighestScore();
+
+    const calculatePercentage = (points) => {
+        return Math.round((points / maxPoints) * 100);
+    };
+
+    const topStudent = students.length > 0 ? students[0] : null;
+
     useEffect(() => {
         const fetchUserAndBatchDetails = async () => {
             try {
-                // First, fetch the current user's details to get the batch code and student ID
                 const userResponse = await axios.get(`${backendUrl}/user/profile/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -40,7 +70,6 @@ const BatchLeaderboard = () => {
                 setCurrentUserStudentId(userStudentId);
                 setCurrentUser(userData);
 
-                // Then, fetch students in the same batch
                 const studentsResponse = await axios.get(`${backendUrl}/user/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -51,31 +80,28 @@ const BatchLeaderboard = () => {
                     },
                 });
 
-                // Sort students first by total points (descending), then by studentId (ascending)
                 const sortedBatchStudents = studentsResponse.data.users.sort((a, b) => {
-                    // First, compare total points in descending order
-                    if (b.TotalPoints !== a.TotalPoints) {
-                        return b.TotalPoints - a.TotalPoints;
+                    if ((b.TotalPoints || 0) !== (a.TotalPoints || 0)) {
+                        return (b.TotalPoints || 0) - (a.TotalPoints || 0);
                     }
-
-                    // If points are equal, compare studentId in ascending order
-                    return a.studentId.localeCompare(b.studentId);
+                    return a.studentId?.localeCompare(b.studentId);
                 });
 
-                // Ensure the current user is in the list if not already present
                 const currentUserInList = sortedBatchStudents.some(student => student._id === userId);
-                if (!currentUserInList && currentUser) {
-                    sortedBatchStudents.push(currentUser);
-                    // Re-sort to maintain the original sorting logic
+                if (!currentUserInList && userData) {
+                    sortedBatchStudents.push(userData);
                     sortedBatchStudents.sort((a, b) => {
-                        if (b.TotalPoints !== a.TotalPoints) {
-                            return b.TotalPoints - a.TotalPoints;
+                        if ((b.TotalPoints || 0) !== (a.TotalPoints || 0)) {
+                            return (b.TotalPoints || 0) - (a.TotalPoints || 0);
                         }
-                        return a.studentId.localeCompare(b.studentId);
+                        return a.studentId?.localeCompare(b.studentId);
                     });
                 }
 
                 setStudents(sortedBatchStudents);
+                const prefixes = extractCoursePrefixes(sortedBatchStudents);
+                setCoursePrefixes(prefixes);
+
             } catch (err) {
                 setError(err.message || "Failed to fetch batch students.");
             } finally {
@@ -88,167 +114,489 @@ const BatchLeaderboard = () => {
         }
     }, [userId]);
 
-    // Function to toggle filtering by student ID initial
-    const toggleStudentIdFilter = () => {
-        setFilteredByInitial(!filteredByInitial);
-    };
-
-    // Filter students based on first 4 letters of studentId
-    const getFilteredStudents = () => {
-        if (!filteredByInitial || !currentUserStudentId) return students;
-
-        const currentInitials = currentUserStudentId.slice(0, 2).toUpperCase();
-        return students.filter(student =>
-            student.studentId && student.studentId.slice(0, 2).toUpperCase() === currentInitials
-        );
-    };
-
-    // Function to determine background and styling for top 3 students
-    const getRowStyle = (index) => {
-        switch (index) {
-            case 0:
-                return {
-                    background: 'bg-gradient-to-r from-yellow-400 to-yellow-500',
-                    text: 'text-gray-800 dark:text-white'
-                };
-            case 1:
-                return {
-                    background: 'bg-gradient-to-r from-gray-400 to-gray-500',
-                    text: 'text-gray-800 dark:text-white'
-                };
-            case 2:
-                return {
-                    background: 'bg-gradient-to-r from-amber-400 to-amber-500',
-                    text: 'text-gray-800 dark:text-white'
-                };
-            default:
-                return {
-                    background: 'bg-mirage-300 dark:bg-mirage-700',
-                    text: 'text-mirage-700 dark:text-mirage-200'
-                };
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (filterRef.current && !filterRef.current.contains(event.target)) {
+                setFilterMenuOpen(false);
+            }
         }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [filterRef]);
+
+    const getFilteredStudents = () => {
+        if (!students.length) return [];
+
+        let filtered = [...students];
+
+        if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            filtered = filtered.filter(student =>
+                (student.fullName && student.fullName.toLowerCase().includes(searchLower)) ||
+                (student.email && student.email.toLowerCase().includes(searchLower)) ||
+                (student.studentId && student.studentId.toLowerCase().includes(searchLower))
+            );
+        }
+
+        if (activeFilter !== "all" && activeFilter !== "top-10") {
+            if (activeFilter === "same-course" && currentUserStudentId) {
+                const currentPrefix = currentUserStudentId.slice(0, 2).toUpperCase();
+                filtered = filtered.filter(student =>
+                    student.studentId && student.studentId.slice(0, 2).toUpperCase() === currentPrefix
+                );
+            } else if (activeFilter.length === 2) {
+                filtered = filtered.filter(student =>
+                    student.studentId && student.studentId.slice(0, 2).toUpperCase() === activeFilter
+                );
+            }
+        }
+
+        if (activeFilter === "top-10") {
+            filtered = filtered.slice(0, 10);
+        }
+
+        return filtered;
     };
 
-    // Loading state
+    const filteredStudents = getFilteredStudents();
+
+    const getCurrentUserRank = () => {
+        const userIndex = students.findIndex(student => student._id === userId);
+        return userIndex > -1 ? userIndex + 1 : null;
+    };
+
+    const currentUserRank = getCurrentUserRank();
+
+    const getRankColor = (rank) => {
+        if (rank === 1) return "text-yellow-500";
+        if (rank === 2) return "text-gray-400";
+        if (rank === 3) return "text-amber-600";
+        return "text-indigo-600 dark:text-indigo-400";
+    };
+
+    const getRankIcon = (rank) => {
+        if (rank === 1) return <Crown size={18} className="text-yellow-500" />;
+        if (rank === 2) return <Medal size={18} className="text-gray-400" />;
+        if (rank === 3) return <Award size={18} className="text-amber-600" />;
+        return <span className="text-xs text-indigo-600 dark:text-indigo-400 font-mono">{rank}</span>;
+    };
+
     if (loading) return (
-        <div className="h-screen w-full flex bg-mirage-50 dark:bg-mirage-900 items-center justify-center">
-            <div className="animate-pulse">
-                <div className="h-8 bg-mirage-200 dark:bg-mirage-600 rounded w-1/3 mb-4"></div>
-                <div className="h-4 bg-mirage-200 dark:bg-mirage-600 rounded w-full mb-4"></div>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-6">
+            <div className="max-w-6xl mx-auto">
+                <div className="animate-pulse space-y-6">
+                    <div className="h-12 bg-indigo-200/50 dark:bg-indigo-800/30 rounded-lg w-1/3"></div>
+
+                    <div className="flex justify-between items-center">
+                        <div className="h-10 bg-indigo-200/50 dark:bg-indigo-800/30 rounded-lg w-1/4"></div>
+                        <div className="flex gap-3">
+                            <div className="h-10 w-32 bg-indigo-200/50 dark:bg-indigo-800/30 rounded-lg"></div>
+                            <div className="h-10 w-32 bg-indigo-200/50 dark:bg-indigo-800/30 rounded-lg"></div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="h-24 bg-white/60 dark:bg-gray-800/60 rounded-xl"></div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
 
-    // Error state
     if (error) return (
-        <div className="h-screen w-full flex bg-mirage-50 dark:bg-mirage-900 items-center justify-center">
-            <div className="text-red-500">Error: {error}</div>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 flex items-center justify-center">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 rounded-xl p-6 max-w-md">
+                <h3 className="text-red-700 dark:text-red-400 font-medium text-lg">Error Loading Leaderboard</h3>
+                <p className="text-red-600 dark:text-red-300 mt-2">{error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                >
+                    Retry
+                </button>
+            </div>
         </div>
     );
 
-    const filteredStudents = getFilteredStudents();
-
     return (
-        <div className="h-screen w-full flex bg-mirage-50 dark:bg-mirage-900">
-            <div className="h-full w-full grid grid-cols-1 gap-8 p-8">
-                <div className="bg-mirage-200 dark:bg-mirage-800 rounded-lg shadow-md h-full">
-                    {/* Fixed Header */}
-                    <div className="p-6 border-b">
-                        <div className="flex justify-between items-center">
-                            <h1 className="text-2xl font-bold text-mirage-700 dark:text-mirage-300">
-                                Batch {currentUserBatch} Leaderboard
-                            </h1>
-                            <div className="flex items-center space-x-4">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-4 md:p-6">
+            <div className="max-w-6xl mx-auto">
+
+                
+                {currentUser && (
+                    <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 rounded-xl p-6 mb-6 text-white shadow-lg relative overflow-hidden z-0">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-x-16 -translate-y-32 blur-2xl"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-32 translate-y-32 blur-xl"></div>
+
+                        <div className="flex flex-col md:flex-row gap-6 items-center relative z-0">
+                            <img
+                                src={currentUser.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                alt="Your Profile"
+                                className="w-20 h-20 rounded-full border-4 border-white/30 object-cover"
+                            />
+
+                            <div className="flex-1 text-center md:text-left">
+                                <h2 className="text-2xl font-bold">{currentUser.fullName}</h2>
+                                <p className="text-indigo-100">Batch {currentUserBatch} • {currentUserStudentId}</p>
+                                {topStudent && currentUser._id !== topStudent._id && (
+                                    <p className="text-indigo-200 text-sm mt-1">
+                                        {calculatePercentage(currentUser.TotalPoints || 0)}% of top score
+                                        <span className="ml-1 opacity-75">({topStudent.TotalPoints} points)</span>
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col items-center text-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                                <div className="text-3xl font-bold">{currentUserRank}</div>
+                                <div className="text-indigo-100 font-medium">Your Rank</div>
+                            </div>
+
+                            <div className="flex flex-col items-center text-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                                <div className="text-3xl font-bold">{currentUser.TotalPoints || 0}</div>
+                                <div className="text-indigo-100 font-medium">Points</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-lg z-100">
+                    <div className="flex flex-col lg:flex-row justify-between gap-4">
+                        <div className="relative flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="text-gray-500" size={18} />
+                            </div>
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search by name, email, or ID..."
+                                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-900 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                            />
+                        </div>
+
+                        <div className="flex flex-wrap gap-3">
+                            <div className="relative z-50" ref={filterRef}>
                                 <button
-                                    onClick={toggleStudentIdFilter}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${filteredByInitial
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300'
-                                        }`}
+                                    onClick={() => setFilterMenuOpen(!filterMenuOpen)}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-indigo-200 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 rounded-lg border border-indigo-300 dark:border-indigo-800/50 hover:bg-indigo-300 dark:hover:bg-indigo-800/50 shadow-sm"
                                 >
-                                    {filteredByInitial
-                                        ? `Show All (${students.length})`
-                                        : `Filter by ${currentUserStudentId?.slice(0, 2).toUpperCase() || ''}`}
+                                    <Filter size={18} />
+                                    <span className="font-medium">
+                                        {activeFilter === "all" ? "All Students" :
+                                            activeFilter === "top-10" ? "Top 10" :
+                                                activeFilter === "same-course" ? "My Course" : `${activeFilter} Course`}
+                                    </span>
+                                    <ChevronDown size={16} />
                                 </button>
-                                <span className="bg-mirage-100 dark:bg-mirage-600 text-mirage-800 dark:text-mirage-300 text-sm font-medium px-3 py-1 rounded-full">
-                                    {filteredStudents.length} Students
-                                </span>
+
+                                {filterMenuOpen && (
+                                    <div className="absolute z-50 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-300 dark:border-gray-700 py-2 z-100">
+                                        <button
+                                            onClick={() => {
+                                                setActiveFilter("all");
+                                                setFilterMenuOpen(false);
+                                            }}
+                                            className={`w-full z-100 text-left px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${activeFilter === "all" ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 z-100 dark:text-indigo-300" : "text-gray-700 dark:text-gray-300"}`}
+                                        >
+                                            All Students
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setActiveFilter("top-10");
+                                                setFilterMenuOpen(false);
+                                            }}
+                                            className={`w-full text-left z-100  px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${activeFilter === "top-10" ? "bg-indigo-100 z-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300" : "text-gray-700 dark:text-gray-300"}`}
+                                        >
+                                            Top 10
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setActiveFilter("same-course");
+                                                setFilterMenuOpen(false);
+                                            }}
+                                            className={`w-full text-left px-4 py-2 z-100 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${activeFilter === "same-course" ? "bg-indigo-100 z-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300" : "text-gray-700 dark:text-gray-300"}`}
+                                        >
+                                            My Course ({currentUserStudentId?.slice(0, 2)})
+                                        </button>
+
+                                        {coursePrefixes.length > 0 && (
+                                            <>
+                                                <hr className="my-2 border-gray-200 dark:border-gray-700" />
+                                                <div className="px-4 py-1 text-xs text-gray-500 dark:text-gray-400">Course Filters</div>
+                                                {coursePrefixes.map(prefix => (
+                                                    <button
+                                                        key={prefix}
+                                                        onClick={() => {
+                                                            setActiveFilter(prefix);
+                                                            setFilterMenuOpen(false);
+                                                        }}
+                                                        className={`w-full text-left px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${activeFilter === prefix ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300" : "text-gray-700 dark:text-gray-300"}`}
+                                                    >
+                                                        {prefix} Students
+                                                    </button>
+                                                ))}
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex rounded-lg overflow-hidden border border-indigo-300 dark:border-indigo-800/50 shadow-sm z-100">
+                                <button
+                                    onClick={() => setLeaderboardView("compact")}
+                                    className={`px-3 py-2 ${leaderboardView === "compact"
+                                        ? "bg-indigo-600 text-white"
+                                        : "bg-indigo-200 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300"}`}
+                                >
+                                    Compact
+                                </button>
+                                <button
+                                    onClick={() => setLeaderboardView("cards")}
+                                    className={`px-3 py-2 ${leaderboardView === "cards"
+                                        ? "bg-indigo-600 text-white"
+                                        : "bg-indigo-200 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300"}`}
+                                >
+                                    Cards
+                                </button>
+                            </div>
+
+                            <div className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-lg border border-yellow-300 dark:border-yellow-800/50 shadow-sm">
+                                <span className="text-xs block">Highest Score</span>
+                                <span className="font-semibold">{maxPoints} points</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Scrollable Participants List */}
-                    <div className="flex-1 min-h-0 h-[calc(100vh-8rem)] overflow-y-auto">
-                        <div className="p-6">
-                            {filteredStudents.length > 0 ? (
-                                <div className="grid grid-cols-1 gap-3">
-                                    {filteredStudents.map((student, index) => {
-                                        const isCurrentUser = student._id === decodedToken?.userId;
-                                        const topThreeStyle = index < 3 ? getRowStyle(index) : null;
-
-                                        return (
-                                            <div
-                                                key={student._id}
-                                                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${isCurrentUser
-                                                    ? index < 3 ? `${topThreeStyle.background} ${topThreeStyle.text} border-2 border-blue-500` : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200 border-2 border-blue-500'
-                                                    : topThreeStyle
-                                                        ? `${topThreeStyle.background} ${topThreeStyle.text} `
-                                                        : 'bg-mirage-300 dark:bg-mirage-700 text-mirage-700 dark:text-mirage-200'
-                                                    }`}
-                                                onClick={() => {
-                                                    if (isCurrentUser) {
-                                                        navigate(`/myProfile`);
-                                                    } else {
-                                                        navigate(`/friends/${student._id}`);
-                                                    }
-                                                }}
-                                            >
-                                                {/* Profile Picture and Details */}
-                                                <div className="flex items-center space-x-3 flex-1">
-                                                    <img
-                                                        src={student.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
-                                                        alt={student.fullName}
-                                                        className="w-12 h-12 rounded-full border border-mirage-300 dark:border-mirage-500"
-                                                    />
-
-                                                    {/* Name and Additional Details */}
-                                                    <div className="flex-1">
-                                                        <h4 className={`text-sm font-medium flex items-center ${index < 3 ? topThreeStyle.text : 'text-mirage-700 dark:text-mirage-200'
-                                                            }`}>
-                                                            {student.fullName}{isCurrentUser && (<span className="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded-full">You</span>)}
-                                                        </h4>
-                                                        <div className={`flex items-center space-x-2 text-xs ${index < 3
-                                                            ? 'text-mirage-600 dark:text-mirage-200'
-                                                            : 'text-mirage-500 dark:text-mirage-300'
-                                                            }`}>
-                                                            <Mail className="w-4 h-4" />
-                                                            <span>{student.email}</span>
-                                                        </div>
-                                                        <div className={`text-xs ${index < 3
-                                                            ? 'text-mirage-600 dark:text-mirage-200'
-                                                            : 'text-mirage-500 dark:text-mirage-300'
-                                                            }`}>
-                                                            Batch: {student.batchCode} | Student ID: {student.studentId}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Points with Capsule Background */}
-                                                <div className="flex items-center space-x-2">
-                                                    <div className="flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium bg-mirage-100 dark:bg-mirage-600">
-                                                        <Trophy className={`w-4 h-4 text-gray-800 dark:text-mirage-100`} />
-                                                        <span className={'ml-1 text-gray-800 dark:text-mirage-100'}>{student.TotalPoints}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                    <div className="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                        <div>
+                            {filteredStudents.length === students.length ? (
+                                <span>Showing all {students.length} students</span>
                             ) : (
-                                <div className="text-mirage-500 dark:text-mirage-400 text-center">No students found with the same Student ID initials</div>
+                                <span>Showing {filteredStudents.length} of {students.length} students</span>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            {searchTerm && (
+                                <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-medium">
+                                    Search: "{searchTerm}"
+                                </span>
+                            )}
+                            {activeFilter !== "all" && (
+                                <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-medium">
+                                    {activeFilter === "top-10" ? "Top 10" :
+                                        activeFilter === "same-course" ? `Course: ${currentUserStudentId?.slice(0, 2)}` :
+                                            `Course: ${activeFilter}`}
+                                </span>
+                            )}
+                            {(searchTerm || activeFilter !== "all") && (
+                                <button
+                                    onClick={() => {
+                                        setSearchTerm("");
+                                        setActiveFilter("all");
+                                    }}
+                                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                >
+                                    Clear filters
+                                </button>
                             )}
                         </div>
                     </div>
+                </div>
+              
+
+
+                {filteredStudents.length > 0 ? (
+                    <>
+
+                        {leaderboardView === "compact" && (
+                            <div className="space-y-2">
+                                {filteredStudents.map((student, index) => {
+                                    const isCurrentUser = student._id === userId;
+                                    const rank = students.findIndex(s => s._id === student._id) + 1;
+                                    const percentOfTop = calculatePercentage(student.TotalPoints || 0);
+
+                                    return (
+                                        <div
+                                            key={student._id}
+                                            className={`flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer
+                                                ${isCurrentUser
+                                                    ? 'bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-300 dark:border-indigo-700'
+                                                    : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700'
+                                                }
+                                            `}
+                                            onClick={() => {
+                                                if (isCurrentUser) {
+                                                    navigate('/myProfile');
+                                                } else {
+                                                    navigate(`/friends/${student._id}`);
+                                                }
+                                            }}
+                                        >
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full flex-shrink-0 ${rank === 1 ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
+                                                rank === 2 ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' :
+                                                    rank === 3 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                                                        'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                                                }`}>
+                                                {rank <= 3 ? getRankIcon(rank) : rank}
+                                            </div>
+
+                                            <img
+                                                className="h-9 w-9 rounded-full object-cover flex-shrink-0"
+                                                src={student.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                alt=""
+                                            />
+
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                                    <span className="truncate">{student.fullName}</span>
+                                                    {isCurrentUser && (
+                                                        <span className="inline-block px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                                                            You
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                                    {student.studentId}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex flex-col items-end">
+                                                    <div className="flex items-center">
+                                                        <Trophy className="text-indigo-400 dark:text-indigo-500" size={16} />
+                                                        <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                                                            {student.TotalPoints || 0}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                        {percentOfTop}% of top
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {leaderboardView === "cards" && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredStudents.map((student, index) => {
+                                    const isCurrentUser = student._id === userId;
+                                    const rank = students.findIndex(s => s._id === student._id) + 1;
+                                    const percentOfTop = calculatePercentage(student.TotalPoints || 0);
+
+                                    return (
+                                        <div
+                                            key={student._id}
+                                            className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-all ${isCurrentUser ? 'ring-2 ring-indigo-500 dark:ring-indigo-400' : ''
+                                                }`}
+                                            onClick={() => {
+                                                if (isCurrentUser) {
+                                                    navigate('/myProfile');
+                                                } else {
+                                                    navigate(`/friends/${student._id}`);
+                                                }
+                                            }}
+                                        >
+                                            <div className="bg-gradient-to-r from-indigo-500 to-violet-500 h-2"></div>
+                                            <div className="p-5">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="relative">
+                                                        <img
+                                                            className="h-16 w-16 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900"
+                                                            src={student.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                            alt=""
+                                                        />
+                                                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 flex items-center justify-center rounded-full text-xs text-white font-medium ${rank === 1 ? 'bg-yellow-500' :
+                                                            rank === 2 ? 'bg-gray-400' :
+                                                                rank === 3 ? 'bg-amber-600' :
+                                                                    'bg-indigo-500'
+                                                            }`}>
+                                                            {rank}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                                            {student.fullName}
+                                                            {isCurrentUser && (
+                                                                <span className="inline-block px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                                                                    You
+                                                                </span>
+                                                            )}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                            {student.studentId}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-4 flex items-center justify-between">
+                                                    <div>
+                                                        <div className="text-xs text-gray-500 dark:text-gray-400">Total Points</div>
+                                                        <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                                            {student.TotalPoints || 0}
+                                                        </div>
+                                                        {student._id !== topStudent?._id && (
+                                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                {percentOfTop}% of highest score
+                                                            </div>
+                                                        )}
+                                                        {student._id === topStudent?._id && (
+                                                            <div className="text-xs text-yellow-500 font-semibold mt-1">
+                                                                Highest Score
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="w-16 h-16">
+                                                        <CircularProgressbar
+                                                            value={percentOfTop}
+                                                            text={`${percentOfTop}%`}
+                                                            styles={buildStyles({
+                                                                textSize: '24px',
+                                                                pathColor: `rgba(99, 102, 241, ${percentOfTop / 100 + 0.3})`,
+                                                                textColor: '#6366F1',
+                                                                trailColor: '#E0E7FF',
+                                                            })}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg text-center">
+                        <Users size={48} className="mx-auto mb-4 text-gray-400" />
+                        <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">No Students Found</h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            {searchTerm ? "Try adjusting your search terms." : "There are no students matching the selected filters."}
+                        </p>
+                        <button
+                            onClick={() => {
+                                setSearchTerm("");
+                                setActiveFilter("all");
+                            }}
+                            className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg"
+                        >
+                            Clear Filters
+                        </button>
+                    </div>
+                )}
+
+                <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
+                    <p>IIIT Raichur League • Batch {currentUserBatch} Leaderboard</p>
                 </div>
             </div>
         </div>

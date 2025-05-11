@@ -24,7 +24,7 @@ const MyEvents = () => {
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({});
-    const [activeTab, setActiveTab] = useState('upcoming');
+    const [activeTab, setActiveTab] = useState('all');
     const token = localStorage.getItem('jwtToken');
 
     const fetchMyEvents = async () => {
@@ -130,6 +130,15 @@ const MyEvents = () => {
                 <div className="flex justify-center mb-8">
                     <div className="inline-flex bg-white dark:bg-gray-800 rounded-full p-1 shadow-lg">
                         <button
+                            onClick={() => setActiveTab('all')}
+                            className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'all'
+                                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                }`}
+                        >
+                            All Events
+                        </button>
+                        <button
                             onClick={() => setActiveTab('upcoming')}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'upcoming'
                                     ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
@@ -137,15 +146,6 @@ const MyEvents = () => {
                                 }`}
                         >
                             Upcoming
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('all')}
-                            className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'all'
-                                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'
-                                }`}
-                        >
-                            All Events
                         </button>
                         <button
                             onClick={() => setActiveTab('past')}
