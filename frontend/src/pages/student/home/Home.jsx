@@ -3,7 +3,7 @@ import axios from "axios";
 import { backendUrl } from "../../../utils/routes";
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-
+import PastParticipants from './PastParticipants';
 
 const HomePage = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -17,6 +17,9 @@ const HomePage = () => {
     const [totalPoints, setTotalPoints] = useState(0);
     const navigate = useNavigate();
     const token = localStorage.getItem("jwtToken");
+
+    // Extract student ID from token
+    const [studentId, setStudentId] = useState(null);
 
     // Calendar logic
     const daysInMonth = new Date(
@@ -41,6 +44,16 @@ const HomePage = () => {
             navigate("/login");
             return;
         }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            setStudentId(decodedToken.userId);
+        } catch (err) {
+            console.error("Failed to decode token:", err);
+            navigate("/login");
+            return;
+        }
+
         const fetchEvents = async () => {
             setIsLoading(true);
             try {
@@ -56,17 +69,6 @@ const HomePage = () => {
                     }),
                 ]);
 
-                const filteredPastEvents = allRes.data.events.filter(
-                    event => {
-                        const enddate = new Date(event.endDate);
-                        return (
-                            enddate < currentDateTime
-                        );
-                    }
-                );
-                setPastEvents(filteredPastEvents || []);
-
-                //filter upcoming events
                 const filteredUpcomingEvents = allRes.data.events.filter(
                     event => {
                         const eventDate = new Date(event.date);
@@ -77,7 +79,6 @@ const HomePage = () => {
                 );
                 setUpcomingEvents(filteredUpcomingEvents || []);
 
-                // Filter ongoing events
                 const ongoingEvents = allRes.data.events.filter(
                     event => {
                         const eventDate = new Date(event.date);
@@ -90,13 +91,22 @@ const HomePage = () => {
                 );
                 setOngoingEvents(ongoingEvents || []);
 
-
+                const filteredPastEvents = allRes.data.events.filter(
+                    event => {
+                        const endDate = new Date(event.endDate);
+                        return (
+                            endDate < currentDateTime
+                        );
+                    }
+                );
+                setPastEvents(filteredPastEvents || []);
             } catch (err) {
                 console.error("Failed to fetch data:", err);
             } finally {
                 setIsLoading(false);
             }
         };
+
         const fetchAttendanceData = async () => {
             try {
                 let decodedToken = jwtDecode(token);
@@ -116,35 +126,26 @@ const HomePage = () => {
                 if (result.records && Array.isArray(result.records)) {
                     let presentCount = 0;
                     let countPoints = 0;
-
                     for (let i = 0; i < result.records.length; i++) {
                         if (result.records[i].status === "present") {
                             presentCount++;
-                            // Assuming each record has a points field, otherwise use a default value
                             const points = result.records[i].pointsGiven || 0;
                             countPoints += points;
                         }
                     }
-
                     setTotalEventsParticipated(presentCount);
                     setTotalPoints(countPoints);
                     updateTotalPoints(countPoints);
                 }
-
-
+            } catch (error) {
+                console.log("students participation");
             }
-            catch (error) {
-                console.log("students participation")
-            }
-        }
-
-
+        };
 
         fetchEvents();
         fetchAttendanceData();
-        
     }, []);
-    
+
     const updateTotalPoints = async (sumPoints) => {
         let decodedToken = jwtDecode(token);
         try {
@@ -165,17 +166,15 @@ const HomePage = () => {
             console.error('Error updating total points:', error);
         }
     };
+
     useEffect(() => {
         if (selectedDate) {
             const selectedFormattedDate = formattedDate(selectedDate);
             const combinedEvents = [...upcomingEvents, ...ongoingEvents, ...pastEvents]
                 .filter(event => formattedDate(new Date(event.date)) === selectedFormattedDate);
-
-            // Remove duplicate events using a Set with unique event IDs
             const uniqueEvents = Array.from(
                 new Map(combinedEvents.map(event => [event._id, event])).values()
             );
-
             setEvents(uniqueEvents);
         }
     }, [selectedDate, upcomingEvents, ongoingEvents, pastEvents]);
@@ -187,7 +186,7 @@ const HomePage = () => {
             1
         );
         setCurrentDate(newDate);
-        setSelectedDate(null); // Reset selected date when changing months
+        setSelectedDate(null);
     };
 
     const getEventColor = (date) => {
@@ -214,14 +213,12 @@ const HomePage = () => {
                     </p>
                 </div>
             </div>
-
             {isLoading ? (
                 <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
             ) : (
                 <>
-                    {/* Stats Cards - Updated to match coordinator dashboard style */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <div className="p-6 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg shadow-lg text-white transform hover:scale-105 transition-transform duration-300">
                             <div className="flex items-center justify-between">
@@ -246,7 +243,6 @@ const HomePage = () => {
                                 </div>
                             </div>
                         </div>
-
                         <div className="p-6 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg shadow-lg text-white transform hover:scale-105 transition-transform duration-300">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -270,7 +266,6 @@ const HomePage = () => {
                                 </div>
                             </div>
                         </div>
-
                         <div className="p-6 bg-gradient-to-r from-fuchsia-500 to-pink-600 rounded-lg shadow-lg text-white transform hover:scale-105 transition-transform duration-300">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -295,70 +290,6 @@ const HomePage = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Action Cards - Similar to coordinator dashboard */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div
-                            onClick={() => navigate('/all-events')}
-                            className="bg-blue-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-blue-500 flex items-center"
-                        >
-                            <div className="p-3 bg-blue-500 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-medium text-mirage-900 dark:text-mirage-50">All Events</h3>
-                                <p className="text-xs text-mirage-600 dark:text-mirage-400">Browse all events</p>
-                            </div>
-                        </div>
-
-                        <div
-                            onClick={() => navigate('/my-events')}
-                            className="bg-purple-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-purple-500 flex items-center"
-                        >
-                            <div className="p-3 bg-purple-500 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-medium text-mirage-900 dark:text-mirage-50">My Events</h3>
-                                <p className="text-xs text-mirage-600 dark:text-mirage-400">View registered events</p>
-                            </div>
-                        </div>
-
-                        <div
-                            onClick={() => navigate('/certificates')}
-                            className="bg-green-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-green-500 flex items-center"
-                        >
-                            <div className="p-3 bg-green-500 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-medium text-mirage-900 dark:text-mirage-50">Certificates</h3>
-                                <p className="text-xs text-mirage-600 dark:text-mirage-400">View your certificates</p>
-                            </div>
-                        </div>
-
-                        <div
-                            onClick={() => navigate('/profile')}
-                            className="bg-amber-50 dark:bg-mirage-800 p-4 rounded-lg shadow-md hover:shadow-lg cursor-pointer transition-shadow border-l-4 border-amber-500 flex items-center"
-                        >
-                            <div className="p-3 bg-amber-500 rounded-lg mr-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-medium text-mirage-900 dark:text-mirage-50">Profile</h3>
-                                <p className="text-xs text-mirage-600 dark:text-mirage-400">Update your details</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Calendar Component */}
                         <div className="lg:col-span-2">
@@ -380,7 +311,6 @@ const HomePage = () => {
                                         </svg>
                                     </button>
                                 </div>
-
                                 <div className="flex justify-between items-center mb-4">
                                     <button
                                         className="p-2 rounded bg-mirage-300 text-mirage-950 dark:text-mirage-50 dark:bg-mirage-700 hover:bg-mirage-400 dark:hover:bg-mirage-600 transition-colors"
@@ -403,7 +333,6 @@ const HomePage = () => {
                                         </svg>
                                     </button>
                                 </div>
-
                                 <div className="grid grid-cols-7 gap-2 text-mirage-950 dark:text-mirage-50 text-center border border-mirage-300 dark:border-mirage-700 p-2 rounded">
                                     {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                                         <div key={day} className="font-semibold">
@@ -426,9 +355,7 @@ const HomePage = () => {
                                             ongoingEvents.some(event => formattedDate(new Date(event.date)) === formattedDate(date)) ||
                                             pastEvents.some(event => formattedDate(new Date(event.date)) === formattedDate(date));
                                         const isSelected = selectedDate && formattedDate(selectedDate) === formattedDate(date);
-
                                         const eventColor = getEventColor(date);
-
                                         return (
                                             <div
                                                 key={`day-${day}`}
@@ -445,7 +372,6 @@ const HomePage = () => {
                                         );
                                     })}
                                 </div>
-
                                 {/* Selected Day Events */}
                                 {selectedDate && (
                                     <div className="mt-6">
@@ -485,7 +411,6 @@ const HomePage = () => {
                                                                         : "Upcoming"}
                                                             </div>
                                                         </div>
-
                                                         <div className="grid grid-cols-2 gap-2 mt-3">
                                                             <div className="text-sm text-mirage-600 dark:text-mirage-400 flex items-center">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -493,14 +418,12 @@ const HomePage = () => {
                                                                 </svg>
                                                                 {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </div>
-
                                                             <div className="text-sm text-mirage-600 dark:text-mirage-400 flex items-center">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                 </svg>
                                                                 {event.duration || "2 hours"}
                                                             </div>
-
                                                             <div className="text-sm text-mirage-600 dark:text-mirage-400 flex items-center">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -508,7 +431,6 @@ const HomePage = () => {
                                                                 </svg>
                                                                 {event.venue || "Online"}
                                                             </div>
-
                                                             <div className="text-sm text-mirage-600 dark:text-mirage-400 flex items-center">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -516,7 +438,6 @@ const HomePage = () => {
                                                                 {event.participantsCount || 0} participants
                                                             </div>
                                                         </div>
-
                                                         {event.clubIds && event.clubIds.length > 0 && (
                                                             <div className="mt-3 pt-3 border-t border-mirage-200 dark:border-mirage-600">
                                                                 <p className="text-xs text-mirage-500 dark:text-mirage-400 mb-2">Organizing clubs:</p>
@@ -553,7 +474,6 @@ const HomePage = () => {
                                 )}
                             </div>
                         </div>
-
                         {/* Right Column - Events List */}
                         <div className="space-y-6">
                             {/* Upcoming Events */}
@@ -580,7 +500,6 @@ const HomePage = () => {
                                         </svg>
                                     </button>
                                 </div>
-
                                 {upcomingEvents.length > 0 ? (
                                     <div className="space-y-4">
                                         {upcomingEvents.slice(0, 4).map((event) => {
@@ -589,8 +508,6 @@ const HomePage = () => {
                                             const daysUntil = Math.floor((eventDate - now) / (1000 * 60 * 60 * 24));
                                             const hoursUntil = Math.floor(((eventDate - now) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                                             const isNearEvent = eventDate.getTime() - now.getTime() < 86400000 * 3; // 3 days
-
-                                            // Find event category
                                             const eventCategory = event.category || "General";
                                             const categoryColors = {
                                                 "Technical": "blue",
@@ -601,7 +518,6 @@ const HomePage = () => {
                                                 "General": "gray"
                                             };
                                             const color = categoryColors[eventCategory] || "gray";
-
                                             return (
                                                 <div
                                                     key={event._id}
@@ -636,7 +552,6 @@ const HomePage = () => {
                                                             </p>
                                                         </div>
                                                     </div>
-
                                                     <div className="grid grid-cols-2 gap-3 mt-4 text-sm text-mirage-600 dark:text-mirage-400">
                                                         <div className="flex items-center">
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -671,7 +586,6 @@ const HomePage = () => {
                                                             <span>{event.duration || "2 hours"}</span>
                                                         </div>
                                                     </div>
-
                                                     {event.clubIds && event.clubIds.length > 0 && (
                                                         <div className="flex items-center mt-3 pt-3 border-t border-mirage-200 dark:border-mirage-600">
                                                             <p className="text-xs text-mirage-500 dark:text-mirage-400 mr-2">Organized by:</p>
@@ -696,7 +610,6 @@ const HomePage = () => {
                                                 </div>
                                             );
                                         })}
-
                                         {upcomingEvents.length > 4 && (
                                             <div className="text-center">
                                                 <button
@@ -720,7 +633,6 @@ const HomePage = () => {
                                     </div>
                                 )}
                             </div>
-
                             {/* Ongoing Events */}
                             <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
                                 <div className="flex justify-between items-center mb-4">
@@ -737,23 +649,18 @@ const HomePage = () => {
                                         )}
                                     </h2>
                                 </div>
-
                                 {ongoingEvents.length > 0 ? (
                                     <div className="space-y-4">
                                         {ongoingEvents.map((event) => {
-                                            // Calculate event progress percentage
                                             const startDate = new Date(event.date);
                                             const endDate = new Date(event.endDate || startDate.getTime() + (event.duration ? parseInt(event.duration) * 60 * 60 * 1000 : 7200000));
                                             const currentTime = new Date();
                                             const totalDuration = endDate.getTime() - startDate.getTime();
                                             const elapsedDuration = currentTime.getTime() - startDate.getTime();
                                             const progressPercentage = Math.min(100, Math.max(0, (elapsedDuration / totalDuration) * 100)).toFixed(0);
-
-                                            // Calculate time remaining
                                             const timeRemaining = endDate.getTime() - currentTime.getTime();
                                             const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
                                             const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-
                                             return (
                                                 <div
                                                     key={event._id}
@@ -779,7 +686,6 @@ const HomePage = () => {
                                                             </p>
                                                         </div>
                                                     </div>
-
                                                     <div className="mt-4 mb-3">
                                                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                                                             <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: `${progressPercentage}%` }}></div>
@@ -790,7 +696,6 @@ const HomePage = () => {
                                                             <span>Ends {endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                         </div>
                                                     </div>
-
                                                     <div className="grid grid-cols-2 gap-3 mt-4 text-sm text-mirage-600 dark:text-mirage-400">
                                                         <div className="flex items-center">
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -806,7 +711,6 @@ const HomePage = () => {
                                                             <span>{event.participantsCount || 0} participants</span>
                                                         </div>
                                                     </div>
-
                                                     {event.clubIds && event.clubIds.length > 0 && (
                                                         <div className="flex items-center mt-3 pt-3 border-t border-mirage-200 dark:border-mirage-600">
                                                             <p className="text-xs text-mirage-500 dark:text-mirage-400 mr-2">Organized by:</p>
@@ -845,6 +749,13 @@ const HomePage = () => {
                         </div>
                     </div>
                 </>
+            )}
+
+            {/* Past Participants Component - Moved below calendar */}
+            {!isLoading && studentId && (
+                <div className="mb-8">
+                    <PastParticipants studentId={studentId} />
+                </div>
             )}
         </div>
     );
