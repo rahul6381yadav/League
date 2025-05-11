@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ViewEvents from './components/ViewEvents';
+import ViewEvents from '../../coordinator/manageEvents/components/ViewEvents';
 import { backendUrl } from '../../../utils/routes';
 
 const ClubEvents = () => {
-    const [isCoordinator, setIsCoordinator] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [clubDetails, setClubDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,7 +12,7 @@ const ClubEvents = () => {
     const { clubId, clubName } = location.state || {};
     const navigate = useNavigate();
 
-    // Fetch club details including coordinators
+    // Fetch club details
     useEffect(() => {
         const fetchClubDetails = async () => {
             if (!clubId) {
@@ -39,15 +37,6 @@ const ClubEvents = () => {
 
                 const data = await response.json();
                 setClubDetails(data.club);
-
-                // Check if current user is a coordinator
-                const userData = JSON.parse(localStorage.getItem('user'));
-                if (userData && data.club) {
-                    const isUserCoordinator =
-                        data.club.coordinator1 && data.club.coordinator1._id === userData._id ||
-                        data.club.coordinator2 && data.club.coordinator2._id === userData._id;
-                    setIsCoordinator(isUserCoordinator);
-                }
             } catch (err) {
                 console.error("Error fetching club details:", err);
                 setError(err.message || "Failed to fetch club details");
@@ -61,8 +50,83 @@ const ClubEvents = () => {
 
     // Function to handle empty events state visibility
     const shouldShowEmptyState = (events) => {
-        // Always show empty state when there are no events, regardless of coordinator status
         return !events || events.length === 0;
+    };
+
+    // Club Logo component 
+    const ClubLogo = ({ club }) => {
+        if (!club || !club.image) return null;
+
+        return (
+            <img
+                src={club.image}
+                alt={`${club.name} Logo`}
+                className="h-10 w-10 rounded-full object-cover border-2 border-indigo-200 dark:border-violet-700 mr-3"
+                onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(club.name)}&background=8B5CF6&color=fff&size=64`;
+                }}
+            />
+        );
+    };
+
+    // Empty Events State component with tattoo design for when no events are available
+    const EmptyEventsState = () => {
+        return (
+            <div className="py-16 flex flex-col items-center justify-center relative">
+                {/* Tattoo-inspired design */}
+                <div className="absolute w-full max-w-md h-64 opacity-10 dark:opacity-5 pointer-events-none">
+                    <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                        <defs>
+                            <linearGradient id="tattooGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#4F46E5" />
+                                <stop offset="100%" stopColor="#7E22CE" />
+                            </linearGradient>
+                        </defs>
+                        <g fill="url(#tattooGradient)" stroke="url(#tattooGradient)" strokeWidth="2">
+                            <path d="M250,50 C350,50 350,150 250,150 C150,150 150,50 250,50 Z" />
+                            <path d="M250,70 C330,70 330,130 250,130 C170,130 170,70 250,70 Z" />
+                            <circle cx="250" cy="100" r="15" />
+                            <path d="M200,50 C220,30 230,30 250,50" strokeWidth="4" fill="none" />
+                            <path d="M250,50 C270,30 280,30 300,50" strokeWidth="4" fill="none" />
+                            <path d="M200,150 C220,170 230,170 250,150" strokeWidth="4" fill="none" />
+                            <path d="M250,150 C270,170 280,170 300,150" strokeWidth="4" fill="none" />
+                            <path d="M150,100 C170,120 180,120 200,100" strokeWidth="3" fill="none" />
+                            <path d="M300,100 C320,120 330,120 350,100" strokeWidth="3" fill="none" />
+                            <path d="M150,100 C170,80 180,80 200,100" strokeWidth="3" fill="none" />
+                            <path d="M300,100 C320,80 330,80 350,100" strokeWidth="3" fill="none" />
+                            <circle cx="150" cy="100" r="5" />
+                            <circle cx="350" cy="100" r="5" />
+                            <path d="M250,150 L250,200" strokeWidth="4" fill="none" />
+                            <path d="M230,180 L270,180" strokeWidth="4" fill="none" />
+                            <path d="M220,200 L280,200" strokeWidth="4" fill="none" />
+                        </g>
+                    </svg>
+                </div>
+
+                {/* Illustration */}
+                <div className="relative w-40 h-40 z-10">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-200 to-violet-200 dark:from-indigo-900 dark:to-violet-900 rounded-full opacity-50 animate-pulse"></div>
+                    <div className="absolute inset-4 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                        <svg className="w-20 h-20 text-indigo-400 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                {/* Message */}
+                <h3 className="mt-8 text-xl font-semibold text-gray-700 dark:text-gray-300">No Events Found</h3>
+                <p className="mt-2 text-gray-600 dark:text-gray-400 text-center max-w-md">
+                    This club hasn't scheduled any events yet. Check back later!
+                </p>
+
+                {/* Decorative elements */}
+                <div className="absolute w-64 h-64 -z-10">
+                    <div className="absolute top-10 left-0 w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/20 opacity-40"></div>
+                    <div className="absolute bottom-0 right-10 w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/20 opacity-40"></div>
+                </div>
+            </div>
+        );
     };
 
     // Function to handle coordinator card click
@@ -139,97 +203,6 @@ const ClubEvents = () => {
         );
     };
 
-    // Club Logo component 
-    const ClubLogo = ({ club }) => {
-        if (!club || !club.image) return null;
-
-        return (
-            <img
-                src={club.image}
-                alt={`${club.name} Logo`}
-                className="h-10 w-10 rounded-full object-cover border-2 border-indigo-200 dark:border-violet-700 mr-3"
-                onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(club.name)}&background=8B5CF6&color=fff&size=64`;
-                }}
-            />
-        );
-    };
-
-    // Empty Events State component with tattoo design for when no events are available
-    const EmptyEventsState = ({ isCoordinator }) => {
-        return (
-            <div className="py-16 flex flex-col items-center justify-center relative">
-                {/* Tattoo-inspired design - visible to all users */}
-                <div className="absolute w-full max-w-md h-64 opacity-10 dark:opacity-5 pointer-events-none">
-                    <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                        <defs>
-                            <linearGradient id="tattooGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#4F46E5" />
-                                <stop offset="100%" stopColor="#7E22CE" />
-                            </linearGradient>
-                        </defs>
-                        <g fill="url(#tattooGradient)" stroke="url(#tattooGradient)" strokeWidth="2">
-                            <path d="M250,50 C350,50 350,150 250,150 C150,150 150,50 250,50 Z" />
-                            <path d="M250,70 C330,70 330,130 250,130 C170,130 170,70 250,70 Z" />
-                            <circle cx="250" cy="100" r="15" />
-                            <path d="M200,50 C220,30 230,30 250,50" strokeWidth="4" fill="none" />
-                            <path d="M250,50 C270,30 280,30 300,50" strokeWidth="4" fill="none" />
-                            <path d="M200,150 C220,170 230,170 250,150" strokeWidth="4" fill="none" />
-                            <path d="M250,150 C270,170 280,170 300,150" strokeWidth="4" fill="none" />
-                            <path d="M150,100 C170,120 180,120 200,100" strokeWidth="3" fill="none" />
-                            <path d="M300,100 C320,120 330,120 350,100" strokeWidth="3" fill="none" />
-                            <path d="M150,100 C170,80 180,80 200,100" strokeWidth="3" fill="none" />
-                            <path d="M300,100 C320,80 330,80 350,100" strokeWidth="3" fill="none" />
-                            <circle cx="150" cy="100" r="5" />
-                            <circle cx="350" cy="100" r="5" />
-                            <path d="M250,150 L250,200" strokeWidth="4" fill="none" />
-                            <path d="M230,180 L270,180" strokeWidth="4" fill="none" />
-                            <path d="M220,200 L280,200" strokeWidth="4" fill="none" />
-                        </g>
-                    </svg>
-                </div>
-
-                {/* Illustration - visible to all users */}
-                <div className="relative w-40 h-40 z-10">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-200 to-violet-200 dark:from-indigo-900 dark:to-violet-900 rounded-full opacity-50 animate-pulse"></div>
-                    <div className="absolute inset-4 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
-                        <svg className="w-20 h-20 text-indigo-400 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                </div>
-
-                {/* Message - different for coordinators vs regular users */}
-                <h3 className="mt-8 text-xl font-semibold text-gray-700 dark:text-gray-300">No Events Found</h3>
-                <p className="mt-2 text-gray-600 dark:text-gray-400 text-center max-w-md">
-                    {isCoordinator
-                        ? "This club doesn't have any events yet. Create your first event to get started!"
-                        : "This club hasn't scheduled any events yet. Check back later!"}
-                </p>
-
-                {/* Action button - only visible to coordinators */}
-                {isCoordinator && (
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="mt-6 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-full font-medium flex items-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
-                    >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Create First Event
-                    </button>
-                )}
-
-                {/* Decorative elements - visible to all users */}
-                <div className="absolute w-64 h-64 -z-10">
-                    <div className="absolute top-10 left-0 w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/20 opacity-40"></div>
-                    <div className="absolute bottom-0 right-10 w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/20 opacity-40"></div>
-                </div>
-            </div>
-        );
-    };
-
     // Component to render coordinator section based on available data
     const CoordinatorSection = () => {
         if (!clubDetails) return null;
@@ -292,6 +265,7 @@ const ClubEvents = () => {
                         </svg>
                         Back to Clubs
                     </button>
+
                     {/* Club name with decorative elements */}
                     <div className="flex flex-col items-center justify-center">
                         <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full mb-4"></div>
@@ -304,18 +278,21 @@ const ClubEvents = () => {
                         </div>
                         <div className="mt-4 w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full"></div>
                     </div>
+
                     {/* Coordinator section */}
                     {!loading && !error && (
                         <div className="mt-6 px-4 md:px-8 max-w-3xl mx-auto">
                             <CoordinatorSection />
                         </div>
                     )}
+
                     {/* Show error if any */}
                     {error && (
                         <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-center">
                             <p className="text-red-600 dark:text-red-400">{error}</p>
                         </div>
                     )}
+
                     {/* Loading state */}
                     {loading && (
                         <div className="mt-6 flex justify-center">
@@ -324,6 +301,7 @@ const ClubEvents = () => {
                     )}
                 </div>
             </div>
+
             {/* Events section with colorful container */}
             <div className="max-w-7xl mx-auto px-4 pb-12 -mt-6">
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100 dark:border-violet-900 overflow-hidden">
@@ -333,23 +311,12 @@ const ClubEvents = () => {
                     <div className="p-6">
                         <ViewEvents
                             props={{ primaryClubId: clubId }}
-                            emptyComponent={<EmptyEventsState isCoordinator={isCoordinator} />}
+                            emptyComponent={<EmptyEventsState />}
                             showEmptyState={shouldShowEmptyState}
                         />
                     </div>
                 </div>
             </div>
-            {/* Floating action button for coordinators */}
-            {isCoordinator && (
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="fixed right-6 bottom-6 w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-violet-700 text-white flex items-center justify-center shadow-lg hover:shadow-indigo-500/50 transition-transform hover:scale-105"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button>
-            )}
         </div>
     );
 };

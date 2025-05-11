@@ -8,7 +8,7 @@ import Login from './pages/auth/Login';
 import ForgetPassword from './pages/auth/Forget';
 import AdminLogin from './pages/auth/adminLogin';
 
-import ClubEventsPage from './pages/coordinator/manageEvents/ClubEvents';
+import ClubEventsPage from './pages/student/clubs/ClubEvents';
 import CreateClub from './pages/cosa/createclub';
 import AdminPanel from './pages/admin/adminPanel';
 import CoordinatorDashboard from './pages/coordinator/dashboard/Dashboard';
@@ -52,7 +52,7 @@ function AppRoutes() {
             <Route path="/all-events" element={<Layout><AllEvents /></Layout>} />
             <Route path="/my-events" element={<Layout><MyEvents /></Layout>} />
             <Route path="/myProfile" element={<Layout><MyProfile /></Layout>} />
-            <Route path="/allPastParticipations" element={<Layout><AllPastParticipation/></Layout>} />
+            <Route path="/allPastParticipations" element={<Layout><AllPastParticipation /></Layout>} />
             <Route path="/friends/:id" element={<Layout><OtherMembers /></Layout>} />
             <Route path="/leaderboard" element={<Layout><Leaderboard /></Layout>} />
             <Route path="/batch-leaderboard" element={<Layout><BatchLeaderboard /></Layout>} />
@@ -65,7 +65,7 @@ function AppRoutes() {
             <Route path="/events/create" element={<LayoutCoordinator><CreateEvents /></LayoutCoordinator>} />
             <Route path="/events/edit/:id" element={<LayoutCoordinator><EditEvents /></LayoutCoordinator>} />
             <Route path="/contest" element={<LayoutCoordinator><Contest /></LayoutCoordinator>} />
-            <Route path="/allEventCoordinator" element={<LayoutCoordinator><AllEventCoordinator /></LayoutCoordinator>}/>
+            <Route path="/allEventCoordinator" element={<LayoutCoordinator><AllEventCoordinator /></LayoutCoordinator>} />
 
             {/* Admin Routes */}
             <Route path="/admin-panel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
