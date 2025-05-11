@@ -10,7 +10,7 @@ const PastParticipants = ({ studentId }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const eventsPerPage = 4; // Increased for horizontal layout
+    const eventsPerPage = 3; // Increased for horizontal layout
     const [maxPoints, setMaxPoints] = useState(100); // Default max points
     const navigate = useNavigate();
 
