@@ -34,6 +34,7 @@ import Contest from './pages/coordinator/manangeContest/Contest';
 import ErrorPage from "./pages/common/errorPage"; // Import the new ErrorPage component
 import CodeFlow1v1ShowdownPage from './pages/static_pages/codeflow1v1Showdown';
 import AllEventCoordinator from './pages/coordinator/allEventCoordinator';
+import AllPastParticipation from './pages/student/allPastParticipation';
 function AppRoutes() {
     return (
         <Routes>
@@ -51,7 +52,7 @@ function AppRoutes() {
             <Route path="/all-events" element={<Layout><AllEvents /></Layout>} />
             <Route path="/my-events" element={<Layout><MyEvents /></Layout>} />
             <Route path="/myProfile" element={<Layout><MyProfile /></Layout>} />
-
+            <Route path="/allPastParticipations" element={<Layout><AllPastParticipation/></Layout>} />
             <Route path="/friends/:id" element={<Layout><OtherMembers /></Layout>} />
             <Route path="/leaderboard" element={<Layout><Leaderboard /></Layout>} />
             <Route path="/batch-leaderboard" element={<Layout><BatchLeaderboard /></Layout>} />
