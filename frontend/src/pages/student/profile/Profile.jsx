@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone,FaPencilAlt } from "react-icons/fa";
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone, FaPencilAlt } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { jwtDecode } from "jwt-decode";
 import EditProfile from "./EditProfile";
@@ -13,7 +13,7 @@ const MyProfile = () => {
         TotalPoints: 0,
         photo: "",
         linkedin: "",
-        LeeTrack:"",
+        LeeTrack: "",
         email: "",
         phone: "",
         Leetcode: "",
@@ -173,56 +173,95 @@ const MyProfile = () => {
     }, []);
 
     return (
-        <div className="min-h-screen p-4 md:p-8 bg-mirage-50 dark:bg-mirage-950">
-            <div className="p-4 md:p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                {/* Profile Header */}
-                <div className="flex flex-col md:flex-row items-center justify-between mb-6 space-y-4 md:space-y-0">
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                        <div className="relative group">
-                            <img
-                                src={profile.photo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
-                                alt="Profile Avatar"
-                                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-mirage-100 dark:border-mirage-700"
-                            />
-                            <div
-                                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
-                                onClick={() => setIsPhotoModalOpen(true)}
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-4 md:p-6">
+            <div className="max-w-4xl mx-auto">
+                {/* Profile Card */}
+                <div className="relative mb-6 rounded-xl overflow-hidden shadow-lg">
+                    {/* Header Banner */}
+                    <div className="h-32 bg-gradient-to-r from-indigo-600 to-violet-600"></div>
+
+                    {/* Profile Info */}
+                    <div className="bg-white dark:bg-gray-800 p-5 pt-0">
+                        <div className="flex flex-col items-center md:flex-row md:items-end md:justify-between">
+                            <div className="flex flex-col md:flex-row items-center">
+                                {/* Profile Image - Fixed positioning */}
+                                <div className="relative group -mt-16 mb-4 md:mb-0 md:mr-6">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-md">
+                                        <img
+                                            src={profile.photo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
+                                            alt="Profile Avatar"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div
+                                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+                                        onClick={() => setIsPhotoModalOpen(true)}
+                                    >
+                                        <FaPencilAlt className="text-white text-xl" />
+                                    </div>
+                                </div>
+
+                                {/* User Details - Added more top margin for better spacing */}
+                                <div className="text-center md:text-left mt-2 md:mt-0">
+                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{profile.name}</h1>
+                                    <div className="flex flex-col md:flex-row md:items-center text-gray-600 dark:text-gray-300 mt-1">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200">{profile.role}</span>
+                                        {profile.studentId && (
+                                            <span className="mt-1 md:mt-0 md:ml-2 text-sm">{profile.studentId}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Edit Button */}
+                            <button
+                                onClick={() => setIsEditModalOpen(true)}
+                                className="mt-4 md:mt-0 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
                             >
-                                <FaPencilAlt className="text-white text-xl" />
+                                Edit Profile
+                            </button>
+                        </div>
+
+                        {/* Points Display */}
+                        <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-indigo-100">Total Points</p>
+                                    <p className="text-3xl font-bold">{profile.TotalPoints}</p>
+                                </div>
+                                <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center">
+                                    <span className="text-2xl font-bold">{profile.TotalPoints > 0 ? '🏆' : '🎯'}</span>
+                                </div>
                             </div>
                         </div>
-                        <div className="text-center md:text-left">
-                            <h1 className="text-2xl md:text-3xl font-bold text-mirage-900 dark:text-mirage-50">{profile.name}</h1>
-                            <p className="text-sm md:text-lg text-mirage-700 dark:text-mirage-200">{profile.role}</p>
-                            <p className="text-sm md:text-lg text-mirage-700 dark:text-mirage-200">{profile.studentId}</p>
+
+                        {/* Contact Grid */}
+                        <div className="mt-6">
+                            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Contact Information</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {[
+                                    { icon: <FaEnvelope className="text-indigo-500" />, label: "Email", value: profile.email, isEmail: true },
+                                    { icon: <FaPhone className="text-violet-500" />, label: "Phone", value: profile.phone, isPhone: true },
+                                    { icon: <FaLinkedin className="text-indigo-500" />, label: "LinkedIn", value: profile.linkedin, isLink: true },
+                                    { icon: <SiLeetcode className="text-violet-500" />, label: "Leetcode", value: profile.Leetcode, isLink: true },
+                                    { icon: <FaInstagram className="text-indigo-500" />, label: "Instagram", value: profile.instagram, isLink: true },
+                                    { icon: <FaGithub className="text-violet-500" />, label: "GitHub", value: profile.github, isLink: true },
+                                ]
+                                    .filter(item => item.value)
+                                    .map((item, index) => (
+                                        <ContactItem
+                                            key={index}
+                                            icon={item.icon}
+                                            label={item.label}
+                                            value={item.value}
+                                            isLink={item.isLink}
+                                            isEmail={item.isEmail}
+                                            isPhone={item.isPhone}
+                                        />
+                                    ))
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <button
-                        onClick={() => setIsEditModalOpen(true)}
-                        className="px-4 py-2 rounded-lg bg-mirage-100 dark:bg-mirage-700 text-mirage-900 dark:text-mirage-50 hover:bg-mirage-300 dark:hover:bg-mirage-600 transition-colors"
-                    >
-                        Edit Profile
-                    </button>
-                </div>
-
-                {/* Points Display */}
-                <div className="mb-6 md:mb-8 p-4 md:p-6 rounded-lg bg-mirage-100 dark:bg-mirage-900">
-                    <div className="text-center">
-                        <p className="text-4xl md:text-6xl font-bold text-mirage-900 dark:text-mirage-50">{profile.TotalPoints}</p>
-                        <p className="text-sm text-mirage-700 dark:text-mirage-200 mt-2">Total Points</p>
-                    </div>
-                </div>
-
-                {/* Contact Information */}
-                <div className="p-4 md:p-6 rounded-lg bg-mirage-100 dark:bg-mirage-900">
-                    <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-mirage-900 dark:text-mirage-50">Contact Information</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <ContactItem icon={<FaLinkedin />} label="LinkedIn" value={profile.linkedin} isLink />
-                        <ContactItem icon={<FaEnvelope />} label="Email" value={profile.email} isEmail />
-                        <ContactItem icon={<FaPhone />} label="Phone" value={profile.phone} isPhone />
-                        <ContactItem icon={<SiLeetcode />} label="Leetcode" value={profile.Leetcode} isLink />
-                        <ContactItem icon={<FaInstagram />} label="Instagram" value={profile.instagram} isLink />
-                        <ContactItem icon={<FaGithub />} label="GitHub" value={profile.github} isLink />
                     </div>
                 </div>
             </div>
@@ -260,20 +299,25 @@ const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
     }
 
     return (
-        <div className="flex items-center gap-4 p-3 rounded-lg bg-mirage-200 dark:bg-mirage-800">
-            <div className="text-lg text-mirage-700 dark:text-mirage-200">{icon}</div>
-            {isLink || isEmail || isPhone ? (
-                <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-mirage-900 dark:text-mirage-50 hover:text-mirage-700 dark:hover:text-mirage-200 transition-colors"
-                >
-                    {value}
-                </a>
-            ) : (
-                <span className="text-mirage-900 dark:text-mirage-50">{value}</span>
-            )}
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow flex items-center justify-center">
+                {icon}
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+                {isLink || isEmail || isPhone ? (
+                    <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate block"
+                    >
+                        {value}
+                    </a>
+                ) : (
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{value}</p>
+                )}
+            </div>
         </div>
     );
 };
@@ -306,12 +350,12 @@ const PhotoUploadModal = ({ currentPhoto, onSave, onClose }) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white dark:bg-mirage-800 rounded-lg p-6 w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4 text-mirage-900 dark:text-mirage-50">Update Profile Photo</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Update Profile Photo</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <div className="flex justify-center mb-4">
-                            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-mirage-100 dark:border-mirage-700">
+                            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-700">
                                 <img
                                     src={previewUrl || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
                                     alt="Profile Preview"
@@ -323,20 +367,20 @@ const PhotoUploadModal = ({ currentPhoto, onSave, onClose }) => {
                             type="file"
                             accept="image/*"
                             onChange={handleFileChange}
-                            className="w-full p-2 border border-gray-300 rounded dark:bg-mirage-700 dark:border-mirage-600"
+                            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
                         />
                     </div>
                     <div className="flex justify-end gap-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-200 dark:bg-mirage-700 rounded-lg hover:bg-gray-300 dark:hover:bg-mirage-600 text-gray-800 dark:text-gray-200"
+                            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-500 rounded-lg hover:bg-blue-600 text-white"
+                            className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 text-white"
                         >
                             Save
                         </button>

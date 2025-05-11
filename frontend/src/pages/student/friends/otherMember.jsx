@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaPhone } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
-import { useParams } from "react-router-dom"; // To get the 'id' from the URL
+import { useParams } from "react-router-dom";
 import PastParticipants from "../home/PastParticipants";
 import { backendUrl } from "../../../utils/routes";
 
 const OtherMembers = () => {
-    const { id } = useParams(); // Extracting the 'id' from the URL parameter
+    const { id } = useParams();
     const token = localStorage.getItem("jwtToken");
     const [profile, setProfile] = useState({
         name: "",
@@ -21,19 +21,14 @@ const OtherMembers = () => {
         instagram: "",
         github: "",
     });
-    const studentId = id;
 
-    // Fetch profile details based on the 'id'
     const fetchProfileDetails = async () => {
         try {
-            console.log("id ", id);
-            const response = await fetch(`${backendUrl}/user/profile?id=${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const response = await fetch(`${backendUrl}/user/profile?id=${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             const result = await response.json();
             if (response.ok && result.user) {
                 setProfile({
@@ -59,79 +54,98 @@ const OtherMembers = () => {
 
     useEffect(() => {
         fetchProfileDetails();
-    }, [id]); // Fetch new profile when 'id' changes
+    }, [id]);
 
     return (
-        <div className="min-h-screen p-8 bg-mirage-50 dark:bg-mirage-950">
-            <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
-                {/* Profile Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-6 w-full">
-                        <img
-                            src={profile.photo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
-                            alt="Profile Avatar"
-                            className="w-32 h-32 rounded-full object-cover border-4 border-mirage-100 dark:border-mirage-700"
-                        />
-                        <div className="flex-grow">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h1 className="text-3xl font-bold text-mirage-900 dark:text-mirage-50">{profile.name}</h1>
-                                    <p className="text-lg text-mirage-700 dark:text-mirage-200">{profile.role}</p>
-                                    <p className="text-lg text-mirage-700 dark:text-mirage-200">{profile.studentId}</p>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-4 md:p-6">
+            <div className="max-w-4xl mx-auto">
+                {/* Profile Card */}
+                <div className="relative mb-6 rounded-xl overflow-hidden shadow-lg">
+                    {/* Header Banner */}
+                    <div className="h-32 bg-gradient-to-r from-indigo-600 to-violet-600"></div>
+
+                    {/* Profile Info */}
+                    <div className="bg-white dark:bg-gray-800 p-5 pt-0">
+                        <div className="flex flex-col md:flex-row items-center md:items-end md:justify-between">
+                            <div className="flex flex-col md:flex-row items-center">
+                                {/* Profile Image */}
+                                <div className="relative -mt-16 mb-4 md:mb-0 md:mr-6">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-md">
+                                        <img
+                                            src={profile.photo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
+                                            alt="Profile Avatar"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="bg-mirage-100 dark:bg-mirage-900 p-4 rounded-lg flex flex-col items-center justify-center h-24 w-32">
-                                    <p className="text-sm text-mirage-700 dark:text-mirage-200 mb-2 text-center">Total Points</p>
-                                    <p className="text-4xl font-bold text-mirage-900 dark:text-mirage-50 text-center">{profile.TotalPoints}</p>
+
+                                {/* User Details */}
+                                <div className="text-center md:text-left mt-2 md:mt-0">
+                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{profile.name}</h1>
+                                    <div className="flex flex-col md:flex-row md:items-center text-gray-600 dark:text-gray-300 mt-1">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200">{profile.role}</span>
+                                        {profile.studentId && (
+                                            <span className="mt-1 md:mt-0 md:ml-2 text-sm">{profile.studentId}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Points Display Card */}
+                            <div className="mt-4 md:mt-0 px-5 py-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                                <div className="text-xs font-medium text-indigo-800 dark:text-indigo-200">Total Points</div>
+                                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{profile.TotalPoints}</div>
+                            </div>
+                        </div>
+
+                        {/* Points Display Banner */}
+                        <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-indigo-100">Total Points</p>
+                                    <p className="text-3xl font-bold">{profile.TotalPoints}</p>
+                                </div>
+                                <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center">
+                                    <span className="text-2xl font-bold">{profile.TotalPoints > 0 ? '🏆' : '🎯'}</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="border">
-                    <PastParticipants studentId={studentId} />
-                </div>
+                        {/* Past Participants Section */}
+                        <div className="mt-6">
+                            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Activity History</h2>
+                            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg overflow-hidden">
+                                <PastParticipants studentId={id} />
+                            </div>
+                        </div>
 
-                {/* Contact Information */}
-                <div className="p-6 rounded-lg bg-mirage-100 dark:bg-mirage-900">
-                    <h2 className="text-xl font-bold mb-6 text-mirage-900 dark:text-mirage-50">Contact Information</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <ContactItem
-                            icon={<FaLinkedin />}
-                            label="LinkedIn"
-                            value={profile.linkedin}
-                            isLink
-                        />
-                        <ContactItem
-                            icon={<FaEnvelope />}
-                            label="Email"
-                            value={profile.email}
-                            isEmail
-                        />
-                        <ContactItem
-                            icon={<FaPhone />}
-                            label="Phone"
-                            value={profile.phone}
-                            isPhone
-                        />
-                        <ContactItem
-                            icon={<SiLeetcode />}
-                            label="Leetcode"
-                            value={profile.Leetcode}
-                            isLink
-                        />
-                        <ContactItem
-                            icon={<FaInstagram />}
-                            label="Instagram"
-                            value={profile.instagram}
-                            isLink
-                        />
-                        <ContactItem
-                            icon={<FaGithub />}
-                            label="GitHub"
-                            value={profile.github}
-                            isLink
-                        />
+                        {/* Contact Grid */}
+                        <div className="mt-6">
+                            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Contact Information</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {[
+                                    { icon: <FaEnvelope className="text-indigo-500" />, label: "Email", value: profile.email, isEmail: true },
+                                    { icon: <FaPhone className="text-violet-500" />, label: "Phone", value: profile.phone, isPhone: true },
+                                    { icon: <FaLinkedin className="text-indigo-500" />, label: "LinkedIn", value: profile.linkedin, isLink: true },
+                                    { icon: <SiLeetcode className="text-violet-500" />, label: "Leetcode", value: profile.Leetcode, isLink: true },
+                                    { icon: <FaInstagram className="text-indigo-500" />, label: "Instagram", value: profile.instagram, isLink: true },
+                                    { icon: <FaGithub className="text-violet-500" />, label: "GitHub", value: profile.github, isLink: true },
+                                ]
+                                    .filter(item => item.value)
+                                    .map((item, index) => (
+                                        <ContactItem
+                                            key={index}
+                                            icon={item.icon}
+                                            label={item.label}
+                                            value={item.value}
+                                            isLink={item.isLink}
+                                            isEmail={item.isEmail}
+                                            isPhone={item.isPhone}
+                                        />
+                                    ))
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,42 +154,38 @@ const OtherMembers = () => {
 };
 
 const ContactItem = ({ icon, label, value, isLink, isEmail, isPhone }) => {
-    if (!value) return null; // Skip if value is not available
+    if (!value) return null;
 
     let href = value;
-    if (isEmail) {
-        href = `mailto:${value}`;
-    } else if (isPhone) {
-        href = `tel:${value}`;
-    } else if (isLink) {
-        if (label === "LinkedIn") {
-            href = `https://www.linkedin.com/in/${value}`;
-        } else if (label === "Leetcode") {
-            href = `https://leetcode.com/${value}`;
-        } else if (label === "Instagram") {
-            href = `https://www.instagram.com/${value}`;
-        } else if (label === "GitHub") {
-            href = `https://github.com/${value}`;
-        }
+    if (isEmail) href = `mailto:${value}`;
+    if (isPhone) href = `tel:${value}`;
+    if (isLink) {
+        if (label === "LinkedIn") href = `https://www.linkedin.com/in/${value}`;
+        if (label === "Leetcode") href = `https://leetcode.com/${value}`;
+        if (label === "Instagram") href = `https://www.instagram.com/${value}`;
+        if (label === "GitHub") href = `https://github.com/${value}`;
     }
 
     return (
-        <div className="flex items-center gap-4 p-3 rounded-lg bg-mirage-200 dark:bg-mirage-800">
-            <div className="text-xl text-mirage-700 dark:text-mirage-200">
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow flex items-center justify-center">
                 {icon}
             </div>
-            {isLink || isEmail || isPhone ? (
-                <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-mirage-900 dark:text-mirage-50 hover:text-mirage-700 dark:hover:text-mirage-200 transition-colors"
-                >
-                    {value}
-                </a>
-            ) : (
-                <span className="text-mirage-900 dark:text-mirage-50">{value}</span>
-            )}
+            <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+                {isLink || isEmail || isPhone ? (
+                    <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate block"
+                    >
+                        {value}
+                    </a>
+                ) : (
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{value}</p>
+                )}
+            </div>
         </div>
     );
 };
