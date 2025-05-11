@@ -150,13 +150,34 @@ const AllPastParticipation = () => {
 
         // Apply tab filter (all/high-points/recent)
         if (selectedTab === 'high-points') {
-            filtered.sort((a, b) => (b.pointsGiven || 0) - (a.pointsGiven || 0));
+            // Filter for present status first
+            const presentEvents = filtered.filter(record => record.status === 'present');
+            // Sort by points (highest first)
+            presentEvents.sort((a, b) => (b.pointsGiven || 0) - (a.pointsGiven || 0));
+            // Take top 3 events, or 1 if total is less than 3
+            return presentEvents.length > 0 ?
+                presentEvents.slice(0, Math.min(3, presentEvents.length)) : [];
         } else if (selectedTab === 'recent') {
+            // Get current month and year
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            // Filter for events from the current month
+            filtered = filtered.filter(record => {
+                if (!record.eventId || !record.eventId.date) return false;
+                const eventDate = new Date(record.eventId.date);
+                return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+            });
+
+            // Sort by date (newest first)
             filtered.sort((a, b) => {
                 const dateA = new Date(a.eventId.date);
                 const dateB = new Date(b.eventId.date);
                 return dateB - dateA;
             });
+
+            return filtered;
         }
 
         // Apply sorting
