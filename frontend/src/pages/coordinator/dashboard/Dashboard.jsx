@@ -37,6 +37,10 @@ const CoordinatorDashboard = () => {
   };
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
@@ -94,7 +98,7 @@ const CoordinatorDashboard = () => {
         );
         setFilteredEvents(filteredEventsOfClub || []);
         // Generate participation data based on past events
-        generateParticipationData(filteredPastEvents || []);
+        generateParticipationData(filteredEventsOfClub || []);
       } catch (err) {
         console.error("Failed to fetch data:", err);
       } finally {
