@@ -37,6 +37,10 @@ const CoordinatorDashboard = () => {
   };
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
