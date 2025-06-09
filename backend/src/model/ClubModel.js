@@ -123,7 +123,7 @@ const eventSchema = new Schema({
     totalWinner:{
         type:Number,
         default: 0,
-    }
+    },
 });
 
 const attendanceSchema = new mongoose.Schema({
@@ -147,7 +147,6 @@ const attendanceSchema = new mongoose.Schema({
         enum: ['present', 'absent'],
         default: 'absent',
         required: true,
-
     },
     isWinner: {
         type: Boolean,

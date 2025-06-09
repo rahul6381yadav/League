@@ -12,84 +12,112 @@ const clubs = [
         description: "Robotics Club of IIIT Raichur.",
         email: "electrogeeks@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/electrogeeks-inverted.png",
-        color: "#3498db"
+        color: "#3498db", // Blue
+        website: "https://students.iiitr.ac.in/clubs/electrogeeks"
     },
     {
         name: "Codesoc",
         description: "Coding club of IIIT Raichur",
         email: "code_soc@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/codesoc-inverted.png",
-        color: "#2ecc71"
+        color: "#2ecc71", // Green
+        website: "https://students.iiitr.ac.in/clubs/codesoc"
     },
     {
         name: "Finesse",
         description: "The Cultural Club",
         email: "finesse@students.iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/finesse-inverted.png",
-        color: "#e74c3c"
+        color: "#e74c3c", // Red
+        website: "https://students.iiitr.ac.in/clubs/finesse"
     },
     {
         name: "Finspiration",
         description: "Finance Club",
         email: "finspiration@students.iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/finspiration-inverted.png",
-        color: "#f39c12"
+        color: "#f39c12", // Orange
+        website: "https://students.iiitr.ac.in/clubs/finspiration"
     },
     {
         name: "Xposure",
         description: "Photography Club",
         email: "xposure@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/xposure-inverted.png",
-        color: "#9b59b6"
+        color: "#9b59b6", // Purple
+        website: "https://students.iiitr.ac.in/clubs/xposure"
     },
     {
         name: "NSO",
         description: "National Sports Organization",
         email: "sports@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/nso-inverted.png",
-        color: "#1abc9c"
+        color: "#1abc9c", // Teal
+        website: "https://students.iiitr.ac.in/clubs/nso"
     },
     {
         name: "NSS",
         description: "National Service Scheme",
         email: "nss@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/nss-inverted.png",
-        color: "#d35400"
+        color: "#d35400", // Dark Orange
+        website: "https://students.iiitr.ac.in/clubs/nss"
     },
     {
         name: "EBSB",
         description: "Ek Bharat Shreshtha Bharat",
         email: "ebsb@iiitr.ac.in",
         image: "https://students.iiitr.ac.in/assets/images/club/ebsb-inverted.png",
-        color: "#27ae60"
+        color: "#27ae60", // Dark Green
+        website: "https://students.iiitr.ac.in/clubs/ebsb"
     },
     {
         name: "Stage&Studio",
         description: "Dance drama and drawing Club",
         email: "d3@students.iiitr.ac.in",
-        image: "https://i.postimg.cc/PJMsKvnc/Stage-Studio-Logo.png",
-        color: "#8e44ad"
+        image: "https://students.iiitr.ac.in/assets/images/club/S&S_Logo.png",
+        color: "#8e44ad", // Dark Purple
+        website: "https://students.iiitr.ac.in/clubs/stagenstudio"
     },
     {
         name: "E-HaCs",
         description: "Cyber Security and Ethical Hacking Society",
         email: "E-HaCs@students.iiitr.ac.in",
-        image: "https://i.ibb.co/hCLr1sf/EHa-CS-Logo.jpg",
-        color: "#2980b9"
+        image: "https://students.iiitr.ac.in/assets/images/club/EHaCS_Logo.jpg",
+        color: "#2980b9", // Dark Blue
+        website: "https://students.iiitr.ac.in/clubs/ehacs"
     },
     {
         name: "Deep-Labs",
         description: "AIML Society",
         email: "deep_labs@students.iiitr.ac.in",
-        image: "https://i.ibb.co/XVz1zJ8/Deep-Labs-logo.png",
-        color: "#c0392b"
+        image: "https://students.iiitr.ac.in/assets/images/club/Deep_Labs_logo.png",
+        color: "#c0392b", // Dark Red
+        website: "https://students.iiitr.ac.in/clubs/deeplabs"
     },
     {
         name: "DevX",
         description: "Web/app development society",
         email: "DevX@students.iiitr.ac.in",
-        image: "https://i.ibb.co/R7KhDVV/devx-logo.png",
-        color: "#16a085"
+        image: "https://students.iiitr.ac.in/assets/images/club/DevX_logo.png",
+        color: "#16a085", // Dark Teal
+        website: "https://students.iiitr.ac.in/clubs/devx"
+    },
+    {
+        name: "Game Xcellence",
+        description: "Gaming and eSports society",
+        email: "gamex@iiitr.ac.in",
+        image: "https://students.iiitr.ac.in/assets/images/club/GameXcellence_logo.png",
+        color: "#7d3c98", // Deep Purple
+        website: "https://students.iiitr.ac.in/clubs/gamexcellence"
+    },
+    {
+        name: "ECell",
+        description: "Entrepreneurship and startup incubation society",
+        email: "ecell@iiitr.ac.in",
+        image: "https://students.iiitr.ac.in/assets/images/club/E_cell_logo.jpg",
+        color: "#2c3e50", // Dark Slate
+        website: "https://students.iiitr.ac.in/clubs/ecell"
     }
 ];
 
@@ -106,10 +134,10 @@ const LeaderboardLanding = () => {
         const checkMobile = () => {
             setIsMobile(window.innerWidth < 768);
         };
-        
+
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        
+
         return () => {
             window.removeEventListener('resize', checkMobile);
         };
@@ -118,11 +146,11 @@ const LeaderboardLanding = () => {
     // Auto-scroll clubs carousel
     useEffect(() => {
         if (isScrolling) return;
-        
+
         const interval = setInterval(() => {
             setActiveIndex((prevIndex) => (prevIndex + 1) % clubs.length);
         }, 5000);
-        
+
         return () => clearInterval(interval);
     }, [isScrolling]);
 
@@ -145,7 +173,7 @@ const LeaderboardLanding = () => {
         if (isMobile) {
             return [clubs[currentIndex]];
         }
-        
+
         return [
             clubs[currentIndex],
             clubs[(currentIndex + 1) % clubs.length],
@@ -157,15 +185,15 @@ const LeaderboardLanding = () => {
         const token = localStorage.getItem("authToken");
         const role = localStorage.getItem("role");
         if (token) {
-          if (role === "student") {
-            navigate("/home");
-          } else if (role === "coordinator") {
-            navigate("/dashboard");
-          } else if (role === "admin") {
-            navigate("/admin");
-          } else {
-            navigate("/login");
-          }
+            if (role === "student") {
+                navigate("/home");
+            } else if (role === "coordinator") {
+                navigate("/dashboard");
+            } else if (role === "admin") {
+                navigate("/admin");
+            } else {
+                navigate("/login");
+            }
         } else {
             navigate("/login");
         }
@@ -173,7 +201,7 @@ const LeaderboardLanding = () => {
 
     // Get gradient based on theme
     const getGradient = () => {
-        return isDarkMode 
+        return isDarkMode
             ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900'
             : 'bg-gradient-to-b from-blue-50 via-white to-blue-50';
     };
@@ -218,11 +246,14 @@ const LeaderboardLanding = () => {
                     <div className="flex justify-between items-center">
                         {/* Logo and Site Title */}
                         <div className="flex items-center space-x-3">
-                            <img
-                                src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
-                                alt="IIITR Logo"
-                                className="w-10 h-10 rounded-full shadow-md"
-                            />
+                            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center">
+                                <img
+                                    src="https://tnp.iiitr.ac.in/static/media/logo.393f38abf77d5c6149ab.png"
+                                    alt="IIITR Logo"
+                                    className="w-8 h-8 object-contain"
+                                />
+                                <div className="absolute inset-0 rounded-full border-2 border-blue-500 opacity-10"></div>
+                            </div>
                             <h1 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                 League of IIITR
                             </h1>
@@ -233,40 +264,37 @@ const LeaderboardLanding = () => {
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                onClick= {handleHomePage}
-                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                                    isDarkMode 
-                                        ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-                                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
-                                } transition-all`}
+                                onClick={handleHomePage}
+                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${isDarkMode
+                                    ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                                    : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                    } transition-all`}
                             >
                                 <Home size={18} />
                                 <span>Dashboard</span>
                             </motion.button>
-                            
+
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => navigate('/login')}
-                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                                    isDarkMode 
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                } transition-all`}
+                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${isDarkMode
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    } transition-all`}
                             >
                                 <LogIn size={18} />
                                 <span>Login</span>
                             </motion.button>
-                            
+
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={toggleDarkMode}
-                                className={`p-2 rounded-full ${
-                                    isDarkMode 
-                                        ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
-                                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
-                                } transition-all`}
+                                className={`p-2 rounded-full ${isDarkMode
+                                    ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400'
+                                    : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                    } transition-all`}
                                 aria-label="Toggle dark mode"
                             >
                                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -275,7 +303,7 @@ const LeaderboardLanding = () => {
 
                         {/* Mobile Menu Button */}
                         <div className="md:hidden">
-                            <button 
+                            <button
                                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                                 className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'}`}
                             >
@@ -303,41 +331,38 @@ const LeaderboardLanding = () => {
                                         handleHomePage();
                                         setShowMobileMenu(false);
                                     }}
-                                    className={`flex items-center space-x-2 px-4 py-3 rounded-lg ${
-                                        isDarkMode 
-                                            ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                                            : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
-                                    } transition-all`}
+                                    className={`flex items-center space-x-2 px-4 py-3 rounded-lg ${isDarkMode
+                                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                        } transition-all`}
                                 >
                                     <Home size={18} />
                                     <span>Dashboard</span>
                                 </button>
-                                
+
                                 <button
                                     onClick={() => {
                                         navigate('/login');
                                         setShowMobileMenu(false);
                                     }}
-                                    className={`flex items-center space-x-2 px-4 py-3 rounded-lg ${
-                                        isDarkMode 
-                                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                    } transition-all`}
+                                    className={`flex items-center space-x-2 px-4 py-3 rounded-lg ${isDarkMode
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                        } transition-all`}
                                 >
                                     <LogIn size={18} />
                                     <span>Login</span>
                                 </button>
-                                
+
                                 <button
                                     onClick={() => {
                                         toggleDarkMode();
                                         setShowMobileMenu(false);
                                     }}
-                                    className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg ${
-                                        isDarkMode 
-                                            ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' 
-                                            : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
-                                    } transition-all`}
+                                    className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg ${isDarkMode
+                                        ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400'
+                                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                                        } transition-all`}
                                 >
                                     {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                                     <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
@@ -352,13 +377,13 @@ const LeaderboardLanding = () => {
             <section className="relative pt-32 lg:pl-12 pb-0 min-h-screen flex items-center">
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col md:flex-row items-center">
-                        <motion.div 
+                        <motion.div
                             className="md:w-1/2 text-center md:text-left mb-12 md:mb-0"
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <motion.h1 
+                            <motion.h1
                                 className={`text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-6 
                                     ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                                 initial={{ opacity: 0, y: 30 }}
@@ -370,8 +395,8 @@ const LeaderboardLanding = () => {
                                     League of IIITR
                                 </span>
                             </motion.h1>
-                            
-                            <motion.p 
+
+                            <motion.p
                                 className={`text-xl mb-8 max-w-lg mx-auto md:mx-0 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -379,8 +404,8 @@ const LeaderboardLanding = () => {
                             >
                                 Explore, connect, and participate with the vibrant clubs and societies of IIIT Raichur.
                             </motion.p>
-                            
-                            <motion.div 
+
+                            <motion.div
                                 className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -394,14 +419,14 @@ const LeaderboardLanding = () => {
                                 >
                                     Dashboard
                                 </motion.button>
-                                
+
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => navigate('/login')}
                                     className={`px-8 py-3 rounded-lg font-medium
-                                        ${isDarkMode 
-                                            ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                                        ${isDarkMode
+                                            ? 'bg-gray-800 text-white hover:bg-gray-700'
                                             : 'bg-gray-100 text-gray-800 hover:bg-gray-200'} 
                                         transition-all`}
                                 >
@@ -409,8 +434,8 @@ const LeaderboardLanding = () => {
                                 </motion.button>
                             </motion.div>
                         </motion.div>
-                        
-                        <motion.div 
+
+                        <motion.div
                             className="md:w-1/2"
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -439,20 +464,33 @@ const LeaderboardLanding = () => {
                                                 />
                                             ))}
                                         </motion.div>
-                                        
-                                        <motion.img
-                                            src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
-                                            alt="IIITR Logo"
-                                            className="w-28 h-28 sm:w-40 sm:h-40 rounded-full z-10 shadow-lg"
-                                            animate={{ 
+
+                                        <motion.div
+                                            className="relative w-28 h-28 sm:w-40 sm:h-40 rounded-full z-10 bg-white flex items-center justify-center overflow-hidden shadow-lg"
+                                            animate={{
                                                 scale: [1, 1.05, 1],
                                             }}
-                                            transition={{ 
-                                                repeat: Infinity, 
-                                                duration: 3, 
-                                                ease: "easeInOut" 
+                                            transition={{
+                                                repeat: Infinity,
+                                                duration: 3,
+                                                ease: "easeInOut"
                                             }}
-                                        />
+                                        >
+                                            <motion.img
+                                                src="https://tnp.iiitr.ac.in/static/media/logo.393f38abf77d5c6149ab.png"
+                                                alt="IIITR Logo"
+                                                className="w-24 h-24 sm:w-36 sm:h-36 object-contain"
+                                            />
+                                            <motion.div
+                                                className="absolute inset-0 rounded-full border-4 border-blue-500 opacity-20"
+                                                animate={{ opacity: [0.1, 0.3, 0.1] }}
+                                                transition={{
+                                                    repeat: Infinity,
+                                                    duration: 3,
+                                                    ease: "easeInOut"
+                                                }}
+                                            ></motion.div>
+                                        </motion.div>
                                     </div>
                                 </div>
                             </div>
@@ -483,7 +521,7 @@ const LeaderboardLanding = () => {
                                     <motion.button
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        onClick={() => navigate('/register')}
+                                        onClick={() => navigate('/login')}
                                         className="px-8 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-gray-100 transition-all shadow-md"
                                     >
                                         Register Now
@@ -519,24 +557,22 @@ const LeaderboardLanding = () => {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={handlePrevClub}
-                            className={`mx-2 p-3 rounded-full ${
-                                isDarkMode 
-                                    ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                            } transition-all`}
+                            className={`mx-2 p-3 rounded-full ${isDarkMode
+                                ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                                : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                                } transition-all`}
                         >
                             <ChevronLeft size={20} />
                         </motion.button>
-                        
+
                         <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={handleNextClub}
-                            className={`mx-2 p-3 rounded-full ${
-                                isDarkMode 
-                                    ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                            } transition-all`}
+                            className={`mx-2 p-3 rounded-full ${isDarkMode
+                                ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                                : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                                } transition-all`}
                         >
                             <ChevronRight size={20} />
                         </motion.button>
@@ -544,7 +580,7 @@ const LeaderboardLanding = () => {
 
                     {/* Advanced Club Cards Carousel */}
                     <div className="relative overflow-hidden py-8">
-                        <motion.div 
+                        <motion.div
                             className="flex flex-wrap justify-center gap-8"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -553,35 +589,37 @@ const LeaderboardLanding = () => {
                             {getVisibleClubs().map((club, idx) => (
                                 <motion.div
                                     key={club.name}
-                                    className={`w-full sm:w-72 rounded-2xl overflow-hidden shadow-xl ${
-                                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                                    }`}
+                                    className={`w-full sm:w-72 rounded-2xl overflow-hidden shadow-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'
+                                        }`}
                                     initial={{ opacity: 0, y: 50 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.2, duration: 0.6 }}
-                                    whileHover={{ 
+                                    whileHover={{
                                         y: -10,
-                                        boxShadow: isDarkMode 
-                                            ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' 
+                                        boxShadow: isDarkMode
+                                            ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
                                             : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
                                     }}
                                 >
-                                    {/* Club Card Header */}
-                                    <div 
-                                        className="h-24 p-4 flex items-center justify-center"
+                                    <div
+                                        className="h-32 p-4 flex items-center justify-center"
                                         style={{ backgroundColor: club.color }}
                                     >
-                                        <div className="relative">
+                                        <div className="w-full relative h-full flex items-center justify-center">
                                             <img
                                                 src={club.image}
                                                 alt={`${club.name} Logo`}
-                                                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md absolute -bottom-12 left-1/2 transform -translate-x-1/2"
+                                                className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = "https://via.placeholder.com/150?text=" + club.name;
+                                                }}
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     {/* Club Card Content */}
-                                    <div className="pt-16 pb-6 px-6">
+                                    <div className="py-6 px-6">
                                         <h3 className={`text-xl font-bold text-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                             {club.name}
                                         </h3>
@@ -591,12 +629,13 @@ const LeaderboardLanding = () => {
                                         <div className={`text-center text-xs mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                             {club.email}
                                         </div>
-                                        
+
                                         {/* Club Action Buttons */}
                                         <div className="flex justify-center">
                                             <motion.button
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
+                                                onClick={() => window.open(club.website, '_blank')}
                                                 className="px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 bg-blue-600 text-white hover:bg-blue-700 transition-all"
                                             >
                                                 <span>View Details</span>
@@ -608,7 +647,7 @@ const LeaderboardLanding = () => {
                             ))}
                         </motion.div>
                     </div>
-                    
+
                     {/* Club Navigation Indicators */}
                     <div className="flex justify-center mt-10">
                         {clubs.map((_, idx) => (
@@ -619,15 +658,14 @@ const LeaderboardLanding = () => {
                                     setActiveIndex(idx);
                                     setTimeout(() => setIsScrolling(false), 1000);
                                 }}
-                                className={`w-2 h-2 mx-1 rounded-full transition-all ${
-                                    idx === activeIndex
-                                        ? isDarkMode
-                                            ? 'bg-blue-500 w-6'
-                                            : 'bg-blue-600 w-6'
-                                        : isDarkMode
-                                            ? 'bg-gray-700'
-                                            : 'bg-gray-300'
-                                }`}
+                                className={`w-2 h-2 mx-1 rounded-full transition-all ${idx === activeIndex
+                                    ? isDarkMode
+                                        ? 'bg-blue-500 w-6'
+                                        : 'bg-blue-600 w-6'
+                                    : isDarkMode
+                                        ? 'bg-gray-700'
+                                        : 'bg-gray-300'
+                                    }`}
                                 aria-label={`Go to slide ${idx + 1}`}
                             />
                         ))}
@@ -670,19 +708,18 @@ const LeaderboardLanding = () => {
                                 description: "Participate in events, competitions, and showcase your unique abilities.",
                                 icon: "🏆"
                             }
-                                                    ].map((feature, idx) => (
+                        ].map((feature, idx) => (
                             <motion.div
                                 key={idx}
-                                className={`p-6 rounded-xl ${
-                                    isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
-                                } text-center relative overflow-hidden`}
+                                className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
+                                    } text-center relative overflow-hidden`}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.2, duration: 0.6 }}
-                                whileHover={{ 
+                                whileHover={{
                                     scale: 1.03,
-                                    boxShadow: isDarkMode 
-                                        ? '0 20px 25px -5px rgba(0, 0, 0, 0.5)' 
+                                    boxShadow: isDarkMode
+                                        ? '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
                                         : '0 20px 25px -5px rgba(0, 0, 0, 0.15)'
                                 }}
                             >
@@ -708,18 +745,21 @@ const LeaderboardLanding = () => {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div>
                             <div className="flex items-center mb-4">
-                                <img
-                                    src="https://yt3.ggpht.com/7Zr32gutPw-f4966pWFhWUa1v07iwzqbtOoWnhnAlrRxYbh9vUboLAfu90lAVRxuIjhyevbb=s68-c-k-c0x00ffffff-no-rj"
-                                    alt="IIITR Logo"
-                                    className="w-10 h-10 rounded-full mr-3"
-                                />
+                                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white flex items-center justify-center shadow-md mr-3">
+                                    <img
+                                        src="https://tnp.iiitr.ac.in/static/media/logo.393f38abf77d5c6149ab.png"
+                                        alt="IIITR Logo"
+                                        className="w-8 h-8 object-contain"
+                                    />
+                                    <div className="absolute inset-0 rounded-full border-2 border-blue-500 opacity-10"></div>
+                                </div>
                                 <h3 className="text-xl font-bold">League of IIITR</h3>
                             </div>
                             <p className="text-gray-400 mb-4">
                                 Connecting clubs and students across the IIIT Raichur campus.
                             </p>
                         </div>
-                        
+
                         {/* <div>
                             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
                             <ul className="space-y-2">
@@ -729,7 +769,7 @@ const LeaderboardLanding = () => {
                                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Leaderboard</a></li>
                             </ul>
                         </div> */}
-                        
+
                         {/* <div>
                             <h4 className="text-lg font-semibold mb-4">Resources</h4>
                             <ul className="space-y-2">
@@ -739,7 +779,7 @@ const LeaderboardLanding = () => {
                                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
                             </ul>
                         </div> */}
-                        
+
                         {/* <div>
                             <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
                             <div className="flex space-x-4 mb-4">
@@ -769,7 +809,7 @@ const LeaderboardLanding = () => {
                             </p>
                         </div> */}
                     </div>
-                    
+
                     <div className="border-t border-gray-700 mt-8 pt-8 text-center">
                         <p className="text-gray-400">
                             © {new Date().getFullYear()} League of IIITR. All rights reserved.
