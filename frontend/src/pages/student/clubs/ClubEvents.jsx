@@ -133,7 +133,7 @@ const ClubEvents = () => {
     const handleCoordinatorClick = (coordinatorId) => {
         // Redirect to coordinator profile
         if (coordinatorId) {
-            navigate(`/profile/${coordinatorId}`);
+            navigate(`/friends/${coordinatorId}`);
         }
     };
 

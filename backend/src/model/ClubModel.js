@@ -112,6 +112,10 @@ const eventSchema = new Schema({
         enum: ["Cancelled", "Scheduled", "Upcoming", "Past", "Active", "Draft"],
         default: "Draft"
     },
+    maxMember: {
+    type: Number,
+    default: 1,
+    },
     participantsCount: {
         type: Number,
         default: 0,
@@ -142,24 +146,79 @@ const attendanceSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
+    teamId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team',
+        required: false,
+    },
     status: {
         type: String,
         enum: ['present', 'absent'],
         default: 'absent',
         required: true,
     },
+    comment: {
+        type: String,
+        default: "",
+    },
     isWinner: {
         type: Boolean,
         default: false,
     },
 });
+const teamSchema = new mongoose.Schema({
+    teamName: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    eventId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Event',
+        required: true,
+    },
+    members: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        }
+    ],
+    leader: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    }
+});
 
+// Middleware to validate team members against event's maxMember
+teamSchema.pre('save', async function(next) {
+    if (this.members && this.members.length > 0) {
+        try {
+            // Get the associated event
+            const event = await mongoose.model('Event').findById(this.eventId);
+            if (event && this.members.length > event.maxMember) {
+                throw new Error(`Team members cannot exceed ${event.maxMember} as specified in the event`);
+            }
+            next();
+        } catch (error) {
+            next(error);
+        }
+    } else {
+        next();
+    }
+});
 
+const TeamModel = mongoose.model('Team', teamSchema);
 const ClubModel = mongoose.model("Club", clubSchema);
 const EventModel = mongoose.model('Event', eventSchema);
 const AttendanceModel = mongoose.model('Attendance', attendanceSchema);
 
 module.exports = {
+    TeamModel,
     ClubModel,
     EventModel,
     AttendanceModel,
