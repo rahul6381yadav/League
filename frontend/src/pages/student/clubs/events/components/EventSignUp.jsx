@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../../../../context/AuthContext";
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUsers, FaChevronRight } from "react-icons/fa";
-import { Mail, Trophy, Medal, Clock, AlertCircle } from "lucide-react";
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUsers, FaChevronRight, FaCommentAlt } from "react-icons/fa";
+import { Mail, Trophy, Medal, Clock, AlertCircle, MessageCircle } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from 'react-router-dom';
 import { backendUrl } from "../../../../../utils/routes";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -29,7 +28,22 @@ const EventSignUp = () => {
     const [isEventEnded, setIsEventEnded] = useState(false);
     const [maxPoints, setMaxPoints] = useState(100);
     const [loading, setLoading] = useState(true);
+    const [commentPopup, setCommentPopup] = useState({ visible: false, content: '', position: { x: 0, y: 0 } });
     const navigate = useNavigate();
+
+    // Close popup when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (commentPopup.visible && !event.target.closest('.comment-popup')) {
+                setCommentPopup(prev => ({ ...prev, visible: false }));
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [commentPopup.visible]);
 
     const calculatePercentage = (points) => {
         return Math.min(Math.round((points / maxPoints) * 100), 100);
@@ -104,6 +118,13 @@ const EventSignUp = () => {
                 });
 
                 const eventData = response.data.event;
+
+                // Check if it's a team event and redirect if needed
+                if (eventData && eventData.maxMember > 1) {
+                    navigate(`/team-event/${id}`);
+                    return;
+                }
+
                 setEvent(eventData);
 
                 if (eventData && eventData.maxPoints) {
@@ -128,7 +149,9 @@ const EventSignUp = () => {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { eventId: id },
                 });
-                const sortedParticipants = response.data.records.sort((a, b) => b.pointsGiven - a.pointsGiven);
+
+                // Get participants and sort them by points
+                const sortedParticipants = (response.data.records || []).sort((a, b) => b.pointsGiven - a.pointsGiven);
                 setParticipants(sortedParticipants);
             } catch (error) {
                 console.error("Error fetching participants:", error.response?.data || error.message);
@@ -151,7 +174,7 @@ const EventSignUp = () => {
         fetchEventDetails();
         getParticipants();
         checkParticipation();
-    }, [id, decodedToken?.userId, token]);
+    }, [id, decodedToken?.userId, token, navigate]);
 
     const handleSignUp = async () => {
         if (isEventEnded) {
@@ -212,8 +235,60 @@ const EventSignUp = () => {
         });
     };
 
+    const handleCommentClick = (comment, event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        if (!comment || comment.trim() === '') {
+            console.log("No comment available to display");
+            return;
+        }
+
+        // Get the button position
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+
+        // Position popup next to the profile
+        const x = rect.right + 5;
+        const y = rect.top;
+
+        setCommentPopup({
+            visible: true,
+            content: comment,
+            position: { x, y }
+        });
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950">
+            {/* Comment popup - will be positioned relative to the profile */}
+            {commentPopup.visible && commentPopup.content && (
+                <div
+                    className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-indigo-200 dark:border-indigo-800 p-4 animate-fade-in"
+                    style={{
+                        left: `${commentPopup.position.x}px`,
+                        top: `${commentPopup.position.y}px`,
+                        maxWidth: '250px',
+                        minWidth: '180px'
+                    }}
+                >
+                    <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                            <MessageCircle size={16} className="inline mr-1" /> Comment
+                        </h4>
+                        <button
+                            onClick={() => setCommentPopup(prev => ({ ...prev, visible: false }))}
+                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        >
+                            &times;
+                        </button>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">
+                        {commentPopup.content}
+                    </p>
+                </div>
+            )}
+
             <div className="container mx-auto px-4 py-8 space-y-6">
                 <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100/50 dark:border-violet-900/30 overflow-hidden transition-transform hover:shadow-xl">
                     <div className="relative w-full" style={{ paddingBottom: '40%' }}>
@@ -495,12 +570,24 @@ const EventSignUp = () => {
                                                                     alt=""
                                                                 />
                                                             </div>
-                                                            <div className="ml-4">
-                                                                <div className="text-sm font-medium text-indigo-900 dark:text-indigo-200">
-                                                                    {participant.studentId?.fullName}
-                                                                </div>
-                                                                <div className="text-xs text-indigo-500 dark:text-indigo-400">
-                                                                    {participant.studentId?.email}
+                                                            <div className="ml-4 flex items-center">
+                                                                <div>
+                                                                    <div className="text-sm font-medium text-indigo-900 dark:text-indigo-200">
+                                                                        {participant.studentId?.fullName}
+                                                                        {/* Check for comment (both possible field names) */}
+                                                                        {(participant.comment || participant.comments) && (
+                                                                            <button
+                                                                                className="ml-2 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all bg-indigo-100 dark:bg-indigo-900/30 p-1 rounded-full"
+                                                                                onClick={(e) => handleCommentClick(participant.comment || participant.comments, e)}
+                                                                                title="View comment"
+                                                                            >
+                                                                                <FaCommentAlt size={12} className="animate-pulse" />
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="text-xs text-indigo-500 dark:text-indigo-400">
+                                                                        {participant.studentId?.email}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -532,7 +619,7 @@ const EventSignUp = () => {
                                                                 : 'bg-gradient-to-r from-red-400 to-red-500 text-white'}`}
                                                         >
                                                             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-30 
-                                                                ${participant.status === 'present' ? 'bg-green-400' : 'bg-red-400'}`}>
+                                                            ${participant.status === 'present' ? 'bg-green-400' : 'bg-red-400'}`}>
                                                             </span>
                                                             <span className="relative">
                                                                 {participant.status === "present" ? "Present" : "Absent"}
@@ -588,6 +675,27 @@ const EventSignUp = () => {
 
                 .animate-spin-slow {
                     animation: spin-slow 4s linear infinite;
+                }
+                
+                .animate-fade-in {
+                    animation: fadeIn 0.2s ease-in-out;
+                }
+                
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                @keyframes pulse {
+                    0% { opacity: 0.6; }
+                    50% { opacity: 1; }
+                    100% { opacity: 0.6; }
                 }
             `}</style>
         </div>

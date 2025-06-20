@@ -4,11 +4,11 @@ const jwtMiddleware = require("../middleware/jwtMiddleware");
 const clubController = require("../controller/ClubController");
 const eventController = require("../controller/EventController")
 const attendanceController = require("../controller/AttendanceController")
-const TeamController = require("../controller/TeamController");
+const teamController = require('../controller/TeamController');
 
 // Protected route requiring token verification
 router.get("/protected", jwtMiddleware.verifyToken, (req, res) => {
-    res.status(200).json({message: "You are authorized!", userId: req.user});
+    res.status(200).json({ message: "You are authorized!", userId: req.user });
 });
 
 router.get("/club", jwtMiddleware.verifyToken, clubController.getClubs);
@@ -28,15 +28,14 @@ router.put("/club/attendance", jwtMiddleware.verifyToken, attendanceController.u
 router.delete("/club/attendance", jwtMiddleware.verifyToken, attendanceController.deleteAttendance);
 
 // for teamController routes
-router.post("/club/createTeam", jwtMiddleware.verifyToken, TeamController.createTeam);
-router.put("/club/updateTeam", jwtMiddleware.verifyToken, TeamController.updateTeam);
-router.delete("/club/deleteTeam", jwtMiddleware.verifyToken, TeamController.deleteTeam);
-router.post("/club/joinTeam", jwtMiddleware.verifyToken, TeamController.joinTeam);
-router.get("/club/teams", jwtMiddleware.verifyToken, TeamController.getTeam);
-
-// update attendace for team
-router.put("/club/updateTeamAttendance", jwtMiddleware.verifyToken, TeamController.updateAttendance);
-// mark attendance for team
-router.post("/club/markTeamAttendance", jwtMiddleware.verifyToken, TeamController.markAttendance);
+router.post('/eventTeam/create', jwtMiddleware.verifyToken, teamController.createTeam);
+router.get('/eventTeam/getTeam', jwtMiddleware.verifyToken, teamController.getTeam);
+router.put('/eventTeam/:teamId', jwtMiddleware.verifyToken, teamController.updateTeam);
+router.delete('/eventTeam/:teamId', jwtMiddleware.verifyToken, teamController.deleteTeam);
+router.post('/eventTeam/join', jwtMiddleware.verifyToken, teamController.joinTeam);
+router.post('/eventTeam/removeMember', jwtMiddleware.verifyToken, teamController.removeMember);
+router.post('/eventTeam/leave', jwtMiddleware.verifyToken, teamController.leaveTeam);
+router.post('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.markAttendance);
+router.put('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.updateAttendance);
 
 module.exports = router;

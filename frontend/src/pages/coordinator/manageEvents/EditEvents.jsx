@@ -32,6 +32,7 @@ function EditEventPage() {
     endDate: '',
     date: '',
     numberOfWinners: '',
+    maxMember: 1, // Default to individual event (1 member)
   });
   const [tab, setTab] = useState('details'); // 'details' or 'clubs'
   const [isLoading, setIsLoading] = useState(true);
@@ -369,6 +370,28 @@ function EditEventPage() {
                         placeholder="Number of winners"
                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-mirage-600 dark:text-mirage-200 mb-2">
+                        Max Team Size
+                      </label>
+                      <input
+                        type="number"
+                        name="maxMember"
+                        value={eventData.maxMember || 1}
+                        onChange={handleInputChange}
+                        placeholder="Maximum team members (1 for individual)"
+                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent outline-none text-gray-800 dark:text-gray-200"
+                        min="1"
+                      />
+                      <div className="flex items-center mt-1">
+                        <div className={`w-2 h-2 rounded-full mr-1 ${eventData.maxMember > 1 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {eventData.maxMember > 1 ?
+                            `Team event (${eventData.maxMember} members max)` :
+                            'Individual participation'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </form>

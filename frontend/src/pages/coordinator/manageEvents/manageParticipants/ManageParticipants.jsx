@@ -119,6 +119,14 @@ const ManageParticipants = () => {
                     if (response.data.event.maxPoints) {
                         setMaxPoints(response.data.event.maxPoints);
                     }
+
+                    // Check if this is a team event (maxMember > 1)
+                    if (response.data.event.maxMember > 1) {
+                        console.log("Team event detected, redirecting to team participants page");
+                        navigate(`/manage-event/${id}/participants`);
+                        return;
+                    }
+
                     console.log("Event fetched successfully:", response.data.event);
                 } else {
                     console.error("Event data is empty or undefined");
@@ -197,7 +205,7 @@ const ManageParticipants = () => {
         }
 
         // Remove participants from the dependency array to prevent infinite loops
-    }, [id, token]);
+    }, [id, token, navigate]);
 
     // Sort participants by points in descending order (highest first)
     const sortedParticipants = [...participants].sort((a, b) =>

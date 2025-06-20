@@ -7,11 +7,11 @@ import 'react-circular-progressbar/dist/styles.css';
 
 const PastParticipants = ({ studentId }) => {
     const [attendanceData, setAttendanceData] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const eventsPerPage = 3; // Increased for horizontal layout
-    const [maxPoints, setMaxPoints] = useState(100); // Default max points
+    const [eventsPerPage] = useState(5);
+    const [maxPoints, setMaxPoints] = useState(100);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -76,7 +76,27 @@ const PastParticipants = ({ studentId }) => {
             }
         };
 
+        // Also fetch team participation data
+        const fetchTeamAttendanceData = async () => {
+            try {
+                const token = localStorage.getItem('jwtToken');
+                const response = await fetch(`${backendUrl}/api/v1/teams/participation?userId=${studentId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+
+                if (result.isError === false && Array.isArray(result.teams)) {
+                    // Process and merge team participation with individual attendance
+                    // This will be implemented in the backend
+                }
+            } catch (error) {
+                console.error("Error fetching team data:", error);
+            }
+        };
+
         fetchAttendanceData();
+        fetchTeamAttendanceData();
     }, [studentId]);
 
     const handleNext = () => {
