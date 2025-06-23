@@ -35,6 +35,7 @@ router.delete('/eventTeam/:teamId', jwtMiddleware.verifyToken, teamController.de
 router.post('/eventTeam/join', jwtMiddleware.verifyToken, teamController.joinTeam);
 router.post('/eventTeam/removeMember', jwtMiddleware.verifyToken, teamController.removeMember);
 router.post('/eventTeam/leave', jwtMiddleware.verifyToken, teamController.leaveTeam);
+router.get('/eventTeam/getAttendance/:teamId', jwtMiddleware.verifyToken, teamController.getAttendance);
 router.post('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.markAttendance);
 router.put('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.updateAttendance);
 

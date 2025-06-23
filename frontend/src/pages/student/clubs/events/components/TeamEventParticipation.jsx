@@ -4,8 +4,9 @@ import axios from "axios";
 import { backendUrl } from "../../../../../utils/routes";
 import { jwtDecode } from "jwt-decode";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { Mail, Trophy, Medal, Clock, AlertCircle, MessageCircle } from "lucide-react";
+import { FaCalendarAlt, FaClock, FaUserCheck, FaUserTimes, FaMapMarkerAlt, FaUsers, FaChevronRight, FaCommentAlt } from "react-icons/fa";
 import "react-circular-progressbar/dist/styles.css";
-import { FaCommentAlt, FaUserCheck, FaUserTimes } from "react-icons/fa";
 
 const token = localStorage.getItem("jwtToken");
 let decodedToken = null;
@@ -48,6 +49,9 @@ const TeamEventParticipation = () => {
     // Add points calculation (like EventSignUp)
     const [maxPoints, setMaxPoints] = useState(100);
 
+    // Attendance state
+    const [teamsAttendance, setTeamsAttendance] = useState({});
+
     // Fetch event details and check if user is already in a team
     useEffect(() => {
         const fetchEventDetails = async () => {
@@ -68,6 +72,11 @@ const TeamEventParticipation = () => {
                     setIsEventEnded(true);
                 }
 
+                // Set max points
+                if (eventData && eventData.maxPoints) {
+                    setMaxPoints(eventData.maxPoints);
+                }
+
                 // Fetch teams for this event
                 const teamsResponse = await axios.get(`${backendUrl}/api/v1/eventTeam/getTeam`, {
                     params: { eventId: id },
@@ -75,21 +84,21 @@ const TeamEventParticipation = () => {
                 });
 
                 if (teamsResponse.data && teamsResponse.data.teams) {
-                    setAllTeams(teamsResponse.data.teams);
+                    const teams = teamsResponse.data.teams;
+                    setAllTeams(teams);
+
+                    // Fetch attendance for all teams
+                    await fetchTeamsAttendance(teams);
 
                     // Check if current user is in any team
-                    const currentUserTeam = teamsResponse.data.teams.find(team =>
-                        team.members.some(member => member._id === decodedToken.userId || member === decodedToken.userId)
+                    const currentUserTeam = teams.find(team =>
+                        team.members.some(member => member._id === decodedToken?.userId || member === decodedToken?.userId)
                     );
 
                     if (currentUserTeam) {
                         setUserTeam(currentUserTeam);
                     }
                 }
-
-                // After setEvent(eventData);
-                if (eventData && eventData.maxPoints) setMaxPoints(eventData.maxPoints);
-
             } catch (error) {
                 console.error("Error fetching event details:", error);
                 setError(error.response?.data?.message || "Failed to load event details");
@@ -100,6 +109,41 @@ const TeamEventParticipation = () => {
 
         fetchEventDetails();
     }, [id]);
+
+    // Fetch team attendance
+    const fetchTeamsAttendance = async (teams) => {
+        try {
+            const attendanceData = {};
+            for (const team of teams) {
+                const response = await axios.get(`${backendUrl}/api/v1/eventTeam/getAttendance/${team._id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                console.log('response:', response);
+                if (response.data && response.data.attendanceRecords.length > 0) {
+                    //attendance records consists of array of 2 3 people so i want to store it accordingly
+                    attendanceData[team._id] = {
+                        attendance: response.data.attendanceRecords.map(record => ({
+                            studentId: record.studentId._id || record.studentId,
+                            status: record.status,
+                            pointsGiven: record.pointsGiven || 0,
+                            comments: record.comment || "",
+                        })),
+                    }
+                }
+                else {
+                    console.log("no attendance records found for team:", team._id);
+                }
+            }
+            // Log attendance data for debugging
+            console.log("Attendance Data:", attendanceData);
+            // Log teams for debugging
+            console.log("Teams:", teams);
+            // Set attendance data in state
+            setTeamsAttendance(attendanceData);
+        } catch (error) {
+            console.error("Error fetching teams attendance:", error);
+        }
+    };
 
     // Handle create team
     const handleCreateTeam = async (e) => {
@@ -424,24 +468,68 @@ const TeamEventParticipation = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [commentPopup.visible]);
 
-    // Calculate team total points
-    const getTeamTotalPoints = () => {
-        if (!userTeam || !Array.isArray(userTeam.members)) return 0;
-        // Sum pointsGiven for all members (if present)
-        return userTeam.members.reduce((sum, member) => {
-            const m = typeof member === "object" ? member : {};
-            return sum + (m.pointsGiven || 0);
-        }, 0);
-    };
-
-    // Get maxPoints for event
+    // Get max points
     const getMaxPoints = () => event?.maxPoints || maxPoints || 100;
 
-    // Calculate percentage for team points
+    // Update team points calculation to use teamsAttendance data
+    const getTeamTotalPoints = () => {
+        if (!userTeam?._id || !teamsAttendance[userTeam._id]) return 0;
+        const attendance = teamsAttendance[userTeam._id].attendance || [];
+        return Math.max(...attendance.map(record => record.pointsGiven || 0), 0);
+    };
+
+    // Update team points percentage calculation
     const getTeamPointsPercent = () => {
         const total = getTeamTotalPoints();
         const max = getMaxPoints();
         return Math.min(Math.round((total / max) * 100), 100);
+    };
+
+    // Calculate percentage for points display
+    const calculatePercentage = (points) => {
+        return Math.min(Math.round((points / maxPoints) * 100), 100);
+    };
+
+    // Handle comment click for popup
+    const handleCommentClick = (comment, event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        if (!comment || comment.trim() === '') {
+            return;
+        }
+
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const x = rect.left;
+        const y = rect.top;
+
+        setCommentPopup({
+            visible: true,
+            content: comment,
+            position: { x, y }
+        });
+    };
+
+    // Helper functions for team data
+    const getTeamAttendance = (teamId) => {
+        return teamsAttendance[teamId]?.attendance || [];
+    };
+
+    const getTeamPoints = (teamId) => {
+        return teamsAttendance[teamId]?.points || 0;
+    };
+
+    const getStudentStatus = (teamId, studentId) => {
+        const attendance = getTeamAttendance(teamId);
+        const record = attendance.find(a => a.studentId === studentId);
+        return record?.status || "absent";
+    };
+
+    const getStudentPoints = (teamId, studentId) => {
+        const attendance = getTeamAttendance(teamId);
+        const record = attendance.find(a => a.studentId === studentId);
+        return record?.pointsGiven || 0;
     };
 
     // Computed properties
@@ -545,8 +633,8 @@ const TeamEventParticipation = () => {
                             ) : (
                                 <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center">
                                     <div className="text-center">
-                                        <svg className="text-white/80 text-6xl mb-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"></path></svg>
-                                        <h3 className="text-white text-xl font-bold tracking-wider">{event?.eventName || "TEAM EVENT"}</h3>
+                                        <Trophy className="text-white/80 text-6xl mb-4 animate-pulse" />
+                                        <h3 className="text-white text-xl font-bold tracking-wider">{event?.eventName || "LEAGUE EVENT"}</h3>
                                     </div>
                                 </div>
                             )}
@@ -576,7 +664,7 @@ const TeamEventParticipation = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                     <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
                                         <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
-                                            <svg className="w-5 h-5 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <FaCalendarAlt className="text-indigo-500 dark:text-indigo-400" />
                                         </div>
                                         <div>
                                             <span className="text-gray-500 dark:text-gray-400 text-xs block">Date & Time</span>
@@ -585,7 +673,7 @@ const TeamEventParticipation = () => {
                                     </div>
                                     <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
                                         <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
-                                            <svg className="w-5 h-5 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            <FaMapMarkerAlt className="text-indigo-500 dark:text-indigo-400" />
                                         </div>
                                         <div>
                                             <span className="text-gray-500 dark:text-gray-400 text-xs block">Venue</span>
@@ -594,8 +682,7 @@ const TeamEventParticipation = () => {
                                     </div>
                                     <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
                                         <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
-                                            <svg className="w-5 h-5 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                            </svg>
+                                            <FaClock className="text-indigo-500 dark:text-indigo-400" />
                                         </div>
                                         <div>
                                             <span className="text-gray-500 dark:text-gray-400 text-xs block">Team Size</span>
@@ -608,6 +695,28 @@ const TeamEventParticipation = () => {
                                         <p className="text-gray-700 dark:text-gray-300 text-sm">
                                             {event.description}
                                         </p>
+                                    </div>
+                                )}
+                                {event.clubIds && event.clubIds.length > 0 && (
+                                    <div className="mt-6 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
+                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                            Collaborating Clubs:
+                                        </h4>
+                                        <div className="flex flex-wrap gap-3">
+                                            {event.clubIds.map((club) => (
+                                                <div key={club._id} className="flex items-center bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg">
+                                                    {club.image && (
+                                                        <img
+                                                            src={club.image}
+                                                            alt={club.name}
+                                                            className="w-6 h-6 rounded-full object-cover mr-2"
+                                                            onError={(e) => e.target.style.display = 'none'}
+                                                        />
+                                                    )}
+                                                    <span className="text-sm text-indigo-700 dark:text-indigo-300">{club.name}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </>
@@ -715,48 +824,95 @@ const TeamEventParticipation = () => {
                                         </button>
                                     </div>
                                 </div>
-                                {/* Team comment if present */}
-                                {userTeam.comment && (
-                                    <div className="mt-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4 flex items-center gap-3">
-                                        <FaCommentAlt className="text-yellow-500" />
-                                        <div>
-                                            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-1">Coordinator's Comment:</h4>
-                                            <p className="text-sm text-gray-700 dark:text-gray-300">{userTeam.comment}</p>
-                                        </div>
-                                    </div>
-                                )}
                                 {/* Team members list */}
                                 <div className="mt-6">
                                     <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Team Members</h4>
                                     <div className="space-y-3">
                                         {Array.isArray(userTeam.members) && userTeam.members.map((member, idx) => {
                                             const m = typeof member === "object" ? member : {};
+                                            const status = getStudentStatus(userTeam._id, m._id);
+                                            const points = getStudentPoints(userTeam._id, m._id);
+                                            const pointsPercentage = calculatePercentage(points);
+
                                             return (
-                                                <div key={idx} className="flex items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-md shadow-sm">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-full bg-indigo-400 flex items-center justify-center text-white text-lg font-bold">
-                                                            {m.fullName?.charAt(0) || 'U'}
-                                                        </div>
+                                                <div key={idx} className="flex items-center justify-between bg-gradient-to-r from-indigo-50/90 to-violet-50/90 dark:from-indigo-900/40 dark:to-violet-900/40 p-4 rounded-xl border border-indigo-100 dark:border-violet-800/50 hover:shadow-md transition-all">
+                                                    <div className="flex items-center gap-4">
+                                                        <img
+                                                            src={m.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                            alt={m.fullName}
+                                                            className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-400 dark:ring-violet-500"
+                                                        />
                                                         <div>
-                                                            <div className="text-gray-800 dark:text-gray-200 font-medium">{m.fullName || 'Unknown User'}</div>
-                                                            <div className="text-xs text-gray-500 dark:text-gray-400">{m.studentId || m.rollNo || m.email || '-'}</div>
+                                                            <div className="flex items-center">
+                                                                <h4 className="text-sm font-medium text-indigo-900 dark:text-indigo-200">
+                                                                    {m.fullName || 'Unknown User'}
+                                                                </h4>
+                                                                {(m.comment || m.comments) && (
+                                                                    <button
+                                                                        className="ml-2 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all bg-indigo-100 dark:bg-indigo-900/30 p-1 rounded-full"
+                                                                        onClick={(e) => handleCommentClick(m.comment || m.comments, e)}
+                                                                        title="View comment"
+                                                                    >
+                                                                        <FaCommentAlt size={12} className="animate-pulse" />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-xs text-indigo-500 dark:text-indigo-400">
+                                                                {m.studentId || m.rollNo || m.email || '-'}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        {m.status === "present" ? (
-                                                            <span className="flex items-center text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full text-xs">
-                                                                <FaUserCheck className="mr-1" /> Present
-                                                            </span>
-                                                        ) : (
-                                                            <span className="flex items-center text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full text-xs">
-                                                                <FaUserTimes className="mr-1" /> Absent
-                                                            </span>
+
+                                                    <div className="flex items-center gap-4">
+                                                        {isEventEnded && (
+                                                            <div className="w-16 h-16">
+                                                                <CircularProgressbar
+                                                                    value={pointsPercentage}
+                                                                    text={`${points}`}
+                                                                    styles={buildStyles({
+                                                                        textSize: '28px',
+                                                                        pathColor: `rgba(99, 102,241, ${pointsPercentage / 100 + 0.2})`,
+                                                                        textColor: '#6366F1',
+                                                                        trailColor: '#E0E7FF',
+                                                                    })}
+                                                                />
+                                                            </div>
                                                         )}
+                                                        <span className={`relative inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                                            ${status === 'present'
+                                                                ? 'bg-gradient-to-r from-green-400 to-green-500 text-white'
+                                                                : 'bg-gradient-to-r from-red-400 to-red-500 text-white'}`}
+                                                        >
+                                                            <span className="relative flex items-center">
+                                                                {status === "present" ? (
+                                                                    <>
+                                                                        <FaUserCheck className="mr-1" /> Present
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <FaUserTimes className="mr-1" /> Absent
+                                                                    </>
+                                                                )}
+                                                            </span>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             );
                                         })}
                                     </div>
+
+                                    {/* Team comment section */}
+                                    {userTeam.comment && (
+                                        <div className="mt-4 bg-gradient-to-r from-amber-50/90 to-yellow-50/90 dark:from-amber-900/30 dark:to-yellow-900/30 border border-amber-200 dark:border-amber-800/30 rounded-xl p-4">
+                                            <div className="flex items-start gap-3">
+                                                <MessageCircle className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                                                <div>
+                                                    <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">Team Feedback:</h4>
+                                                    <p className="text-sm text-amber-700 dark:text-amber-400">{userTeam.comment}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 {/* Team actions section */}
                                 <div className="mt-6 pt-4 border-t border-indigo-100 dark:border-indigo-800/50">
@@ -783,223 +939,307 @@ const TeamEventParticipation = () => {
                                                         Leave Team
                                                     </>
                                                 )}
-                                                    </button>
+                                            </button>
                                         )}
 
-                                                {/* Event status information */}
-                                                {eventStarted && (
-                                                    <div className="text-amber-600 dark:text-amber-400 flex items-center">
-                                                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                        </svg>
-                                                        <span>Event has started - team modifications locked</span>
-                                                    </div>
-                                                )}
-
-                                                {/* Show share button only if team is not full */}
-                                                {!isTeamFull ? (
-                                                    <div className="flex items-center ml-auto">
-                                                        <span className="text-sm text-gray-600 dark:text-gray-400 mr-3">
-                                                            Share team code with others to join
-                                                        </span>
-                                                        <button
-                                                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors flex items-center"
-                                                            onClick={() => setShowShareModal(true)}
-                                                        >
-                                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
-                                                            </svg>
-                                                            Share Team
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-amber-600 dark:text-amber-400 flex items-center ml-auto">
-                                                        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                                        </svg>
-                                                        <span>Team is full ({userTeam.members.length}/{event.maxMember})</span>
-                                                    </div>
-                                                )}
+                                        {/* Event status information */}
+                                        {eventStarted && (
+                                            <div className="text-amber-600 dark:text-amber-400 flex items-center">
+                                                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                <span>Event has started - team modifications locked</span>
                                             </div>
-                                </div>
-                                </div>
-                            </div>
-                            ) : (
-                            // User doesn't have a team
-                            <div className="flex flex-col md:flex-row gap-6">
-                                <div className="flex-1 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg p-6">
-                                    <h3 className="text-xl font-semibold text-indigo-900 dark:text-indigo-200 mb-4">Create a New Team</h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6">Start your own team and invite others to join using a team code.</p>
-                                    <button
-                                        onClick={() => setShowCreateTeamModal(true)}
-                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md transition-colors"
-                                    >
-                                        Create Team
-                                    </button>
-                                </div>
+                                        )}
 
-                                <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-6">
-                                    <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-200 mb-4">Join an Existing Team</h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6">Enter a team code shared with you to join an existing team.</p>
-                                    <button
-                                        onClick={() => setShowJoinTeamModal(true)}
-                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition-colors"
-                                    >
-                                        Join Team
-                                    </button>
+                                        {/* Show share button only if team is not full */}
+                                        {!isTeamFull ? (
+                                            <div className="flex items-center ml-auto">
+                                                <span className="text-sm text-gray-600 dark:text-gray-400 mr-3">
+                                                    Share team code with others to join
+                                                </span>
+                                                <button
+                                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors flex items-center"
+                                                    onClick={() => setShowShareModal(true)}
+                                                >
+                                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                                    </svg>
+                                                    Share Team
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="text-amber-600 dark:text-amber-400 flex items-center ml-auto">
+                                                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                </svg>
+                                                <span>Team is full ({userTeam.members.length}/{event.maxMember})</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                    )}
                         </div>
+                    ) : (
+                        // User doesn't have a team
+                        <div className="flex flex-col md:flex-row gap-6">
+                            <div className="flex-1 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg p-6">
+                                <h3 className="text-xl font-semibold text-indigo-900 dark:text-indigo-200 mb-4">Create a New Team</h3>
+                                <p className="text-gray-600 dark:text-gray-400 mb-6">Start your own team and invite others to join using a team code.</p>
+                                <button
+                                    onClick={() => setShowCreateTeamModal(true)}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md transition-colors"
+                                >
+                                    Create Team
+                                </button>
+                            </div>
+
+                            <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-6">
+                                <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-200 mb-4">Join an Existing Team</h3>
+                                <p className="text-gray-600 dark:text-gray-400 mb-6">Enter a team code shared with you to join an existing team.</p>
+                                <button
+                                    onClick={() => setShowJoinTeamModal(true)}
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition-colors"
+                                >
+                                    Join Team
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Participating Teams Section */}
-                    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 dark:border-violet-900/30 p-6">
-                        <h2 className="text-xl font-bold text-indigo-700 dark:text-indigo-300 mb-4">Participating Teams</h2>
+                <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 dark:border-violet-900/30 overflow-hidden">
+                    <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 px-6 py-4 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                            <Trophy size={24} className="text-white" />
+                            <h2 className="text-xl font-semibold text-white">Participating Teams</h2>
+                        </div>
+                        <span className="px-3 py-1 bg-white/20 text-white rounded-full text-sm">
+                            {allTeams.length} Teams
+                        </span>
+                    </div>
 
-                        {allTeams.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {allTeams.map(team => {
-                                    // Check if this is the user's team
+                    <div className="p-4">
+                        <div className="space-y-4">
+                            {allTeams
+                                .sort((a, b) => {
+                                    const aPoints = teamsAttendance[a._id]?.attendance?.reduce((max, record) =>
+                                        Math.max(max, record.pointsGiven || 0), 0) || 0;
+                                    const bPoints = teamsAttendance[b._id]?.attendance?.reduce((max, record) =>
+                                        Math.max(max, record.pointsGiven || 0), 0) || 0;
+                                    return bPoints - aPoints;
+                                })
+                                .map((team, index) => {
                                     const isUserTeam = userTeam && userTeam._id === team._id;
+                                    const teamAttendance = teamsAttendance[team._id]?.attendance || [];
+                                    const maxTeamPoints = Math.max(...teamAttendance.map(record => record.pointsGiven || 0), 0);
 
                                     return (
                                         <div
                                             key={team._id}
-                                            className={`border rounded-lg p-4 transition-all ${isUserTeam
-                                                ? "border-indigo-400 dark:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
-                                                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750"
-                                                }`}
+                                            className={`relative bg-gradient-to-r ${isUserTeam
+                                                ? 'from-indigo-50/90 to-violet-50/90 dark:from-indigo-900/40 dark:to-violet-900/40'
+                                                : 'from-gray-50/90 to-gray-100/90 dark:from-gray-900/40 dark:to-gray-800/40'
+                                                } rounded-xl p-6 border border-indigo-100 dark:border-indigo-800/50 transition-all hover:shadow-md`}
                                         >
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                                    {team.teamName}
-                                                </h3>
+                                            {/* Rank Badge */}
+                                            <div className="absolute -left-3 top-6 w-8 h-8 flex items-center justify-center bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-full shadow-lg">
+                                                <span className="text-sm font-bold">{index + 1}</span>
+                                            </div>
 
-                                                {/* "Your Team" badge */}
-                                                {isUserTeam && (
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
-                                                        <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                                                        </svg>
-                                                        Your Team
-                                                    </span>
+                                            {/* Team Header with Comment */}
+                                            <div className="ml-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-16 h-16">
+                                                        <CircularProgressbar
+                                                            value={calculatePercentage(maxTeamPoints)}
+                                                            text={`${maxTeamPoints}`}
+                                                            styles={buildStyles({
+                                                                textSize: '28px',
+                                                                pathColor: `rgba(99, 102, 241, ${calculatePercentage(maxTeamPoints) / 100 + 0.2})`,
+                                                                textColor: '#6366F1',
+                                                                trailColor: '#E0E7FF',
+                                                            })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <h3 className="text-lg font-semibold text-indigo-900 dark:text-indigo-200">
+                                                                {team.teamName}
+                                                            </h3>
+                                                            {isUserTeam && (
+                                                                <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-xs px-2 py-1 rounded-full">
+                                                                    Your Team
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                            {team.members?.length || 0} members · {calculatePercentage(maxTeamPoints)}% Achievement
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+
+                                                {team.comment && (
+                                                    <button
+                                                        onClick={(e) => handleCommentClick(team.comment, e)}
+                                                        className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-2 border-amber-600"
+                                                    >
+                                                        <MessageCircle size={16} className="mr-1 animate-pulse" />
+                                                        <span className="text-sm font-bold tracking-wider">FEEDBACK</span>
+                                                    </button>
                                                 )}
                                             </div>
 
-                                            <div className="mt-2 flex items-center text-gray-600 dark:text-gray-400">
-                                                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                                </svg>
-                                                <span>{Array.isArray(team.members) ? team.members.length : 0} / {event?.maxMember} members</span>
-                                            </div>
+                                            {/* Team Members Grid */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {Array.isArray(team.members) && team.members.map((member, idx) => {
+                                                    const memberAttendance = teamAttendance.find(a => a.studentId === (member._id || member));
+                                                    const isLeader = team.leader._id === (member._id || member);
 
-                                            {/* Team leader info */}
-                                            {team.leader && typeof team.leader === 'object' && (
-                                                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-gray-700">
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        Team Leader: <span className="font-medium text-gray-700 dark:text-gray-300">{team.leader.fullName}</span>
-                                                    </p>
-                                                </div>
-                                            )}
+                                                    return (
+                                                        <div key={idx} className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
+                                                            <div className="relative">
+                                                                <img
+                                                                    src={member.photo || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
+                                                                    alt={member.fullName}
+                                                                    className="w-10 h-10 rounded-full object-cover"
+                                                                />
+                                                                {isLeader && (
+                                                                    <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-1" title="Team Leader">
+                                                                        <Trophy size={12} className="text-white" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center">
+                                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                        {member.fullName || 'Unknown Member'}
+                                                                    </div>
+                                                                    {(member.comment || memberAttendance?.comments) && (
+                                                                        <button
+                                                                            onClick={(e) => handleCommentClick(member.comment || memberAttendance.comments, e)}
+                                                                            className="ml-2 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all bg-indigo-100 dark:bg-indigo-900/30 p-1 rounded-full"
+                                                                            title="View comment"
+                                                                        >
+                                                                            <FaCommentAlt size={12} className="animate-pulse" />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center space-x-2 mt-1">
+                                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                                    ${memberAttendance?.status === 'present'
+                                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
+                                                                        {memberAttendance?.status === 'present' ?
+                                                                            <FaUserCheck className="mr-1" /> :
+                                                                            <FaUserTimes className="mr-1" />
+                                                                        }
+                                                                        {memberAttendance?.status === 'present' ? 'Present' : 'Absent'}
+                                                                    </span>
+                                                                    {memberAttendance?.pointsGiven > 0 && (
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                                                            {memberAttendance.pointsGiven} pts
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                     );
                                 })}
-                            </div>
-                        ) : (
-                            <div className="text-center py-12">
-                                <svg className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                </svg>
-                                <p className="text-lg font-medium text-gray-500 dark:text-gray-400 mt-4">No teams have registered yet</p>
-                                <p className="text-gray-500 dark:text-gray-500 mt-2">Be the first to create a team!</p>
-                            </div>
-                        )}
+                        </div>
                     </div>
-
-                    {/* Create Team Modal */}
-                    {showCreateTeamModal && (
-                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-                                <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Create a New Team</h3>
-                                <form onSubmit={handleCreateTeam}>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 dark:text-gray-300 mb-2 text-sm font-medium">Team Name</label>
-                                        <input
-                                            type="text"
-                                            value={teamName}
-                                            onChange={(e) => setTeamName(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            placeholder="Enter your team name"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex justify-end gap-2 mt-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowCreateTeamModal(false)}
-                                            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                                        >
-                                            Create Team
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Join Team Modal */}
-                    {showJoinTeamModal && (
-                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-                                <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Join a Team</h3>
-                                <form onSubmit={handleJoinTeam}>
-                                    <div className="mb-4">
-                                        <label className="block text-gray-700 dark:text-gray-300 mb-2 text-sm font-medium">Team Code</label>
-                                        <input
-                                            type="text"
-                                            value={shareId}
-                                            onChange={(e) => setShareId(e.target.value)}
-                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            placeholder="Enter the team code"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex justify-end gap-2 mt-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowJoinTeamModal(false)}
-                                            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                        >
-                                            Join Team
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Share Team Modal */}
-                    {showShareModal && <ShareTeamModal
-                        userTeam={userTeam}
-                        event={event}
-                        onClose={() => setShowShareModal(false)}
-                        shareTeamCode={shareTeamCode}
-                    />}
                 </div>
-                {/* Style block for animation and gradient (copied from EventSignUp) */}
-                <style jsx>{`
+
+                {/* Create Team Modal */}
+                {showCreateTeamModal && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+                            <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Create a New Team</h3>
+                            <form onSubmit={handleCreateTeam}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 dark:text-gray-300 mb-2 text-sm font-medium">Team Name</label>
+                                    <input
+                                        type="text"
+                                        value={teamName}
+                                        onChange={(e) => setTeamName(e.target.value)}
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        placeholder="Enter your team name"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-2 mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCreateTeamModal(false)}
+                                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                    >
+                                        Create Team
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Join Team Modal */}
+                {showJoinTeamModal && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+                            <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Join a Team</h3>
+                            <form onSubmit={handleJoinTeam}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 dark:text-gray-300 mb-2 text-sm font-medium">Team Code</label>
+                                    <input
+                                        type="text"
+                                        value={shareId}
+                                        onChange={(e) => setShareId(e.target.value)}
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        placeholder="Enter the team code"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-2 mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowJoinTeamModal(false)}
+                                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    >
+                                        Join Team
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Share Team Modal */}
+                {showShareModal && <ShareTeamModal
+                    userTeam={userTeam}
+                    event={event}
+                    onClose={() => setShowShareModal(false)}
+                    shareTeamCode={shareTeamCode}
+                />}
+            </div>
+            {/* Style block for animation and gradient (copied from EventSignUp) */}
+            <style jsx>{`
                 @keyframes gradient {
                     0% { background-position: 0% 50%; }
                     50% { background-position: 100% 50%; }
@@ -1035,8 +1275,8 @@ const TeamEventParticipation = () => {
                     animation: fadeIn 0.2s ease-in-out;
                 }
             `}</style>
-            </div>
-            );
+        </div >
+    );
 };
 
 
