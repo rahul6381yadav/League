@@ -4,10 +4,11 @@ const jwtMiddleware = require("../middleware/jwtMiddleware");
 const clubController = require("../controller/ClubController");
 const eventController = require("../controller/EventController")
 const attendanceController = require("../controller/AttendanceController")
+const teamController = require('../controller/TeamController');
 
 // Protected route requiring token verification
 router.get("/protected", jwtMiddleware.verifyToken, (req, res) => {
-    res.status(200).json({message: "You are authorized!", userId: req.user});
+    res.status(200).json({ message: "You are authorized!", userId: req.user });
 });
 
 router.get("/club", jwtMiddleware.verifyToken, clubController.getClubs);
@@ -26,5 +27,16 @@ router.post("/club/attendance", jwtMiddleware.verifyToken, attendanceController.
 router.put("/club/attendance", jwtMiddleware.verifyToken, attendanceController.updateAttendance);
 router.delete("/club/attendance", jwtMiddleware.verifyToken, attendanceController.deleteAttendance);
 
+// for teamController routes
+router.post('/eventTeam/create', jwtMiddleware.verifyToken, teamController.createTeam);
+router.get('/eventTeam/getTeam', jwtMiddleware.verifyToken, teamController.getTeam);
+router.put('/eventTeam/:teamId', jwtMiddleware.verifyToken, teamController.updateTeam);
+router.delete('/eventTeam/:teamId', jwtMiddleware.verifyToken, teamController.deleteTeam);
+router.post('/eventTeam/join', jwtMiddleware.verifyToken, teamController.joinTeam);
+router.post('/eventTeam/removeMember', jwtMiddleware.verifyToken, teamController.removeMember);
+router.post('/eventTeam/leave', jwtMiddleware.verifyToken, teamController.leaveTeam);
+router.get('/eventTeam/getAttendance/:teamId', jwtMiddleware.verifyToken, teamController.getAttendance);
+router.post('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.markAttendance);
+router.put('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.updateAttendance);
 
 module.exports = router;

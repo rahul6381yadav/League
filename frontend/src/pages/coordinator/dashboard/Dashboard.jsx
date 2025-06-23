@@ -710,7 +710,7 @@ const CoordinatorDashboard = () => {
                         <div
                           key={event._id}
                           className="bg-white dark:bg-mirage-700 p-5 rounded-lg shadow hover:shadow-lg transition-all border-l-4 border-blue-500 cursor-pointer transform hover:scale-[1.01] duration-200 group"
-                          onClick={() => navigate(`/event/${event._id}`)}
+                          
                         >
                           <div className="flex justify-between items-start">
                             <div>

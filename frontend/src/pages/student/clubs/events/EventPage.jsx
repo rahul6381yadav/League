@@ -270,12 +270,13 @@ const EventPage = () => {
         
         if (window.confirm('Are you sure you want to delete this event?')) {
             try {
-                await axios.delete(`${backendUrl}/api/v1/club/events/${eventId}`, {
+                await axios.delete(`${backendUrl}/api/v1/club/events?id=${eventId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                
-                // Remove event from state
                 setEvents(events.filter(event => event._id !== eventId));
+                // Show success message
+                alert('Event deleted successfully.');
+                // Remove event from state
             } catch (err) {
                 console.error('Error deleting event:', err.response || err.message);
                 setError('Failed to delete event. Please try again.');

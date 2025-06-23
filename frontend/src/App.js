@@ -35,6 +35,10 @@ import ErrorPage from "./pages/common/errorPage"; // Import the new ErrorPage co
 import CodeFlow1v1ShowdownPage from './pages/static_pages/codeflow1v1Showdown';
 import AllEventCoordinator from './pages/coordinator/allEventCoordinator';
 import AllPastParticipation from './pages/student/allPastParticipation';
+import TeamEventParticipation from './pages/student/clubs/events/components/TeamEventParticipation';
+import TeamAttendanceMarking from './pages/coordinator/manageEvents/TeamAttendanceMarking';
+import EventParticipants from './pages/coordinator/manageEvents/EventParticipants';
+
 function AppRoutes() {
     return (
         <Routes>
@@ -56,6 +60,7 @@ function AppRoutes() {
             <Route path="/friends/:id" element={<Layout><OtherMembers /></Layout>} />
             <Route path="/leaderboard" element={<Layout><Leaderboard /></Layout>} />
             <Route path="/batch-leaderboard" element={<Layout><BatchLeaderboard /></Layout>} />
+            <Route path="/team-event/:id" element={<Layout><TeamEventParticipation /></Layout>} />
 
             {/* Coordinator Routes */}
             <Route path="/dashboard" element={<LayoutCoordinator><CoordinatorDashboard /></LayoutCoordinator>} />
@@ -66,6 +71,11 @@ function AppRoutes() {
             <Route path="/events/edit/:id" element={<LayoutCoordinator><EditEvents /></LayoutCoordinator>} />
             <Route path="/contest" element={<LayoutCoordinator><Contest /></LayoutCoordinator>} />
             <Route path="/allEventCoordinator" element={<LayoutCoordinator><AllEventCoordinator /></LayoutCoordinator>} />
+
+            {/* Routes for Team Events - Make sure these routes are properly defined */}
+            <Route path="/manage-event/:eventId/participants" element={<LayoutCoordinator><EventParticipants /></LayoutCoordinator>} />
+            <Route path="/manage-event/:eventId/team/:teamId/attendance" element={<LayoutCoordinator><TeamAttendanceMarking /></LayoutCoordinator>} />
+            <Route path="/manage-event/:id/attendance" element={<LayoutCoordinator><ManageParticipants /></LayoutCoordinator>} />
 
             {/* Admin Routes */}
             <Route path="/admin-panel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />

@@ -6,10 +6,21 @@ import { useRole } from '../../../../../context/RoleContext';
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
   const { role } = useRole();
+  const isTeamEvent = event.maxMember > 1;
 
   const handleCardClick = () => {
     const route = role === "coordinator" ? `/events/${event._id}` : `/event-signup/${event._id}`;
     navigate(route);
+  };
+
+  const handleClick = () => {
+    if (isTeamEvent) {
+      // Navigate to team event page
+      navigate(`/team-event/${event._id}`);
+    } else {
+      // Navigate to regular event page
+      navigate(`/event-signup/${event._id}`);
+    }
   };
 
   // Format date to be more readable
@@ -96,6 +107,13 @@ const EventCard = ({ event }) => {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Add team event indicator */}
+        {isTeamEvent && (
+          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+            Team Event
           </div>
         )}
 
