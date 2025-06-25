@@ -234,7 +234,7 @@ const TeamAttendanceMarking = () => {
 
             setUpdateStatus('Attendance saved successfully!');
             setTimeout(() => {
-                navigate(`/manage-event/${eventId}/participants`);
+                navigate(`/manage-event/participants/${eventId}`);
             }, 1500);
 
         } catch (error) {
@@ -258,7 +258,7 @@ const TeamAttendanceMarking = () => {
             );
 
             alert("Team deleted successfully");
-            navigate(`/manage-event/${eventId}/participants`);
+            navigate(`/manage-event/participants/${eventId}`);
         } catch (error) {
             alert(error.response?.data?.message || "Failed to delete team");
         }
