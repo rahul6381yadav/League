@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
                 email: club.email,
                 coordinator1_Id: club.coordinator1,
                 clubName: club.name
-            }, process.env.JWT_SECRET, {expiresIn: '1h'});
+            }, process.env.JWT_SECRET, {expiresIn: '15d'});
             res.status(200).json({message: "Login successful", token, email: club.email});
         } else {
             let user = await User.findOne({email});
@@ -100,7 +100,7 @@ exports.login = async (req, res) => {
                 role: role,
                 email: user.email,
                 fullName: user.fullName
-            }, process.env.JWT_SECRET, {expiresIn: '365d'});
+            }, process.env.JWT_SECRET, {expiresIn: '15d'});
             res.status(200).json({message: "Login successful", token, user  : user});
         }
 

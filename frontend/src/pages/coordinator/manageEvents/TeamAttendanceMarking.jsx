@@ -5,7 +5,7 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { backendUrl } from '../../../utils/routes';
 import { jwtDecode } from 'jwt-decode';
-import { FiUsers, FiCheck, FiX, FiSave } from 'react-icons/fi';
+import { FiUsers, FiCheck, FiX, FiSave, FiUserPlus, FiUserMinus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 const TeamAttendanceMarking = () => {
     const { eventId, teamId } = useParams();
@@ -13,13 +13,18 @@ const TeamAttendanceMarking = () => {
     const [event, setEvent] = useState(null);
     const [team, setTeam] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [saving, setSaving] = useState(false);
     const [teamAttendance, setTeamAttendance] = useState([]);
     const [teamComment, setTeamComment] = useState('');
     const [groupPoints, setGroupPoints] = useState(0);
     const [updateStatus, setUpdateStatus] = useState('');
     const [isCoordinator, setIsCoordinator] = useState(true); // Set default to true to always allow access
+    const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+    const [showEditTeamModal, setShowEditTeamModal] = useState(false);
+    const [newTeamName, setNewTeamName] = useState('');
+    const [selectedMember, setSelectedMember] = useState(null);
+    const [availableStudents, setAvailableStudents] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const token = localStorage.getItem('jwtToken');
     const decodedToken = token ? jwtDecode(token) : null;
@@ -70,8 +75,7 @@ const TeamAttendanceMarking = () => {
 
                 // If user is neither coordinator nor team leader, show error
                 if (!isCoordinator && !isTeamLeader) {
-                    setError("Only coordinators or team leaders can access this page.");
-                    setLoading(false);
+                    navigate(-1);
                     return;
                 }
 
@@ -139,11 +143,11 @@ const TeamAttendanceMarking = () => {
             }
         } catch (error) {
             console.error("Error fetching data:", error);
-            setError(error.response?.data?.message || "Failed to load team data");
+            navigate(-1); // Navigate back on error
         } finally {
             setLoading(false);
         }
-    }, [eventId, teamId, token, decodedToken?.userId]); // Note the stable dependencies
+    }, [eventId, teamId, token, decodedToken?.userId, navigate]);
 
     // Use the useCallback function in useEffect
     useEffect(() => {
@@ -230,7 +234,7 @@ const TeamAttendanceMarking = () => {
 
             setUpdateStatus('Attendance saved successfully!');
             setTimeout(() => {
-                navigate(`/manage-event/${eventId}/participants`);
+                navigate(`/manage-event/participants/${eventId}`);
             }, 1500);
 
         } catch (error) {
@@ -254,35 +258,242 @@ const TeamAttendanceMarking = () => {
             );
 
             alert("Team deleted successfully");
-            navigate(`/manage-event/${eventId}/participants`);
+            navigate(`/manage-event/participants/${eventId}`);
         } catch (error) {
             alert(error.response?.data?.message || "Failed to delete team");
         }
     };
 
+    // Function to fetch available students
+    const fetchAvailableStudents = async () => {
+        try {
+            const response = await axios.get(`${backendUrl}/api/v1/club/non-participants`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { eventId },
+            });
+
+            setAvailableStudents(response.data.nonParticipants || []);
+        } catch (error) {
+            console.error('Error fetching students:', error);
+        }
+    };
+
+    // Function to add member to team
+    const handleAddMember = async (studentId) => {
+        try {
+            await axios.put(`${backendUrl}/api/v1/eventTeam/${team._id}`, {
+                members: [studentId]
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Refresh team data
+            fetchTeamAndEvent();
+            setShowAddMemberModal(false);
+        } catch (error) {
+            console.error('Error adding member:', error);
+            alert(error.response?.data?.message || 'Failed to add member');
+        }
+    };
+
+    // Function to remove member from team
+    const handleRemoveMember = async (memberId) => {
+        if (!window.confirm('Are you sure you want to remove this member?')) return;
+
+        try {
+            await axios.post(`${backendUrl}/api/v1/eventTeam/removeMember`, {
+                teamId: team._id,
+                memberId
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Refresh team data
+            fetchTeamAndEvent();
+        } catch (error) {
+            console.error('Error removing member:', error);
+            alert(error.response?.data?.message || 'Failed to remove member');
+        }
+    };
+
+    // Function to update team name
+    const handleUpdateTeamName = async () => {
+        try {
+            await axios.put(`${backendUrl}/api/v1/eventTeam/${team._id}`, {
+                teamName: newTeamName
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Refresh team data
+            fetchTeamAndEvent();
+            setShowEditTeamModal(false);
+        } catch (error) {
+            console.error('Error updating team:', error);
+            alert(error.response?.data?.message || 'Failed to update team');
+        }
+    };
+
+    // Replace error display with simple loading state
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-violet-50 to-purple-50 dark:from-gray-900 dark:via-indigo-950 dark:to-violet-950 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
+                    <p className="text-indigo-600 dark:text-indigo-400">Loading team data...</p>
+                </div>
             </div>
         );
     }
 
-    if (error) {
-        return (
-            <div className="container mx-auto p-4">
-                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
-                    <p>{error}</p>
+    // Add this inside your return statement, after the event header card
+    const teamManagementSection = (
+        <div className="bg-white/70 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100/50 dark:border-violet-900/30 p-6">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-indigo-900 dark:text-indigo-200">Team Management</h3>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => {
+                            setNewTeamName(team?.teamName || '');
+                            setShowEditTeamModal(true);
+                        }}
+                        className="flex items-center px-3 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+                    >
+                        <FiEdit2 className="mr-2" /> Edit Team
+                    </button>
+                    <button
+                        onClick={() => {
+                            fetchAvailableStudents();
+                            setShowAddMemberModal(true);
+                        }}
+                        className="flex items-center px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                    >
+                        <FiUserPlus className="mr-2" /> Add Member
+                    </button>
                 </div>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Go Back
-                </button>
             </div>
-        );
-    }
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-indigo-900 dark:text-indigo-200 mb-2">Team Code</h4>
+                    <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-white dark:bg-gray-700 rounded font-mono text-indigo-600 dark:text-indigo-300">
+                            {team?.shareId}
+                        </span>
+                        <button
+                            onClick={() => navigator.clipboard.writeText(team?.shareId)}
+                            className="text-indigo-600 hover:text-indigo-700"
+                        >
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Add these modal components before the final return statement
+    const addMemberModal = showAddMemberModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-4xl">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Add Team Member</h3>
+                <div className="flex items-center mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search students..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg"
+                    />
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                    <table className="w-full border-collapse border border-gray-300 dark:border-gray-700">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-gray-700">
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Photo</th>
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Name</th>
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Email</th>
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center text-sm font-medium text-gray-700 dark:text-gray-300">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {availableStudents
+                                .filter(student =>
+                                    student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                )
+                                .map(student => (
+                                    <tr key={student._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                            <img
+                                                src={student.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.fullName)}`}
+                                                alt={student.fullName}
+                                                className="w-8 h-8 rounded-full"
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
+                                            {student.fullName}
+                                        </td>
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
+                                            {student.email}
+                                        </td>
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center">
+                                            <button
+                                                onClick={() => handleAddMember(student._id)}
+                                                className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+                                            >
+                                                Add
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="mt-4 flex justify-end">
+                    <button
+                        onClick={() => setShowAddMemberModal(false)}
+                        className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const editTeamModal = showEditTeamModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Edit Team</h3>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Team Name
+                    </label>
+                    <input
+                        type="text"
+                        value={newTeamName}
+                        onChange={(e) => setNewTeamName(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg"
+                    />
+                </div>
+                <div className="flex justify-end gap-2">
+                    <button
+                        onClick={() => setShowEditTeamModal(false)}
+                        className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleUpdateTeamName}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    >
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-violet-50 to-purple-50 dark:from-gray-900 dark:via-indigo-950 dark:to-violet-950">
@@ -332,6 +543,9 @@ const TeamAttendanceMarking = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Team Management Section */}
+                {teamManagementSection}
 
                 {/* Group Controls Card */}
                 <div className="bg-white/70 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100/50 dark:border-violet-900/30 p-6">
@@ -465,6 +679,16 @@ const TeamAttendanceMarking = () => {
                                         className="block w-full py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700/50 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
                                     />
                                 </div>
+
+                                {/* Add member removal button to each member card */}
+                                {!member.isLeader && (
+                                    <button
+                                        onClick={() => handleRemoveMember(member.memberId)}
+                                        className="mt-2 w-full flex items-center justify-center px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                                    >
+                                        <FiUserMinus className="mr-2" /> Remove Member
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -490,13 +714,29 @@ const TeamAttendanceMarking = () => {
                         <button
                             onClick={saveAttendance}
                             disabled={saving}
-                            className={`px-6 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-lg flex items-center ${saving ? 'opacity-70 cursor-not-allowed' : 'hover:from-indigo-600 hover:to-violet-700'}`
-                            }
+                            className={`px-6 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-lg flex items-center ${saving ? 'opacity-70 cursor-not-allowed' : 'hover:from-indigo-600 hover:to-violet-700'}`}
                         >
-                            <FiSave className="mr-2" /> Save Attendance
+                            {saving ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8zm2 0a6 6 0 1 1 12 0 6 6 0 0 1-12 0z"></path>
+                                    </svg>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <FiSave className="mr-2" />
+                                    Save Attendance
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
+
+                {/* Modals */}
+                {addMemberModal}
+                {editTeamModal}
             </div>
         </div>
     );
