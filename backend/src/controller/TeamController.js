@@ -8,8 +8,11 @@ exports.createTeam = async (req, res) => {
         const { teamName, eventId } = req.body;
         const leaderId = req.user._id; // Make sure we're using _id from the user object
 
-        if (!teamName || !eventId) {
-            return res.status(400).json({ message: "Team name and event ID are required", isError: true });
+        if (!teamName) {
+            return res.status(400).json({ message: "Team name are required", isError: true });
+        }
+        if (!eventId) {
+            return res.status(400).json({ message: "Event ID is required", isError: true });
         }
 
         const event = await EventModel.findById(eventId);
@@ -80,12 +83,83 @@ exports.createTeam = async (req, res) => {
     }
 };
 
+// similary create a team by coordinator
+exports.createTeamByCoordinator = async (req, res) => {
+    try {
+        const { teamName, eventId, leaderId } = req.body;
+        if (!teamName) {
+            return res.status(400).json({ message: "Team name is required", isError: true });
+        }
+        if (!eventId) {
+            return res.status(400).json({ message: "Event ID is required", isError: true });
+        }
+        if (!leaderId) {
+            return res.status(400).json({ message: "Leader ID is required", isError: true });
+        }
+        const event = await EventModel.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: "Event not found", isError: true });
+        }
+        // Generate a unique team code that doesn't exist for this event
+        let shareId;
+        let isUnique = false;
+        let attempts = 0;
+        while (!isUnique && attempts < 10) {
+            shareId = generateRandomCode(6);
+            // Check if this code already exists for this event
+            const existingTeam = await TeamModel.findOne({
+                eventId,
+                shareId
+            });
+            if (!existingTeam) {
+                isUnique = true;
+            }
+            attempts++;
+        }
+        // If we couldn't generate a unique code after several attempts, generate one with more characters
+        if (!isUnique) {
+            shareId = generateRandomCode(8);
+        }
+        const team = new TeamModel({
+            teamName,
+            eventId,
+            leader: leaderId,
+            members: [leaderId],
+            shareId, // Explicitly set the shareId
+        });
+        const savedTeam = await team.save();
+        // Create attendance record for team leader with default "absent" status
+        const leaderAttendance = new AttendanceModel({
+            studentId: leaderId,
+            eventId: eventId,
+            teamId: savedTeam._id,
+            status: 'absent',
+            pointsGiven: 0
+        });
+        await leaderAttendance.save();
+        // Populate the necessary fields before responding
+        const populatedTeam = await TeamModel.findById(savedTeam._id)
+            .populate('leader')
+            .populate('members');
+        res.status(201).json({
+            message: "Team created successfully by coordinator",
+            team: populatedTeam,
+            isError: false
+        });
+    } catch (error) {
+        console.error("Error creating team by coordinator:", error.message);
+        res.status(500).json({
+            message: "Internal Server Error", isError: true
+        });
+    }
+};
+                
+
 // Update team details
 exports.updateTeam = async (req, res) => {
     try {
         const { teamId } = req.params;
         const { teamName, members } = req.body;
-        const userId = req.user.id;
 
         const team = await TeamModel.findById(teamId);
         if (!team) {
@@ -93,7 +167,25 @@ exports.updateTeam = async (req, res) => {
         }
 
         if (teamName) team.teamName = teamName;
-        if (members) team.members = [...new Set([...team.members, ...members])];
+
+        if (members) {
+            const newMembers = members.filter(
+                (member) => !team.members.includes(member)
+            );
+            team.members = [...new Set([...team.members, ...members])];
+
+            // Create attendance records for new members
+            for (const memberId of newMembers) {
+                const attendanceRecord = new AttendanceModel({
+                    studentId: memberId,
+                    eventId: team.eventId,
+                    teamId: team._id,
+                    status: 'absent',
+                    pointsGiven: 0,
+                });
+                await attendanceRecord.save();
+            }
+        }
 
         await team.save();
 
@@ -108,7 +200,6 @@ exports.updateTeam = async (req, res) => {
 exports.removeMember = async (req, res) => {
     try {
         const { teamId, memberId } = req.body;
-        const leaderId = req.user._id;
 
         if (!teamId || !memberId) {
             return res.status(400).json({ message: "Team ID and member ID are required", isError: true });
@@ -117,16 +208,6 @@ exports.removeMember = async (req, res) => {
         const team = await TeamModel.findById(teamId);
         if (!team) {
             return res.status(404).json({ message: "Team not found", isError: true });
-        }
-
-        // Check if the requester is the team leader
-        if (team.leader.toString() !== leaderId.toString()) {
-            return res.status(403).json({ message: "Only the team leader can remove members", isError: true });
-        }
-
-        // Prevent removing the leader themselves via this endpoint
-        if (memberId === leaderId.toString()) {
-            return res.status(400).json({ message: "Team leader cannot remove themselves. Use the delete team option instead.", isError: true });
         }
 
         // Check if the member exists in the team

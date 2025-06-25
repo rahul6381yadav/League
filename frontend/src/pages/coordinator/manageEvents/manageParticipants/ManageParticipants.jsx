@@ -123,7 +123,7 @@ const ManageParticipants = () => {
                     // Check if this is a team event (maxMember > 1)
                     if (response.data.event.maxMember > 1) {
                         console.log("Team event detected, redirecting to team participants page");
-                        navigate(`/manage-event/${id}/participants`);
+                        navigate(`/manage-event/participants/${id}`);
                         return;
                     }
 
@@ -214,8 +214,9 @@ const ManageParticipants = () => {
 
     // Filter participants based on search term - use sortedParticipants instead of participants
     const filteredParticipants = sortedParticipants.filter(participant =>
-        participant.studentId.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        participant.studentId.email.toLowerCase().includes(searchTerm.toLowerCase())
+        participant.studentId &&
+        (participant.studentId.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            participant.studentId.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     // Calculate pagination for participants in the modal view

@@ -1,6 +1,7 @@
 const { AttendanceModel } = require("../model/ClubModel");
 const User = require("../model/UserModel");
-const {Types} = require("mongoose");
+const { Types } = require("mongoose");
+const mongoose = require("mongoose");
 
 
 exports.participate = async (req, res) => {
@@ -67,6 +68,58 @@ exports.participate = async (req, res) => {
         res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
+
+
+// i want the api in which on passing eventId it will return all students who have not participated in the event
+exports.getNonParticipants = async (req, res) => {
+    try {
+        const { eventId } = req.query;
+        if (!eventId) {
+            return res.status(400).json({ message: "Event ID is required", isError: true });
+        }
+
+        const eventObjectId = mongoose.Types.ObjectId.isValid(eventId)
+            ? new mongoose.Types.ObjectId(eventId)
+            : null;
+
+        if (!eventObjectId) {
+            return res.status(400).json({ message: "Invalid Event ID", isError: true });
+        }
+
+        // Get distinct participated student IDs
+        const participatedStudents = await AttendanceModel.find({ eventId: eventObjectId })
+            .distinct("studentId");
+
+        const participatedSet = new Set(participatedStudents.map(id => id.toString()));
+
+        // Get all students
+        const allStudents = await User.find({ role: { $regex: /^student$/i } }).select("_id fullName email");
+
+        // Filter non-participants
+        const nonParticipants = allStudents.filter(student =>
+            !participatedSet.has(String(student._id))
+        );
+
+        console.log("All students:", allStudents.length);
+        console.log("Participated student IDs:", participatedStudents);
+        console.log("Participated students:", participatedSet);
+        console.log("Non-participating students:", nonParticipants.length);
+
+        res.status(200).json({
+            message: "Non-participating students fetched successfully",
+            nonParticipants,
+            isError: false
+        });
+
+    } catch (error) {
+        console.error("Error in getNonParticipants:", error);
+        res.status(500).json({
+            message: "Internal Server Error",
+            isError: true
+        });
+    }
+};
+
 
 
 

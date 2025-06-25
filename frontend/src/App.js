@@ -72,12 +72,12 @@ function AppRoutes() {
             <Route path="/contest" element={<LayoutCoordinator><Contest /></LayoutCoordinator>} />
             <Route path="/allEventCoordinator" element={<LayoutCoordinator><AllEventCoordinator /></LayoutCoordinator>} />
 
-            {/* Routes for Team Events - Make sure these routes are properly defined */}
-            <Route path="/manage-event/:eventId/participants" element={<LayoutCoordinator><EventParticipants /></LayoutCoordinator>} />
-            <Route path="/manage-event/:eventId/team/:teamId/attendance" element={<LayoutCoordinator><TeamAttendanceMarking /></LayoutCoordinator>} />
+            
+            <Route path="/manage-event/participants/:eventId" element={<LayoutCoordinator><EventParticipants/></LayoutCoordinator>} />
+            <Route path="/manage-event/:eventId/team/:teamId/attendance" element={<LayoutCoordinator><TeamAttendanceMarking/></LayoutCoordinator>} />
             <Route path="/manage-event/:id/attendance" element={<LayoutCoordinator><ManageParticipants /></LayoutCoordinator>} />
 
-            {/* Admin Routes */}
+                        {/* Admin Routes */}
             <Route path="/admin-panel" element={<ProtectedRoute requiredRole="admin"><AdminPanel /></ProtectedRoute>} />
 
             {/* CoSA Routes */}
