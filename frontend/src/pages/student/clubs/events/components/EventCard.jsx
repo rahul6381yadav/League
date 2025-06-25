@@ -8,11 +8,6 @@ const EventCard = ({ event }) => {
   const { role } = useRole();
   const isTeamEvent = event.maxMember > 1;
 
-  const handleCardClick = () => {
-    const route = role === "coordinator" ? `/events/${event._id}` : `/event-signup/${event._id}`;
-    navigate(route);
-  };
-
   const handleClick = () => {
     if (isTeamEvent) {
       // Navigate to team event page
@@ -36,7 +31,7 @@ const EventCard = ({ event }) => {
 
   return (
     <div
-      onClick={handleCardClick}
+      onClick={handleClick}
       className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-indigo-100 dark:border-violet-900/30 flex flex-col h-full transform hover:-translate-y-1"
     >
       {/* Color accent top bar */}

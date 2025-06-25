@@ -152,7 +152,7 @@ exports.getParticipation = async (req, res) => {
 };
 
 
-// Update attendance for multiple students
+// Update attendance for multiple students 
 exports.updateAttendance = async (req, res) => {
     try {
         const { updates } = req.body;
@@ -160,10 +160,10 @@ exports.updateAttendance = async (req, res) => {
             return res.status(400).json({ message: "Updates data is required", isError: true });
         }
 
-        const bulkOps = updates.map(({ id, status, pointsGiven }) => ({
+        const bulkOps = updates.map(({ id, status, pointsGiven, comment }) => ({
             updateOne: {
                 filter: { _id: id },
-                update: { $set: { status, pointsGiven } }
+                update: { $set: { status, pointsGiven, comment } }
             }
         }));
 
@@ -183,7 +183,7 @@ exports.updateAttendance = async (req, res) => {
 
     } catch (error) {
         console.error("Error:", error.message);
-        res.status(500).json({message: "Internal Server Error", isError: true});
+        res.status(500).json({ message: "Internal Server Error", isError: true });
     }
 };
 
