@@ -267,16 +267,12 @@ const TeamAttendanceMarking = () => {
     // Function to fetch available students
     const fetchAvailableStudents = async () => {
         try {
-            const response = await axios.get(`${backendUrl}/api/v1/user/students`, {
-                headers: { Authorization: `Bearer ${token}` }
+            const response = await axios.get(`${backendUrl}/api/v1/club/non-participants`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { eventId },
             });
 
-            // Filter out students who are already in the team
-            const filteredStudents = response.data.students.filter(student =>
-                !teamAttendance.some(member => member.memberId === student._id)
-            );
-
-            setAvailableStudents(filteredStudents);
+            setAvailableStudents(response.data.nonParticipants || []);
         } catch (error) {
             console.error('Error fetching students:', error);
         }
@@ -285,8 +281,7 @@ const TeamAttendanceMarking = () => {
     // Function to add member to team
     const handleAddMember = async (studentId) => {
         try {
-            await axios.post(`${backendUrl}/api/v1/eventTeam/update`, {
-                teamId: team._id,
+            await axios.put(`${backendUrl}/api/v1/eventTeam/${team._id}`, {
                 members: [studentId]
             }, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -400,42 +395,60 @@ const TeamAttendanceMarking = () => {
     // Add these modal components before the final return statement
     const addMemberModal = showAddMemberModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-4xl">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Add Team Member</h3>
-                <input
-                    type="text"
-                    placeholder="Search students..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg mb-4"
-                />
-                <div className="max-h-64 overflow-y-auto">
-                    {availableStudents
-                        .filter(student =>
-                            student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            student.email.toLowerCase().includes(searchTerm.toLowerCase())
-                        )
-                        .map(student => (
-                            <div key={student._id} className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                                <div className="flex items-center">
-                                    <img
-                                        src={student.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.fullName)}`}
-                                        alt={student.fullName}
-                                        className="w-8 h-8 rounded-full mr-3"
-                                    />
-                                    <div>
-                                        <div className="font-medium">{student.fullName}</div>
-                                        <div className="text-sm text-gray-500">{student.email}</div>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => handleAddMember(student._id)}
-                                    className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        ))}
+                <div className="flex items-center mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search students..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg"
+                    />
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                    <table className="w-full border-collapse border border-gray-300 dark:border-gray-700">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-gray-700">
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Photo</th>
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Name</th>
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Email</th>
+                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center text-sm font-medium text-gray-700 dark:text-gray-300">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {availableStudents
+                                .filter(student =>
+                                    student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                )
+                                .map(student => (
+                                    <tr key={student._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                                            <img
+                                                src={student.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.fullName)}`}
+                                                alt={student.fullName}
+                                                className="w-8 h-8 rounded-full"
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
+                                            {student.fullName}
+                                        </td>
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
+                                            {student.email}
+                                        </td>
+                                        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center">
+                                            <button
+                                                onClick={() => handleAddMember(student._id)}
+                                                className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+                                            >
+                                                Add
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
                 </div>
                 <div className="mt-4 flex justify-end">
                     <button

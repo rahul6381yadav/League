@@ -221,8 +221,8 @@ exports.removeMember = async (req, res) => {
 
         // Delete attendance record for the removed member
         await AttendanceModel.deleteOne({
-            studentId: memberId,
-            teamId: teamId
+            studentId: memberId.toString(),
+            teamId: teamId.toString()
         });
 
         // Return the updated team with populated fields

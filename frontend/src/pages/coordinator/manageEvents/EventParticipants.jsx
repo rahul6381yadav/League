@@ -4,9 +4,9 @@ import axios from 'axios';
 import { backendUrl } from '../../../utils/routes';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { Search } from 'lucide-react';
-import { MessageCircle } from 'lucide-react';
 import 'react-circular-progressbar/dist/styles.css';
-
+import { Mail, Trophy, Medal, Clock, MessageCircle } from "lucide-react";
+import { FaCalendarAlt, FaClock, FaUserCheck, FaUserTimes, FaMapMarkerAlt, FaUsers, FaChevronRight, FaCommentAlt } from "react-icons/fa";
 const EventParticipants = () => {
     const { eventId } = useParams();
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const EventParticipants = () => {
     const [commentPopup, setCommentPopup] = useState({ visible: false, content: '', position: { x: 0, y: 0 } });
     const [teamsAttendance, setTeamsAttendance] = useState({});
     const token = localStorage.getItem('jwtToken');
+    const [isEventEnded, setIsEventEnded] = useState(false);
 
     useEffect(() => {
         fetchAvailableStudents();
@@ -36,6 +37,19 @@ const EventParticipants = () => {
             )
         );
     }, [searchTerm, availableStudents]);
+
+    const formatDateTime = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
 
     const fetchAvailableStudents = async () => {
         setIsLoadingStudents(true);
@@ -60,6 +74,11 @@ const EventParticipants = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setEventDetails(response.data.event);
+            const now = new Date();
+            const eventEndDate = response.data.event.endDate ? new Date(response.data.event.endDate) : null;
+            if (eventEndDate && now > eventEndDate) {
+                setIsEventEnded(true);
+            }
         } catch (error) {
             console.error('Error fetching event details:', error);
         }
@@ -147,11 +166,11 @@ const EventParticipants = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950">
             {commentPopup.visible && (
                 <div
-                    className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-indigo-200 dark:border-indigo-800 p-4"
-                    style={{
+                className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-indigo-200 dark:border-indigo-800 p-4 animate-fade-in"
+                style={{
                         left: `${commentPopup.position.x}px`,
                         top: `${commentPopup.position.y}px`,
                         maxWidth: '250px',
@@ -159,7 +178,10 @@ const EventParticipants = () => {
                     }}
                 >
                     <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Comment</h4>
+                        <h4 className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                            <svg className="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                            Comment
+                        </h4>
                         <button
                             onClick={() => setCommentPopup({ visible: false, content: '', position: { x: 0, y: 0 } })}
                             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -170,36 +192,129 @@ const EventParticipants = () => {
                     <p className="text-gray-700 dark:text-gray-300 text-sm">{commentPopup.content}</p>
                 </div>
             )}
-
-            {/* Poster Section */}
-            <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100/50 dark:border-violet-900/30 overflow-hidden">
+            <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100/50 dark:border-violet-900/30 overflow-hidden transition-transform hover:shadow-xl">
                 <div className="relative w-full" style={{ paddingBottom: '40%' }}>
                     <div className="absolute inset-0">
-                        {eventDetails?.photo ? (
-                            <img
-                                src={eventDetails.photo}
-                                alt="Event Banner"
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center">
+                    {eventDetails && eventDetails.photo ? (
+                        <img
+                            src={eventDetails.photo}
+                            alt="Event Banner"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.parentElement.style.background = 'linear-gradient(to br, #6366F1, #8B5CF6, #9333EA)';
+                            }}
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center">
                                 <div className="text-center">
-                                    <h3 className="text-white text-xl font-bold tracking-wider">{eventDetails?.eventName || "Event Poster"}</h3>
+                                    <Trophy className="text-white/80 text-6xl mb-4 animate-pulse" />
+                                    <h3 className="text-white text-xl font-bold tracking-wider">{eventDetails?.eventName || "LEAGUE EVENT"}</h3>
+                                </div>
+                        </div>
+                    )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    </div>
+            </div>
+            <div className="p-6">
+                {eventDetails ? (
+                    <>
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                                {eventDetails.eventName || "Event Name Not Available"}
+                            </h1>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="bg-gradient-to-r from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 text-indigo-800 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-medium border border-indigo-200/50 dark:border-violet-700/30">
+                                    Team Event
+                                </span>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium border 
+                                        ${isEventEnded
+                                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200/50 dark:border-red-700/30"
+                                        : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200/50 dark:border-green-700/30"
+                                    }`}>
+                                    {isEventEnded ? "Ended" : "Active"}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                    <FaCalendarAlt className="text-indigo-500 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Date & Time</span>
+                                    <span>{formatDateTime(eventDetails.date) || "Not Available"}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                    <FaMapMarkerAlt className="text-indigo-500 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Venue</span>
+                                    <span>{eventDetails.venue || "Not specified"}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                    <FaClock className="text-indigo-500 dark:text-indigo-400" />
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Team Size</span>
+                                    <span>Up to {eventDetails.maxMember || "N/A"} members</span>
+                                </div>
+                            </div>
+                        </div>
+                        {eventDetails.description && (
+                            <div className="mt-4 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
+                                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                                    {eventDetails.description}
+                                </p>
+                            </div>
+                        )}
+                        {eventDetails.clubIds && eventDetails.clubIds.length > 0 && (
+                            <div className="mt-6 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Collaborating Clubs:
+                                </h4>
+                                <div className="flex flex-wrap gap-3">
+                                    {eventDetails.clubIds.map((club) => (
+                                        <div key={club._id} className="flex items-center bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg">
+                                            {club.image && (
+                                                <img
+                                                    src={club.image}
+                                                    alt={club.name}
+                                                    className="w-6 h-6 rounded-full object-cover mr-2"
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                />
+                                            )}
+                                            <span className="text-sm text-indigo-700 dark:text-indigo-300">{club.name}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+
+                    </>
+                ) : (
+                    <div className="animate-pulse space-y-4">
+                        <div className="h-8 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-2/3"></div>
+                        <div className="grid grid-cols-3 gap-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex items-center">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-200/50 dark:bg-indigo-800/30 mr-3"></div>
+                                    <div className="space-y-2">
+                                        <div className="h-2 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-12"></div>
+                                        <div className="h-3 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-20"></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-                <div className="p-6">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-                        {eventDetails?.eventName || "Event Name"}
-                    </h1>
-                    <p className="text-gray-700 dark:text-gray-300 mt-2">{eventDetails?.description || "Event description goes here."}</p>
+                )}
                 </div>
             </div>
 
-            {/* Add Team Button */}
             <div className="flex justify-end mt-4 px-6">
                 <button
                     onClick={() => setIsModalOpen(true)}
@@ -317,7 +432,7 @@ const EventParticipants = () => {
                         })}
                     </div>
                 </div>
-            </div>
+                </div>
 
             {/* Modal for Adding Team */}
             {isModalOpen && (
