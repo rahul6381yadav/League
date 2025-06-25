@@ -272,7 +272,7 @@ const ManageParticipants = () => {
 
     // Handler for modifying a participant
     const handleModifyClick = (participant) => {
-        setEditedParticipant({ ...participant });
+        setEditedParticipant({ ...participant, comment: participant.comment || "" });
         setEditModalOpen(true);
     };
 
@@ -292,26 +292,29 @@ const ManageParticipants = () => {
                             id: editedParticipant._id,
                             status: editedParticipant.status,
                             pointsGiven: editedParticipant.points,
-                            studentId: editedParticipant.studentId._id
+                            comment: editedParticipant.comment || "", // Include comment in the update
+                            studentId: editedParticipant.studentId._id,
                         },
                     ],
                 }, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                console.log("comments ", editedParticipant.comment);
+                
 
                 if (response.status === 200) {
-                    fetchTotalPoints(editedParticipant.studentId._id);
+                    // Update the participant in the state
                     setParticipants((prev) =>
                         prev.map((participant) =>
-                            participant._id === editedParticipant._id ? editedParticipant : participant
+                            participant._id === editedParticipant._id ? { ...participant, ...editedParticipant } : participant
                         )
                     );
+                    fetchTotalPoints(editedParticipant.studentId._id); // Update total points
+                    setEditModalOpen(false); // Close the modal
+                    setEditedParticipant(null); // Reset the edited participant
                 }
             } catch (error) {
                 console.error("Error modifying participant:", error.response?.data || error.message);
-            } finally {
-                setEditModalOpen(false);
-                setEditedParticipant(null);
             }
         }
     };
@@ -577,8 +580,7 @@ const ManageParticipants = () => {
                                                             ${participant.status === 'present'
                                                                 ? 'bg-gradient-to-r from-green-400 to-green-500 text-white'
                                                                 : 'bg-gradient-to-r from-red-400 to-red-500 text-white'}`}>
-                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-30 
-                                                                ${participant.status === 'present' ? 'bg-green-400' : 'bg-red-400'}"></span>
+                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-30  ${participant.status === 'present' ? 'bg-green-400' : 'bg-red-400'}"></span>
                                                             <span className="relative">
                                                                 {participant.status === "present" ? "Present" : "Absent"}
                                                             </span>
@@ -686,6 +688,16 @@ const ManageParticipants = () => {
                                     value={editedParticipant.points}
                                     onChange={handleInputChange}
                                     className="block w-full text-black p-2 border rounded bg-indigo-50 dark:bg-violet-900 text-indigo-900 dark:text-indigo-200"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2 text-indigo-600 dark:text-indigo-400">Comment</label>
+                                <textarea
+                                    name="comment"
+                                    value={editedParticipant.comment}
+                                    onChange={handleInputChange}
+                                    className="block w-full text-black p-2 border rounded bg-indigo-50 dark:bg-violet-900 text-indigo-900 dark:text-indigo-200"
+                                    rows="3"
                                 />
                             </div>
                             <div className="flex justify-end gap-4">
