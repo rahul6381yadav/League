@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDarkMode } from "../../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from 'react-helmet'; // Import React Helmet for SEO
 
 // Import necessary icons
 import { Home, LogIn, Sun, Moon, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
@@ -208,6 +209,21 @@ const LeaderboardLanding = () => {
 
     return (
         <div className={`min-h-screen ${isDarkMode ? 'text-white bg-gray-900' : 'text-gray-900 bg-white'} relative`}>
+            {/* SEO Optimization */}
+            <Helmet>
+                <title>League of IIITR - Connect with Clubs & Events at IIIT Raichur</title>
+                <meta name="description" content="Explore and connect with clubs, participate in events, and join the vibrant community of IIIT Raichur through the League of IIITR platform." />
+                <meta name="keywords" content="IIIT Raichur, clubs, student activities, college events, Electrogeeks, Codesoc, Finesse, campus life, IIITR" />
+                <meta property="og:title" content="League of IIITR - Campus Clubs & Events" />
+                <meta property="og:description" content="Join IIIT Raichur's vibrant community. Connect with clubs, participate in events, and showcase your talents." />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:image" content="https://tnp.iiitr.ac.in/static/media/logo.393f38abf77d5c6149ab.png" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <link rel="canonical" href={window.location.href} />
+                <meta name="robots" content="index, follow" />
+            </Helmet>
+
             {/* Modern Particle Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className={`absolute inset-0 opacity-20 ${isDarkMode ? 'bg-blue-900' : 'bg-blue-100'}`}>
