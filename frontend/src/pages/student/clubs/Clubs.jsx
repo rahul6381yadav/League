@@ -95,7 +95,7 @@ function Clubs() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 py-8 px-4">
+        <div className="min-h-screen bg-transparent py-8 px-4">
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-4xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 dark:from-indigo-400 dark:via-purple-400 dark:to-violet-300">
                     <span className="animate-gradient-text">Discover Clubs</span>
@@ -169,7 +169,7 @@ function Clubs() {
                                         })}
                                         className="relative group cursor-pointer overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white dark:bg-gray-800"
                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/80 via-purple-500/80 to-violet-600/80 opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10"></div>
+                                        <div className="absolute inset-0 transition-opacity duration-300 z-10"></div>
 
                                         <div className="aspect-[16/9] w-full overflow-hidden">
                                             <img

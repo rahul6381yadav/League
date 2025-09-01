@@ -11,17 +11,6 @@ import AddStudent from "./AddStudent";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-// Token decoding logic remains the same
-const token = localStorage.getItem("jwtToken");
-let decodedToken = null;
-if (token) {
-    try {
-        decodedToken = jwtDecode(token);
-    } catch (error) {
-        console.error("Error decoding JWT token:", error.message);
-    }
-}
-
 const modalStyles = {
     allParticipants: { zIndex: 50 },
     deleteConfirmation: { zIndex: 110 },
@@ -50,9 +39,23 @@ const ManageParticipants = () => {
     const [participantsPerPage] = useState(10);
     const [maxPoints, setMaxPoints] = useState(100); // Default max points value to calculate percentage
     const navigate = useNavigate();
+    const token = localStorage.getItem("jwtToken");
+    let decodedToken = null;
+    if (token) {
+        try {
+            decodedToken = jwtDecode(token);
+        } catch (error) {
+            console.error("Error decoding JWT token:", error.message);
+        }
+    }
 
     const fetchTotalPoints = async (studentId) => {
         try {
+            if (!token || !decodedToken?.email) {
+                setError('No auth token or email found. Please log in.');
+                return;
+            }
+
             let sumPoints = 0;
             const response = await fetch(`${backendUrl}/api/v1/club/attendance?studentId=${studentId}`, {
                 headers: {
@@ -107,6 +110,10 @@ const ManageParticipants = () => {
 
     useEffect(() => {
         const fetchEventDetails = async () => {
+            if (!token || !decodedToken?.email) {
+                setError('No auth token or email found. Please log in.');
+                return;
+            }
             try {
                 const response = await axios.get(`${backendUrl}/api/v1/club/events`, {
                     params: { id },

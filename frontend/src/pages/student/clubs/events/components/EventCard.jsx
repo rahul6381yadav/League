@@ -10,121 +10,111 @@ const EventCard = ({ event }) => {
 
   const handleClick = () => {
     if (isTeamEvent) {
-      // Navigate to team event page
       navigate(`/team-event/${event._id}`);
     } else {
-      // Navigate to regular event page
       navigate(`/event-signup/${event._id}`);
     }
   };
 
-  // Format date to be more readable
   const formatDate = (dateString) => {
-    const options = { month: 'short', day: 'numeric', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
   };
 
-  // Format time from date
-  const formatTime = (dateString) => {
-    return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+  const { date, time } = formatDate(event.date);
 
   return (
     <div
       onClick={handleClick}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-indigo-100 dark:border-violet-900/30 flex flex-col h-full transform hover:-translate-y-1"
+      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 dark:border-gray-700 cursor-pointer group hover:-translate-y-0.5"
     >
-      {/* Color accent top bar */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+      {/* Gradient accent */}
+      <div className="h-1 w-full bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+      
+      {/* Team event badge */}
+      {isTeamEvent && (
+        <div className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+          Team
+        </div>
+      )}
 
-      {/* Content container */}
-      <div className="flex flex-col h-full">
-        {/* Event header */}
-        <div className="p-5 pb-3">
-          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 line-clamp-1">{event.eventName}</h3>
-
-          {/* Date and time info */}
-          <div className="flex items-center mb-3 text-sm text-gray-700 dark:text-gray-300">
-            <FaCalendarAlt className="text-indigo-500 dark:text-indigo-400 mr-2" />
-            <span className="font-medium">{formatDate(event.date)}</span>
-            <span className="mx-2">•</span>
-            <span>{formatTime(event.date)}</span>
-          </div>
-
-          {/* Description */}
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+      <div className="p-4 flex flex-col justify-between">
+        {/* Header */}
+        <div className="mb-3">
+          <h3 className="font-bold text-base text-gray-900 dark:text-white mb-1 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            {event.eventName}
+          </h3>
+          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
             {event.description || "No description available"}
           </p>
         </div>
 
-        {/* Details grid */}
-        <div className="px-5 grid grid-cols-1 gap-2 text-sm">
-          <div className="flex items-center text-gray-700 dark:text-gray-300">
-            <div className="w-7 h-7 rounded-md bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mr-3">
-              <FaClock className="text-indigo-500 dark:text-indigo-400" />
+        {/* Compact info grid */}
+        <div className="space-y-2 mb-3">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center text-gray-700 dark:text-gray-300">
+              <FaCalendarAlt className="text-indigo-500 w-3 h-3 mr-2" />
+              <span className="font-medium">{date}</span>
             </div>
-            <span>{event.duration}</span>
-          </div>
-
-          <div className="flex items-center text-gray-700 dark:text-gray-300">
-            <div className="w-7 h-7 rounded-md bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mr-3">
-              <FaMapMarkerAlt className="text-violet-500 dark:text-violet-400" />
-            </div>
-            <span className="truncate">{event.venue}</span>
-          </div>
-
-          <div className="flex items-center text-gray-700 dark:text-gray-300">
-            <div className="w-7 h-7 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mr-3">
-              <FaUsers className="text-purple-500 dark:text-purple-400" />
-            </div>
-            <span>{event.participantsCount || 0} participants</span>
-          </div>
-        </div>
-
-        {/* Collaborating Clubs Section */}
-        {event.clubIds && event.clubIds.length > 0 && (
-          <div className="px-5 mt-3">
-            <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-              <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Collaborating with:</h4>
-              <div className="flex flex-wrap gap-1">
-                {event.clubIds.map((club) => (
-                  <div key={club._id} className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
-                    {club.image && (
-                      <img
-                        src={club.image}
-                        alt=""
-                        className="w-3 h-3 rounded-full mr-1"
-                        onError={(e) => e.target.style.display = 'none'}
-                      />
-                    )}
-                    <span className="text-xs truncate max-w-[80px] text-gray-700 dark:text-gray-300">{club.name}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center text-gray-600 dark:text-gray-400">
+              <FaClock className="w-3 h-3 mr-1" />
+              <span>{time}</span>
             </div>
           </div>
-        )}
 
-        {/* Add team event indicator */}
-        {isTeamEvent && (
-          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
-            Team Event
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center text-gray-700 dark:text-gray-300 flex-1 min-w-0">
+              <FaMapMarkerAlt className="text-violet-500 w-3 h-3 mr-2 flex-shrink-0" />
+              <span className="truncate">{event.venue}</span>
+            </div>
+            <div className="flex items-center text-gray-600 dark:text-gray-400 ml-3">
+              <FaUsers className="w-3 h-3 mr-1" />
+              <span>{event.participantsCount || 0}</span>
+            </div>
           </div>
-        )}
 
-        {/* Call to action */}
-        <div className="mt-auto p-4 pt-6">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 mr-1.5"></span>
-              {role === "coordinator" ? "Manage participants" : "View event details"}
+          <div className="text-xs text-gray-600 dark:text-gray-400">
+            <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+              {event.duration}
             </span>
-            <button className="py-1.5 px-3 rounded-md bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-sm flex items-center transition-colors">
-              {role === "coordinator" ? "Manage" : "View"}
-              <FaChevronRight className="ml-1.5 text-xs" />
-            </button>
           </div>
         </div>
+
+        {/* Collaborating clubs - more compact */}
+        {event.clubIds && event.clubIds.length > 0 && (
+          <div className="mb-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">With:</span>
+              {event.clubIds.slice(0, 3).map((club) => (
+                <div key={club._id} className="inline-flex items-center px-1.5 py-0.5 bg-gray-50 dark:bg-gray-700/50 rounded text-xs">
+                  {club.image && (
+                    <img
+                      src={club.image}
+                      alt=""
+                      className="w-3 h-3 rounded-full mr-1"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  )}
+                  <span className="text-gray-700 dark:text-gray-300 max-w-[60px] truncate">
+                    {club.name}
+                  </span>
+                </div>
+              ))}
+              {event.clubIds.length > 3 && (
+                <span className="text-xs text-gray-400">+{event.clubIds.length - 3}</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Action button */}
+        <button className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white text-sm font-medium flex items-center justify-center transition-all duration-200 group/btn">
+          <span>{role === "coordinator" ? "Manage Event" : "View Details"}</span>
+          <FaChevronRight className="ml-2 w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
+        </button>
       </div>
     </div>
   );
