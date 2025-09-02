@@ -1045,6 +1045,43 @@ const TeamEventParticipation = () => {
                             <div className="flex justify-end gap-2 mt-6">
                                 <button
                                     type="button"
+                                    onClick={() => setShowCreateTeamModal(false)}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                >
+                                    Create Team
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Join Team Modal */}
+            {showJoinTeamModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+                        <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Join a Team</h3>
+                        <form onSubmit={handleJoinTeam}>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 dark:text-gray-300 mb-2 text-sm font-medium">Team Code</label>
+                                <input
+                                    type="text"
+                                    value={shareId}
+                                    onChange={(e) => setShareId(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    placeholder="Enter the team code"
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2 mt-6">
+                                <button
+                                    type="button"
                                     onClick={() => setShowJoinTeamModal(false)}
                                     className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
