@@ -57,7 +57,7 @@ const OtherMembers = () => {
     }, [id]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-4 md:p-6">
+        <div className="min-h-screen p-4 md:p-6">
             <div className="max-w-4xl mx-auto">
                 {/* Profile Card */}
                 <div className="relative mb-6 rounded-xl overflow-hidden shadow-lg">

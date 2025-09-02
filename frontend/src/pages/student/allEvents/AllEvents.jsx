@@ -63,7 +63,7 @@ const AllEvents = () => {
     // }
 
     return (
-        <div className="h-screen w-full flex bg-mirage-50 dark:bg-mirage-900">
+        <div className="h-screen w-full flex">
             <div className="h-full w-full flex flex-col p-8">
                 <h1 className="text-3xl font-bold text-mirage-700 dark:text-mirage-100 mb-6 text-center">All Events</h1>
 

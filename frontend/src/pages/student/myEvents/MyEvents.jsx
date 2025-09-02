@@ -114,7 +114,7 @@ const MyEvents = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 py-8 px-4" style={gradientStyle}>
+        <div className="min-h-screen  py-8 px-4" style={gradientStyle}>
             <div className="max-w-7xl mx-auto">
                 {/* Header with animated text */}
                 <div className="text-center mb-8">

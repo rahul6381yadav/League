@@ -185,7 +185,7 @@ const BatchLeaderboard = () => {
     };
 
     if (loading) return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-6">
+        <div className="min-h-screen p-6">
             <div className="max-w-6xl mx-auto">
                 <div className="animate-pulse space-y-6">
                     <div className="h-12 bg-indigo-200/50 dark:bg-indigo-800/30 rounded-lg w-1/3"></div>
@@ -209,7 +209,7 @@ const BatchLeaderboard = () => {
     );
 
     if (error) return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
             <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 rounded-xl p-6 max-w-md">
                 <h3 className="text-red-700 dark:text-red-400 font-medium text-lg">Error Loading Leaderboard</h3>
                 <p className="text-red-600 dark:text-red-300 mt-2">{error}</p>
@@ -224,7 +224,7 @@ const BatchLeaderboard = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 p-4 md:p-6">
+        <div className="min-h-screen  p-4 md:p-6">
             <div className="max-w-6xl mx-auto">
 
                 

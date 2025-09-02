@@ -249,10 +249,10 @@ const ClubEvents = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950">
+        <div className="min-h-screen">
             {/* Header with club name */}
             <div className="relative py-10 px-6 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-violet-600/20 dark:from-indigo-900/30 dark:to-violet-900/30 blur-sm"></div>
+                <div className="absolute inset-0 blur-sm"></div>
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                 <div className="relative max-w-7xl mx-auto">
                     {/* Back button */}

@@ -44,7 +44,9 @@ const Login = memo(() => {
           localStorage.setItem("authToken", firebaseToken);
           setRole(activeTab);
           if (activeTab === 'student') {
-            navigate('/home');
+            const redirectPath = sessionStorage.getItem("redirect") || "/home";
+            sessionStorage.removeItem("redirect");
+            navigate(redirectPath);
           } else if (activeTab === 'coordinator') {
             navigate('/dashboard');
           }
@@ -91,7 +93,9 @@ const Login = memo(() => {
           localStorage.setItem("authToken", firebaseToken);
           setRole(activeTab);
           if (activeTab === 'student') {
-            navigate('/home');
+            const redirectPath = sessionStorage.getItem("redirect") || "/home";
+            sessionStorage.removeItem("redirect");
+            navigate(redirectPath);
           } else if (activeTab === 'coordinator') {
             navigate('/dashboard');
           }

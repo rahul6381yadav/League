@@ -7,6 +7,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
     const {user, loading} = useAuth();
     const {role} = useRole();
     const navigate = useNavigate();
+    const currentUrl = window.location.pathname + window.location.search;
 
     if (loading) {
         return (
@@ -23,7 +24,9 @@ const ProtectedRoute = ({children, requiredRole}) => {
     }
 
     if (!user || (requiredRole && role !== requiredRole)) {
-        navigate("/");
+        navigate("/login");
+        if(currentUrl != "/home")
+        sessionStorage.setItem("redirect", currentUrl);
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-center">
