@@ -57,6 +57,7 @@ const Layout = ({ children }) => {
     "/myProfile": "My Profile",
     "/friends/:id": "Friend Details",
     "/event-signup/:id": "Events → Details",
+    "/team-event/:id": "Team Events → Details"
   };
 
 
@@ -69,7 +70,8 @@ const Layout = ({ children }) => {
     "/leaderboard": Goal,
     "/myProfile": User,
     "/friends/:id": FaUserFriends,
-    "/event-signup/:id": Plus
+    "/event-signup/:id": Plus,
+    "/team-event/:id": FaUserFriends
   };
 
   function getMatchingPath(pathname) {
