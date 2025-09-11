@@ -41,7 +41,6 @@ const MyEvents = () => {
                     },
                 }
             );
-
             const records = Array.isArray(response.data.records) ? response.data.records : [];
             if (records.length > 0) {
                 // Extract event IDs as strings

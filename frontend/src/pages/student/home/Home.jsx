@@ -659,7 +659,8 @@ const HomePage = () => {
                                             const elapsedDuration = currentTime.getTime() - startDate.getTime();
                                             const progressPercentage = Math.min(100, Math.max(0, (elapsedDuration / totalDuration) * 100)).toFixed(0);
                                             const timeRemaining = endDate.getTime() - currentTime.getTime();
-                                            const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+                                            const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+                                            const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60)) % 24;
                                             const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
                                             return (
                                                 <div
@@ -682,7 +683,7 @@ const HomePage = () => {
                                                         <div className="bg-yellow-50 dark:bg-yellow-900/20 px-3 py-2 rounded-lg text-center">
                                                             <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium">Ends in</p>
                                                             <p className="text-yellow-800 dark:text-yellow-300 font-bold">
-                                                                {hoursRemaining}h {minutesRemaining}m
+                                                                {daysRemaining}d {hoursRemaining}h {minutesRemaining}m
                                                             </p>
                                                         </div>
                                                     </div>
