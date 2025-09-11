@@ -34,7 +34,6 @@ const TeamEventParticipation = () => {
     const [allTeams, setAllTeams] = useState([]);
     const [isEventEnded, setIsEventEnded] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
-
     // Add state for comment popup
     const [commentPopup, setCommentPopup] = useState({
         visible: false,
@@ -110,7 +109,6 @@ const TeamEventParticipation = () => {
 
         fetchEventDetails();
     }, [id]);
-
     // Fetch team attendance
     const fetchTeamsAttendance = async (teams) => {
         try {
