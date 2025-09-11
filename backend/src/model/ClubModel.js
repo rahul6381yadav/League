@@ -130,6 +130,20 @@ const eventSchema = new Schema({
     },
 });
 
+// Middleware to update participantsCount based on attendance
+eventSchema.pre('save', async function (next) {
+    if (this.maxMember > 1) {
+        try {
+            // Fetch attendance for this event
+            const attendanceCount = await mongoose.model('Attendance').countDocuments({ eventId: this._id });
+            this.participantsCount = attendanceCount;
+        } catch (error) {
+            return next(error);
+        }
+    }
+    next();
+});
+
 const attendanceSchema = new mongoose.Schema({
     studentId: {
         type: Schema.Types.ObjectId,
