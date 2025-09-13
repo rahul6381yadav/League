@@ -29,8 +29,7 @@ router.delete("/club/attendance", jwtMiddleware.verifyToken, attendanceControlle
 
 // for attendanceController routes for non-event participation
 router.get('/club/non-participants', jwtMiddleware.verifyToken, attendanceController.getNonParticipants);
-
-
+router.put('/club/events/participantsCount', jwtMiddleware.verifyToken, eventController.setParticipantsCount);
 router.post('/eventTeam/create', jwtMiddleware.verifyToken, teamController.createTeam);
 router.post('/eventTeam/createTeam', jwtMiddleware.verifyToken, teamController.createTeamByCoordinator);
 router.get('/eventTeam/getTeam', jwtMiddleware.verifyToken, teamController.getTeam);
