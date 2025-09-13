@@ -144,8 +144,51 @@ function Clubs() {
                 </div>
 
                 {loading && (
-                    <div className="flex justify-center items-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+                    <div className="animate-pulse">
+                        {/* Club Card Grid Skeleton */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            {[...Array(6)].map((_, index) => (
+                                <div key={index} className="rounded-xl shadow-md bg-white dark:bg-gray-800 overflow-hidden">
+                                    {/* Image Skeleton */}
+                                    <div className="aspect-[16/9] w-full bg-gradient-to-r from-indigo-100 to-violet-100 dark:from-indigo-900/30 dark:to-violet-900/30"></div>
+
+                                    {/* Content Skeleton */}
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-start">
+                                            {/* Title Skeleton */}
+                                            <div className="h-6 w-2/3 bg-indigo-200 dark:bg-indigo-700 rounded-md"></div>
+
+                                            {/* Rating Skeleton */}
+                                            <div className="flex space-x-1">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <div key={i} className="h-5 w-5 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Description Skeleton */}
+                                        <div className="mt-2 space-y-2">
+                                            <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            <div className="h-4 w-4/5 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                        </div>
+
+                                        {/* Footer Skeleton */}
+                                        <div className="mt-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+                                            {/* Email Skeleton */}
+                                            <div className="flex items-center">
+                                                <div className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded-full mr-2"></div>
+                                                <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            </div>
+
+                                            {/* Button Skeleton */}
+                                            <div className="mt-3 flex justify-end">
+                                                <div className="h-9 w-28 bg-indigo-300 dark:bg-indigo-700 rounded-full"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 

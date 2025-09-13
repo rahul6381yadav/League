@@ -232,9 +232,80 @@ const AllPastParticipation = () => {
     if (isLoading) {
         return (
             <div className="p-6 bg-mirage-100 dark:bg-mirage-900 min-h-screen">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-center h-96">
-                        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600"></div>
+                <div className="max-w-7xl mx-auto animate-pulse">
+                    {/* Header Skeleton */}
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <div className="h-8 w-64 bg-white dark:bg-mirage-800 rounded-md mb-2"></div>
+                            <div className="h-4 w-80 bg-white/80 dark:bg-mirage-800/80 rounded-md"></div>
+                        </div>
+                        <div className="h-8 w-40 bg-purple-200 dark:bg-purple-900/30 rounded-md"></div>
+                    </div>
+
+                    {/* Stats Overview Cards Skeleton */}
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="bg-white dark:bg-mirage-800 p-5 rounded-lg shadow-sm flex-1">
+                                <div className="h-4 w-24 bg-mirage-200 dark:bg-mirage-700 rounded-md"></div>
+                                <div className="h-10 w-16 bg-mirage-300 dark:bg-mirage-600 rounded-md mt-2"></div>
+                                <div className="h-3 w-36 bg-mirage-200 dark:bg-mirage-700 rounded-md mt-2"></div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Filter/View Controls Skeleton */}
+                    <div className="bg-white dark:bg-mirage-800 p-4 rounded-lg shadow-sm mb-6">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
+                            <div className="flex space-x-2">
+                                {[...Array(3)].map((_, i) => (
+                                    <div key={i} className={`h-9 w-28 rounded-lg ${i === 0 ? 'bg-purple-600' : 'bg-mirage-200 dark:bg-mirage-700'}`}></div>
+                                ))}
+                            </div>
+                            <div className="flex space-x-4">
+                                <div className="h-9 w-32 bg-mirage-200 dark:bg-mirage-700 rounded-lg"></div>
+                                <div className="h-9 w-40 bg-mirage-200 dark:bg-mirage-700 rounded-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Event Cards Grid Skeleton */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        {[...Array(8)].map((_, index) => (
+                            <div
+                                key={index}
+                                className="bg-white dark:bg-mirage-700 p-5 rounded-lg shadow-sm flex flex-col border-l-4 border-gray-200 dark:border-gray-600"
+                            >
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="flex-1">
+                                        <div className="h-5 w-3/4 bg-mirage-200 dark:bg-mirage-600 rounded-md"></div>
+                                        <div className="flex items-center mt-2">
+                                            <div className="h-3 w-3 rounded-full bg-mirage-200 dark:bg-mirage-600 mr-1"></div>
+                                            <div className="h-3 w-20 bg-mirage-200 dark:bg-mirage-600 rounded-md"></div>
+                                        </div>
+                                    </div>
+                                    <div className="h-6 w-16 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+                                </div>
+
+                                {/* Points progress circle skeleton */}
+                                <div className="my-3 flex items-center justify-center">
+                                    <div className="w-20 h-20 rounded-full bg-mirage-200 dark:bg-mirage-600 flex items-center justify-center">
+                                        <div className="w-16 h-16 rounded-full bg-white dark:bg-mirage-700"></div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between mt-2">
+                                    <div className="h-3 w-12 bg-mirage-200 dark:bg-mirage-600 rounded-md"></div>
+                                    <div className="h-5 w-20 rounded-full bg-purple-100 dark:bg-purple-900/30"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Pagination Skeleton */}
+                    <div className="mt-8 flex justify-between items-center bg-white dark:bg-mirage-800 p-4 rounded-lg shadow-sm">
+                        <div className="h-8 w-24 bg-mirage-200 dark:bg-mirage-700 rounded-lg"></div>
+                        <div className="h-5 w-64 bg-mirage-200 dark:bg-mirage-700 rounded-md"></div>
+                        <div className="h-8 w-24 bg-mirage-200 dark:bg-mirage-700 rounded-lg"></div>
                     </div>
                 </div>
             </div>
