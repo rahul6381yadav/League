@@ -39,6 +39,7 @@ import TeamEventParticipation from './pages/student/clubs/events/components/Team
 import TeamAttendanceMarking from './pages/coordinator/manageEvents/TeamAttendanceMarking';
 import EventParticipants from './pages/coordinator/manageEvents/EventParticipants';
 import SIH_PS_SITE from './pages/static_pages/sih_ps';
+import IPForecastPage from './pages/static_pages/ip_forecast';
 
 function AppRoutes() {
     return (
@@ -49,6 +50,7 @@ function AppRoutes() {
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/code-flow/:id" element={<CodeFlow1v1ShowdownPage />} />
             <Route path="/sih/problem-statements" element={<SIH_PS_SITE />} />
+            <Route path="/ehacs/tth/:id" element={<IPForecastPage />} />
 
             {/* Student Routes */}
             <Route path="/home" element={<Layout><HomePage /></Layout>} />
