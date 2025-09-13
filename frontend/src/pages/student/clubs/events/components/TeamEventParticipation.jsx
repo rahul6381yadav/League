@@ -87,13 +87,19 @@ const TeamEventParticipation = () => {
                     const teams = teamsResponse.data.teams;
                     setAllTeams(teams);
 
-                    // Fetch attendance for all teams
-                    await fetchTeamsAttendance(teams);
+                    if (eventEndDate && now > eventEndDate) {
+                        // Fetch attendance for all teams
+                        await fetchTeamsAttendance(teams);
+                    }
 
                     // Check if current user is in any team
                     const currentUserTeam = teams.find(team =>
                         team.members.some(member => member._id === decodedToken?.userId || member === decodedToken?.userId)
                     );
+                    const totalParticipants = teams.reduce((sum, team) => sum + (team.members ? team.members.length : 0), 0);
+                    if (totalParticipants !== eventData.participantsCount) {
+                        setParticipantsCount(totalParticipants);
+                    }
 
                     if (currentUserTeam) {
                         setUserTeam(currentUserTeam);
@@ -109,6 +115,26 @@ const TeamEventParticipation = () => {
 
         fetchEventDetails();
     }, [id]);
+    const setParticipantsCount = async (count) => {
+        try {
+            const response = await axios.put(
+                `${backendUrl}/api/v1/club/events/participantsCount`,
+                { participantsCount: count },
+                {
+                    params: { id },
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            if (response.data && !response.data.isError) {
+                console.log("Participants count updated successfully");
+            } else {
+                console.error("Failed to update participants count:", response.data.message);
+            }
+        } catch (error) {
+            console.error("Error updating participants count:", error.response?.data?.message || error.message);
+        }
+    }
     // Fetch team attendance
     const fetchTeamsAttendance = async (teams) => {
         try {

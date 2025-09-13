@@ -94,7 +94,28 @@ exports.updateEvent = async (req, res) => {
         res.status(500).json({message: "Internal Server Error", isError: true});
     }
 };
+exports.setParticipantsCount = async (req, res) => {
+    try {
+        const {id} = req.query;
+        const { participantsCount } = req.body;
+        if (participantsCount == null || isNaN(participantsCount) || participantsCount < 0) {
+            return res.status(400).json({ message: "Invalid participants count", isError: true });
+        }
 
+        const event = await EventModel.findById(id);
+        if (!event) {
+            return res.status(404).json({ message: "Event not found", isError: true });
+        }
+
+        event.participantsCount = participantsCount;
+        await event.save();
+
+        res.status(200).json({ message: "Participants count updated successfully", event, isError: false });
+    } catch (error) {
+        console.error("Error:", error.message);
+        res.status(500).json({ message: "Internal Server Error", isError: true });
+    }
+};
 exports.deleteEvent = async (req, res) => {
     try {
         const {id} = req.query;
