@@ -214,8 +214,148 @@ const HomePage = () => {
                 </div>
             </div>
             {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-pulse">
+                    {/* Stats Cards Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className={`p-6 bg-gradient-to-r ${i === 0 ? 'from-indigo-200 to-indigo-300' : i === 1 ? 'from-violet-200 to-purple-300' : 'from-fuchsia-200 to-pink-300'} 
+                            dark:${i === 0 ? 'from-indigo-900/30 to-indigo-800/30' : i === 1 ? 'from-violet-900/30 to-purple-800/30' : 'from-fuchsia-900/30 to-pink-800/30'} rounded-lg shadow-lg`}>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="h-4 w-24 bg-white/30 dark:bg-white/20 rounded-md"></div>
+                                        <div className="h-8 w-16 bg-white/40 dark:bg-white/30 rounded-md mt-1"></div>
+                                    </div>
+                                    <div className="p-3 bg-white/30 dark:bg-white/10 rounded-full">
+                                        <div className="h-8 w-8 rounded-full bg-white/40 dark:bg-white/20"></div>
+                                    </div>
+                                </div>
+                                <div className="mt-4">
+                                    <div className="h-4 w-32 bg-white/30 dark:bg-white/20 rounded-md"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Calendar and Events Grid Skeleton */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Calendar Component Skeleton */}
+                        <div className="lg:col-span-2">
+                            <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800 mb-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <div className="h-6 w-32 bg-blue-200 dark:bg-blue-800 rounded-md"></div>
+                                    <div className="h-4 w-24 bg-blue-100 dark:bg-blue-900 rounded-md"></div>
+                                </div>
+
+                                <div className="flex justify-between items-center mb-4">
+                                    <div className="h-8 w-8 bg-mirage-300 dark:bg-mirage-700 rounded"></div>
+                                    <div className="h-6 w-40 bg-mirage-300 dark:bg-mirage-700 rounded-md"></div>
+                                    <div className="h-8 w-8 bg-mirage-300 dark:bg-mirage-700 rounded"></div>
+                                </div>
+
+                                {/* Calendar Grid Skeleton */}
+                                <div className="grid grid-cols-7 gap-2 border border-mirage-300 dark:border-mirage-700 p-2 rounded">
+                                    {/* Days of week */}
+                                    {[...Array(7)].map((_, i) => (
+                                        <div key={i} className="h-4 w-full bg-mirage-300 dark:bg-mirage-700 rounded-md"></div>
+                                    ))}
+
+                                    {/* Calendar days */}
+                                    {[...Array(35)].map((_, i) => (
+                                        <div key={i} className="p-2 rounded-lg">
+                                            <div className="h-5 w-5 mx-auto bg-mirage-300 dark:bg-mirage-700 rounded-md"></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column - Events Lists Skeleton */}
+                        <div className="space-y-6">
+                            {/* Upcoming Events Skeleton */}
+                            <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
+                                <div className="flex justify-between items-center mb-4">
+                                    <div className="flex items-center">
+                                        <div className="h-5 w-5 bg-blue-200 dark:bg-blue-800 rounded-full mr-2"></div>
+                                        <div className="h-6 w-40 bg-mirage-300 dark:bg-mirage-700 rounded-md"></div>
+                                    </div>
+                                    <div className="h-4 w-16 bg-blue-100 dark:bg-blue-900 rounded-md"></div>
+                                </div>
+
+                                {/* Event Cards Skeleton */}
+                                <div className="space-y-4">
+                                    {[...Array(2)].map((_, i) => (
+                                        <div key={i} className="bg-white dark:bg-mirage-700 p-5 rounded-lg shadow border-l-4 border-blue-200 dark:border-blue-800">
+                                            <div className="flex justify-between items-start">
+                                                <div className="w-3/4">
+                                                    <div className="h-6 w-3/4 bg-mirage-200 dark:bg-mirage-700 rounded-md"></div>
+                                                    <div className="h-4 w-full bg-mirage-100 dark:bg-mirage-800 rounded-md mt-2"></div>
+                                                    <div className="h-4 w-2/3 bg-mirage-100 dark:bg-mirage-800 rounded-md mt-1"></div>
+                                                </div>
+                                                <div className="h-14 w-20 bg-blue-50 dark:bg-blue-900/20 rounded-lg"></div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                                {[...Array(4)].map((_, j) => (
+                                                    <div key={j} className="flex items-center">
+                                                        <div className="h-4 w-4 bg-mirage-200 dark:bg-mirage-700 rounded-full mr-2"></div>
+                                                        <div className="h-4 w-20 bg-mirage-200 dark:bg-mirage-700 rounded-md"></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Ongoing Events Skeleton */}
+                            <div className="p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
+                                <div className="flex justify-between items-center mb-4">
+                                    <div className="flex items-center">
+                                        <div className="h-5 w-5 bg-yellow-200 dark:bg-yellow-800 rounded-full mr-2"></div>
+                                        <div className="h-6 w-40 bg-mirage-300 dark:bg-mirage-700 rounded-md"></div>
+                                    </div>
+                                </div>
+
+                                {/* Ongoing Event Card Skeleton */}
+                                <div className="bg-white dark:bg-mirage-700 p-5 rounded-lg shadow border-l-4 border-yellow-200 dark:border-yellow-800">
+                                    <div className="flex justify-between items-start">
+                                        <div className="w-3/4">
+                                            <div className="flex items-center">
+                                                <div className="h-6 w-1/2 bg-mirage-200 dark:bg-mirage-700 rounded-md"></div>
+                                                <div className="h-4 w-12 ml-3 bg-yellow-100 dark:bg-yellow-900 rounded-full"></div>
+                                            </div>
+                                            <div className="h-4 w-full bg-mirage-100 dark:bg-mirage-800 rounded-md mt-2"></div>
+                                        </div>
+                                        <div className="h-14 w-20 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg"></div>
+                                    </div>
+
+                                    <div className="mt-4 mb-3">
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Past Participants Skeleton */}
+                    <div className="mt-8 p-6 rounded-lg shadow-md bg-mirage-200 dark:bg-mirage-800">
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="h-6 w-40 bg-mirage-300 dark:bg-mirage-700 rounded-md"></div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="bg-white dark:bg-mirage-700 p-4 rounded-lg shadow-sm">
+                                    <div className="flex items-center">
+                                        <div className="h-10 w-10 bg-mirage-200 dark:bg-mirage-800 rounded-full mr-3"></div>
+                                        <div>
+                                            <div className="h-5 w-24 bg-mirage-200 dark:bg-mirage-800 rounded-md"></div>
+                                            <div className="h-4 w-16 bg-mirage-100 dark:bg-mirage-900 rounded-md mt-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <>
@@ -659,7 +799,8 @@ const HomePage = () => {
                                             const elapsedDuration = currentTime.getTime() - startDate.getTime();
                                             const progressPercentage = Math.min(100, Math.max(0, (elapsedDuration / totalDuration) * 100)).toFixed(0);
                                             const timeRemaining = endDate.getTime() - currentTime.getTime();
-                                            const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+                                            const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+                                            const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60)) % 24;
                                             const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
                                             return (
                                                 <div
@@ -682,7 +823,7 @@ const HomePage = () => {
                                                         <div className="bg-yellow-50 dark:bg-yellow-900/20 px-3 py-2 rounded-lg text-center">
                                                             <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium">Ends in</p>
                                                             <p className="text-yellow-800 dark:text-yellow-300 font-bold">
-                                                                {hoursRemaining}h {minutesRemaining}m
+                                                                {daysRemaining}d {hoursRemaining}h {minutesRemaining}m
                                                             </p>
                                                         </div>
                                                     </div>
