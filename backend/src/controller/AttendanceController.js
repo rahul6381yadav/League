@@ -100,10 +100,6 @@ exports.getNonParticipants = async (req, res) => {
             !participatedSet.has(String(student._id))
         );
 
-        console.log("All students:", allStudents.length);
-        console.log("Participated student IDs:", participatedStudents);
-        console.log("Participated students:", participatedSet);
-        console.log("Non-participating students:", nonParticipants.length);
 
         res.status(200).json({
             message: "Non-participating students fetched successfully",
