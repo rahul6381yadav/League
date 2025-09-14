@@ -173,7 +173,6 @@ exports.updateTeam = async (req, res) => {
         if (teamName) team.teamName = teamName;
         if (typeof teamPoints === "number") {
             team.teamPoints = teamPoints; // ensures >= 0
-            console.log("good rahul", teamPoints)
             await team.save();
         }
 
@@ -424,7 +423,6 @@ exports.markAttendance = async (req, res) => {
         // Update team points if provided
         if (typeof teamPoints === "number") {
             team.teamPoints = teamPoints; // ensures >= 0
-            console.log("good rahul",teamPoints)
             await team.save();
         }
 
