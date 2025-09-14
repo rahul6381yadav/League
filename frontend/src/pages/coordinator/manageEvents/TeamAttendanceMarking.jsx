@@ -209,9 +209,10 @@ const TeamAttendanceMarking = () => {
         try {
             setSaving(true);
             setUpdateStatus('Saving attendance records...');
+
             // First, update the team comment
             await axios.put(
-                `${backendUrl}/api/v1/eventTeam/${teamId}/points`,
+                `${backendUrl}/api/v1/eventTeam/points/${teamId}`,
                 {
                     teamPoints: groupPoints,
                 },
