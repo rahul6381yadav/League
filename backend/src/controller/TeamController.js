@@ -436,11 +436,6 @@ exports.markAttendance = async (req, res) => {
             team.comment = teamComment;
             await team.save();
         }
-        // Update team points if provided
-        if (typeof teamPoints === "number") {
-            team.teamPoints = teamPoints; // ensures >= 0
-            await team.save();
-        }
 
         const attendanceRecords = [];
         for (const { memberId, status, pointsGiven, comment } of attendance) {
@@ -473,7 +468,7 @@ exports.markAttendance = async (req, res) => {
 exports.updateAttendance = async (req, res) => {
     try {
         const { teamId } = req.params;
-        const { attendance, teamComment } = req.body; // Array of { memberId, status, pointsGiven, comment }
+        const { attendance, teamComment,teamPoints } = req.body; // Array of { memberId, status, pointsGiven, comment }
         const userId = req.user.id;
 
         // First find the team
@@ -501,6 +496,11 @@ exports.updateAttendance = async (req, res) => {
         // Update team comment if provided
         if (teamComment !== undefined) {
             team.comment = teamComment;
+            await team.save();
+        }
+        
+        if (typeof teamPoints === "number") {
+            team.teamPoints = teamPoints; // ensures >= 0
             await team.save();
         }
 
