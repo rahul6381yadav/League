@@ -38,7 +38,8 @@ const TeamEventParticipation = () => {
     const [commentPopup, setCommentPopup] = useState({
         visible: false,
         content: "",
-        position: { x: 0, y: 0 }
+        position: { x: 0, y: 0 },
+        title: "Comment" // Add title field to distinguish between regular comments and team feedback
     });
 
     // Add state for loading states of member actions
@@ -48,9 +49,6 @@ const TeamEventParticipation = () => {
 
     // Add points calculation (like EventSignUp)
     const [maxPoints, setMaxPoints] = useState(100);
-
-    // Attendance state
-    const [teamsAttendance, setTeamsAttendance] = useState({});
 
     // Fetch event details and check if user is already in a team
     useEffect(() => {
@@ -85,12 +83,11 @@ const TeamEventParticipation = () => {
 
                 if (teamsResponse.data && teamsResponse.data.teams) {
                     const teams = teamsResponse.data.teams;
-                    setAllTeams(teams);
 
-                    if (eventEndDate && now > eventEndDate) {
-                        // Fetch attendance for all teams
-                        await fetchTeamsAttendance(teams);
-                    }
+                    // Debug team comments
+                    console.log("Teams with comments:", teams.filter(team => team.comment));
+
+                    setAllTeams(teams);
 
                     // Check if current user is in any team
                     const currentUserTeam = teams.find(team =>
@@ -135,41 +132,6 @@ const TeamEventParticipation = () => {
             console.error("Error updating participants count:", error.response?.data?.message || error.message);
         }
     }
-    // Fetch team attendance
-    const fetchTeamsAttendance = async (teams) => {
-        try {
-            const attendanceData = {};
-            for (const team of teams) {
-                const response = await axios.get(`${backendUrl}/api/v1/eventTeam/getAttendance/${team._id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                console.log('response:', response);
-                if (response.data && response.data.attendanceRecords.length > 0) {
-                    //attendance records consists of array of 2 3 people so i want to store it accordingly
-                    attendanceData[team._id] = {
-                        attendance: response.data.attendanceRecords.map(record => ({
-                            studentId: record.studentId._id || record.studentId,
-                            status: record.status,
-                            pointsGiven: record.pointsGiven || 0,
-                            comments: record.comment || "",
-                        })),
-                    }
-                }
-                else {
-                    console.log("no attendance records found for team:", team._id);
-                }
-            }
-            // Log attendance data for debugging
-            console.log("Attendance Data:", attendanceData);
-            // Log teams for debugging
-            console.log("Teams:", teams);
-            // Set attendance data in state
-            setTeamsAttendance(attendanceData);
-        } catch (error) {
-            console.error("Error fetching teams attendance:", error);
-        }
-    };
-
     // Handle create team
     const handleCreateTeam = async (e) => {
         e.preventDefault();
@@ -488,16 +450,14 @@ const TeamEventParticipation = () => {
     // Get max points
     const getMaxPoints = () => event?.maxPoints || maxPoints || 100;
 
-    // Update team points calculation to use teamsAttendance data
-    const getTeamTotalPoints = () => {
-        if (!userTeam?._id || !teamsAttendance[userTeam._id]) return 0;
-        const attendance = teamsAttendance[userTeam._id].attendance || [];
-        return Math.max(...attendance.map(record => record.pointsGiven || 0), 0);
+    // Update team points calculation to use teamPoints from the team model
+    const getTeamTotalPoints = (team) => {
+        return team?.teamPoints || 0;
     };
 
     // Update team points percentage calculation
-    const getTeamPointsPercent = () => {
-        const total = getTeamTotalPoints();
+    const getTeamPointsPercent = (team) => {
+        const total = getTeamTotalPoints(team);
         const max = getMaxPoints();
         return Math.min(Math.round((total / max) * 100), 100);
     };
@@ -507,8 +467,8 @@ const TeamEventParticipation = () => {
         return Math.min(Math.round((points / maxPoints) * 100), 100);
     };
 
-    // Handle comment click for popup
-    const handleCommentClick = (comment, event) => {
+    // Enhanced comment click handler to support team feedback
+    const handleCommentClick = (comment, event, title = "Comment") => {
         event.stopPropagation();
         event.preventDefault();
 
@@ -524,25 +484,9 @@ const TeamEventParticipation = () => {
         setCommentPopup({
             visible: true,
             content: comment,
-            position: { x, y }
+            position: { x, y },
+            title
         });
-    };
-
-    // Helper functions for team data
-    const getTeamAttendance = (teamId) => {
-        return teamsAttendance[teamId]?.attendance || [];
-    };
-
-    const getStudentStatus = (teamId, studentId) => {
-        const attendance = getTeamAttendance(teamId);
-        const record = attendance.find(a => a.studentId === studentId);
-        return record?.status || "absent";
-    };
-
-    const getStudentPoints = (teamId, studentId) => {
-        const attendance = getTeamAttendance(teamId);
-        const record = attendance.find(a => a.studentId === studentId);
-        return record?.pointsGiven || 0;
     };
 
     if (loading) {
@@ -690,30 +634,34 @@ const TeamEventParticipation = () => {
 
     return (
         <div className="min-h-screen">
-            {/* Comment popup */}
+            {/* Enhanced Comment popup with dynamic title */}
             {commentPopup.visible && commentPopup.content && (
                 <div
-                    className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-lg border border-indigo-200 dark:border-indigo-800 p-3 animate-fade-in"
+                    className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-lg border border-indigo-200 dark:border-indigo-800 p-4 animate-fade-in"
                     style={{
                         left: `${commentPopup.position.x}px`,
-                        top: `${commentPopup.position.y}px`,
-                        maxWidth: '200px',
-                        minWidth: '150px'
+                        top: `${commentPopup.position.y - 10}px`,
+                        maxWidth: '320px',
+                        minWidth: '240px',
+                        maxHeight: '80vh',
+                        overflow: 'auto'
                     }}
                 >
-                    <div className="flex justify-between items-center mb-1">
-                        <h4 className="text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                            <MessageCircle className="inline w-3 h-3 mr-1" />
-                            Comment
+                    <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                            <MessageCircle className="inline w-4 h-4 mr-1" />
+                            {commentPopup.title}
                         </h4>
                         <button
                             onClick={() => setCommentPopup(prev => ({ ...prev, visible: false }))}
-                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm"
+                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-lg"
                         >
                             ×
                         </button>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 text-xs">{commentPopup.content}</p>
+                    <div className="text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap">
+                        {commentPopup.content}
+                    </div>
                 </div>
             )}
 
@@ -853,11 +801,11 @@ const TeamEventParticipation = () => {
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12">
                                         <CircularProgressbar
-                                            value={getTeamPointsPercent()}
-                                            text={`${getTeamTotalPoints()}`}
+                                            value={getTeamPointsPercent(userTeam)}
+                                            text={`${getTeamTotalPoints(userTeam)}`}
                                             styles={buildStyles({
                                                 textSize: '32px',
-                                                pathColor: `rgba(99, 102, 241, ${getTeamPointsPercent() / 100 + 0.2})`,
+                                                pathColor: `rgba(99, 102, 241, ${getTeamPointsPercent(userTeam) / 100 + 0.2})`,
                                                 textColor: '#6366F1',
                                                 trailColor: '#E0E7FF',
                                             })}
@@ -869,11 +817,21 @@ const TeamEventParticipation = () => {
                                             {isTeamLeader && (
                                                 <Trophy className="w-4 h-4 text-yellow-500" />
                                             )}
+                                            {/* Add feedback button next to team name */}
+                                            {userTeam.comment && (
+                                                <button
+                                                    onClick={(e) => handleCommentClick(userTeam.comment, e, "Team Feedback")}
+                                                    className="ml-2 flex items-center gap-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-800/30 transition-colors shadow-sm text-xs"
+                                                >
+                                                    <MessageCircle size={12} />
+                                                    <span className="font-medium">Feedback</span>
+                                                </button>
+                                            )}
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                                             <span>Code: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">{userTeam.shareId}</code></span>
                                             <span className="text-purple-600 dark:text-purple-400">
-                                                {getTeamPointsPercent()}% Achievement
+                                                {getTeamPointsPercent(userTeam)}% Achievement
                                             </span>
                                         </div>
                                     </div>
@@ -915,8 +873,6 @@ const TeamEventParticipation = () => {
                                 <div className="grid gap-2">
                                     {Array.isArray(userTeam.members) && userTeam.members.map((member, idx) => {
                                         const m = typeof member === "object" ? member : {};
-                                        const status = getStudentStatus(userTeam._id, m._id);
-                                        const points = getStudentPoints(userTeam._id, m._id);
 
                                         return (
                                             <div key={idx} className="flex items-center justify-between bg-white/70 dark:bg-gray-800/50 p-2 rounded-lg">
@@ -943,55 +899,13 @@ const TeamEventParticipation = () => {
                                                         <span className="text-xs text-gray-500">{m.studentId || m.rollNo || '-'}</span>
                                                     </div>
                                                 </div>
-
-                                                <div className="flex items-center gap-2">
-                                                    {isEventEnded && points > 0 && (
-                                                        <div className="w-8 h-8">
-                                                            <CircularProgressbar
-                                                                value={calculatePercentage(points)}
-                                                                text={`${points}`}
-                                                                styles={buildStyles({
-                                                                    textSize: '32px',
-                                                                    pathColor: '#6366F1',
-                                                                    textColor: '#6366F1',
-                                                                    trailColor: '#E0E7FF',
-                                                                })}
-                                                            />
-                                                        </div>
-                                                    )}
-                                                    {/* <span className={`px-2 py-0.5 rounded-full text-xs ${
-                                                    status === 'present' 
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                                                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                }`}>
-                                                    {status === "present" ? "Present" : "Absent"}
-                                                </span> */}
-                                                </div>
                                             </div>
                                         );
                                     })}
                                 </div>
                             </div>
 
-                            {/* Team Comment - Compact */}
-                            {userTeam.comment && (
-                                <div className="mt-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/30 rounded-lg p-3">
-                                    <div className="flex items-start gap-2">
-                                        <MessageCircle className="text-amber-600 dark:text-amber-400 w-4 h-4 mt-0.5" />
-                                        <div>
-                                            <h4 className="text-xs font-medium text-amber-800 dark:text-amber-300">Team Feedback:</h4>
-                                            <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">{userTeam.comment}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {eventStarted && (
-                                <div className="mt-3 text-xs text-amber-600 dark:text-amber-400 flex items-center">
-                                    <Clock className="w-3 h-3 mr-1" />
-                                    Event started - team modifications locked
-                                </div>
-                            )}
+                            {/* Remove the separate team feedback section */}
                         </div>
                     ) : (
                         // Compact Team Creation Options
@@ -1032,24 +946,18 @@ const TeamEventParticipation = () => {
 
                     <div className="p-3 space-y-3 max-h-96 overflow-y-auto">
                         {allTeams
-                            .sort((a, b) => {
-                                const aPoints = teamsAttendance[a._id]?.attendance?.reduce((max, record) =>
-                                    Math.max(max, record.pointsGiven || 0), 0) || 0;
-                                const bPoints = teamsAttendance[b._id]?.attendance?.reduce((max, record) =>
-                                    Math.max(max, record.pointsGiven || 0), 0) || 0;
-                                return bPoints - aPoints;
-                            })
+                            .sort((a, b) => b.teamPoints - a.teamPoints)
                             .map((team, index) => {
                                 const isUserTeam = userTeam && userTeam._id === team._id;
-                                const teamAttendance = teamsAttendance[team._id]?.attendance || [];
-                                const maxTeamPoints = Math.max(...teamAttendance.map(record => record.pointsGiven || 0), 0);
 
                                 return (
                                     <div
                                         key={team._id}
                                         className={`relative ${isUserTeam ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'bg-gray-50 dark:bg-gray-800/50'} rounded-lg p-3 border ${isUserTeam ? 'border-indigo-200 dark:border-indigo-700' : 'border-gray-200 dark:border-gray-700'}`}
                                     >
-                                        {/* Rank and Team Info */}
+                                        {/* Remove the top-right positioned feedback button */}
+
+                                        {/* Rank and Team Info - Keep the feedback button next to team name */}
                                         <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-6 h-6 flex items-center justify-center bg-indigo-600 text-white rounded-full text-xs font-bold">
@@ -1057,8 +965,8 @@ const TeamEventParticipation = () => {
                                                 </div>
                                                 <div className="w-10 h-10">
                                                     <CircularProgressbar
-                                                        value={calculatePercentage(maxTeamPoints)}
-                                                        text={`${maxTeamPoints}`}
+                                                        value={getTeamPointsPercent(team)}
+                                                        text={`${getTeamTotalPoints(team)}`}
                                                         styles={buildStyles({
                                                             textSize: '28px',
                                                             pathColor: '#6366F1',
@@ -1071,28 +979,27 @@ const TeamEventParticipation = () => {
                                                     <div className="flex items-center gap-2">
                                                         <h3 className="font-semibold text-gray-900 dark:text-gray-100">{team.teamName}</h3>
                                                         {isUserTeam && <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">Your Team</span>}
+                                                        {/* Add feedback button next to team name */}
+                                                        {team.comment && (
+                                                            <button
+                                                                onClick={(e) => handleCommentClick(team.comment, e, "Team Feedback")}
+                                                                className="ml-2 flex items-center gap-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-800/30 transition-colors shadow-sm text-xs"
+                                                            >
+                                                                <MessageCircle size={10} />
+                                                                <span className="font-medium">Feedback</span>
+                                                            </button>
+                                                        )}
                                                     </div>
                                                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                        {team.members?.length || 0} members · {calculatePercentage(maxTeamPoints)}%
+                                                        {team.members?.length || 0} members · {getTeamPointsPercent(team)}%
                                                     </p>
                                                 </div>
                                             </div>
-
-                                            {team.comment && (
-                                                <button
-                                                    onClick={(e) => handleCommentClick(team.comment, e)}
-                                                    className="bg-amber-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
-                                                >
-                                                    <MessageCircle size={12} />
-                                                    Feedback
-                                                </button>
-                                            )}
                                         </div>
 
                                         {/* Team Members - Compact Grid */}
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                             {Array.isArray(team.members) && team.members.map((member, idx) => {
-                                                const memberAttendance = teamAttendance.find(a => a.studentId === (member._id || member));
                                                 const isLeader = team.leader._id === (member._id || member);
 
                                                 return (
@@ -1112,28 +1019,6 @@ const TeamEventParticipation = () => {
                                                                 <span className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
                                                                     {member.fullName || 'Unknown'}
                                                                 </span>
-                                                                {(member.comment || memberAttendance?.comments) && (
-                                                                    <button
-                                                                        onClick={(e) => handleCommentClick(member.comment || memberAttendance.comments, e)}
-                                                                        className="text-indigo-500 p-0.5"
-                                                                    >
-                                                                        <FaCommentAlt size={8} />
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex items-center gap-1">
-                                                                {/* <span className={`text-xs px-1 py-0.5 rounded ${
-                                                                memberAttendance?.status === 'present' 
-                                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
-                                                                    : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                                                            }`}>
-                                                                {memberAttendance?.status === 'present' ? 'P' : 'A'}
-                                                            </span> */}
-                                                                {memberAttendance?.pointsGiven > 0 && (
-                                                                    <span className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 px-1 py-0.5 rounded">
-                                                                        {memberAttendance.pointsGiven}
-                                                                    </span>
-                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1298,6 +1183,21 @@ const TeamEventParticipation = () => {
             }
             .space-y-3::-webkit-scrollbar-thumb:hover {
                 background: rgba(99, 102, 241, 0.5);
+            }
+
+            /* Line clamp for comment preview */
+            .line-clamp-1 {
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            
+            /* Enhanced comment popup styling */
+            .comment-popup {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform-origin: top center;
+                z-index: 100;
             }
         `}</style>
         </div>

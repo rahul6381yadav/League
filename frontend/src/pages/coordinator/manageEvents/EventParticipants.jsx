@@ -92,31 +92,8 @@ const EventParticipants = () => {
             });
             const teams = response.data.teams || [];
             setAllTeams(teams);
-            await fetchTeamsAttendance(teams); // Fetch attendance for all teams
         } catch (error) {
             console.error('Error fetching teams:', error);
-        }
-    };
-
-    const fetchTeamsAttendance = async (teams) => {
-        try {
-            const attendanceData = {};
-            for (const team of teams) {
-                const response = await axios.get(`${backendUrl}/api/v1/eventTeam/getAttendance/${team._id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                attendanceData[team._id] = {
-                    attendance: response.data.attendanceRecords.map(record => ({
-                        studentId: record.studentId._id || record.studentId,
-                        status: record.status,
-                        pointsGiven: record.pointsGiven || 0,
-                        comments: record.comment || "",
-                    })),
-                };
-            }
-            setTeamsAttendance(attendanceData);
-        } catch (error) {
-            console.error('Error fetching teams attendance:', error);
         }
     };
 
@@ -169,8 +146,8 @@ const EventParticipants = () => {
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950">
             {commentPopup.visible && (
                 <div
-                className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-indigo-200 dark:border-indigo-800 p-4 animate-fade-in"
-                style={{
+                    className="comment-popup fixed z-50 bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-indigo-200 dark:border-indigo-800 p-4 animate-fade-in"
+                    style={{
                         left: `${commentPopup.position.x}px`,
                         top: `${commentPopup.position.y}px`,
                         maxWidth: '250px',
@@ -195,123 +172,123 @@ const EventParticipants = () => {
             <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-100/50 dark:border-violet-900/30 overflow-hidden transition-transform hover:shadow-xl">
                 <div className="relative w-full" style={{ paddingBottom: '40%' }}>
                     <div className="absolute inset-0">
-                    {eventDetails && eventDetails.photo ? (
-                        <img
-                            src={eventDetails.photo}
-                            alt="Event Banner"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.parentElement.style.background = 'linear-gradient(to br, #6366F1, #8B5CF6, #9333EA)';
-                            }}
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center">
+                        {eventDetails && eventDetails.photo ? (
+                            <img
+                                src={eventDetails.photo}
+                                alt="Event Banner"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.style.background = 'linear-gradient(to br, #6366F1, #8B5CF6, #9333EA)';
+                                }}
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center">
                                 <div className="text-center">
                                     <Trophy className="text-white/80 text-6xl mb-4 animate-pulse" />
                                     <h3 className="text-white text-xl font-bold tracking-wider">{eventDetails?.eventName || "LEAGUE EVENT"}</h3>
                                 </div>
-                        </div>
-                    )}
+                            </div>
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     </div>
-            </div>
-            <div className="p-6">
-                {eventDetails ? (
-                    <>
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-                                {eventDetails.eventName || "Event Name Not Available"}
-                            </h1>
-                            <div className="flex flex-wrap gap-2">
-                                <span className="bg-gradient-to-r from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 text-indigo-800 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-medium border border-indigo-200/50 dark:border-violet-700/30">
-                                    Team Event
-                                </span>
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium border 
+                </div>
+                <div className="p-6">
+                    {eventDetails ? (
+                        <>
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                                    {eventDetails.eventName || "Event Name Not Available"}
+                                </h1>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="bg-gradient-to-r from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 text-indigo-800 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-medium border border-indigo-200/50 dark:border-violet-700/30">
+                                        Team Event
+                                    </span>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium border 
                                         ${isEventEnded
-                                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200/50 dark:border-red-700/30"
-                                        : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200/50 dark:border-green-700/30"
-                                    }`}>
-                                    {isEventEnded ? "Ended" : "Active"}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
-                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
-                                    <FaCalendarAlt className="text-indigo-500 dark:text-indigo-400" />
-                                </div>
-                                <div>
-                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Date & Time</span>
-                                    <span>{formatDateTime(eventDetails.date) || "Not Available"}</span>
+                                            ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200/50 dark:border-red-700/30"
+                                            : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200/50 dark:border-green-700/30"
+                                        }`}>
+                                        {isEventEnded ? "Ended" : "Active"}
+                                    </span>
                                 </div>
                             </div>
-                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
-                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
-                                    <FaMapMarkerAlt className="text-indigo-500 dark:text-indigo-400" />
-                                </div>
-                                <div>
-                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Venue</span>
-                                    <span>{eventDetails.venue || "Not specified"}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
-                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
-                                    <FaClock className="text-indigo-500 dark:text-indigo-400" />
-                                </div>
-                                <div>
-                                    <span className="text-gray-500 dark:text-gray-400 text-xs block">Team Size</span>
-                                    <span>Up to {eventDetails.maxMember || "N/A"} members</span>
-                                </div>
-                            </div>
-                        </div>
-                        {eventDetails.description && (
-                            <div className="mt-4 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
-                                <p className="text-gray-700 dark:text-gray-300 text-sm">
-                                    {eventDetails.description}
-                                </p>
-                            </div>
-                        )}
-                        {eventDetails.clubIds && eventDetails.clubIds.length > 0 && (
-                            <div className="mt-6 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                                    Collaborating Clubs:
-                                </h4>
-                                <div className="flex flex-wrap gap-3">
-                                    {eventDetails.clubIds.map((club) => (
-                                        <div key={club._id} className="flex items-center bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg">
-                                            {club.image && (
-                                                <img
-                                                    src={club.image}
-                                                    alt={club.name}
-                                                    className="w-6 h-6 rounded-full object-cover mr-2"
-                                                    onError={(e) => e.target.style.display = 'none'}
-                                                />
-                                            )}
-                                            <span className="text-sm text-indigo-700 dark:text-indigo-300">{club.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                    </>
-                ) : (
-                    <div className="animate-pulse space-y-4">
-                        <div className="h-8 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-2/3"></div>
-                        <div className="grid grid-cols-3 gap-4">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="flex items-center">
-                                    <div className="w-8 h-8 rounded-full bg-indigo-200/50 dark:bg-indigo-800/30 mr-3"></div>
-                                    <div className="space-y-2">
-                                        <div className="h-2 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-12"></div>
-                                        <div className="h-3 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-20"></div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                        <FaCalendarAlt className="text-indigo-500 dark:text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500 dark:text-gray-400 text-xs block">Date & Time</span>
+                                        <span>{formatDateTime(eventDetails.date) || "Not Available"}</span>
                                     </div>
                                 </div>
-                            ))}
+                                <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                        <FaMapMarkerAlt className="text-indigo-500 dark:text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500 dark:text-gray-400 text-xs block">Venue</span>
+                                        <span>{eventDetails.venue || "Not specified"}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center text-indigo-700 dark:text-indigo-300 text-sm">
+                                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mr-3">
+                                        <FaClock className="text-indigo-500 dark:text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500 dark:text-gray-400 text-xs block">Team Size</span>
+                                        <span>Up to {eventDetails.maxMember || "N/A"} members</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {eventDetails.description && (
+                                <div className="mt-4 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
+                                    <p className="text-gray-700 dark:text-gray-300 text-sm">
+                                        {eventDetails.description}
+                                    </p>
+                                </div>
+                            )}
+                            {eventDetails.clubIds && eventDetails.clubIds.length > 0 && (
+                                <div className="mt-6 border-t border-indigo-100 dark:border-indigo-900/30 pt-4">
+                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                        Collaborating Clubs:
+                                    </h4>
+                                    <div className="flex flex-wrap gap-3">
+                                        {eventDetails.clubIds.map((club) => (
+                                            <div key={club._id} className="flex items-center bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg">
+                                                {club.image && (
+                                                    <img
+                                                        src={club.image}
+                                                        alt={club.name}
+                                                        className="w-6 h-6 rounded-full object-cover mr-2"
+                                                        onError={(e) => e.target.style.display = 'none'}
+                                                    />
+                                                )}
+                                                <span className="text-sm text-indigo-700 dark:text-indigo-300">{club.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </>
+                    ) : (
+                        <div className="animate-pulse space-y-4">
+                            <div className="h-8 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-2/3"></div>
+                            <div className="grid grid-cols-3 gap-4">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="flex items-center">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-200/50 dark:bg-indigo-800/30 mr-3"></div>
+                                        <div className="space-y-2">
+                                            <div className="h-2 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-12"></div>
+                                            <div className="h-3 bg-indigo-200/50 dark:bg-indigo-800/30 rounded w-20"></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
                 </div>
             </div>
 
@@ -336,15 +313,14 @@ const EventParticipants = () => {
                     <div className="space-y-4">
                         {allTeams.map((team, index) => {
                             const maxPoints = eventDetails?.maxPoints || 100;
-                            const teamAttendance = teamsAttendance[team._id]?.attendance || [];
-                            const teamPoints = Math.max(...teamAttendance.map(record => record.pointsGiven || 0), 0);
+                            const teamPoints = team.teamPoints || 0; // Fetch team points directly from the team model
                             const pointsPercentage = calculatePercentage(teamPoints, maxPoints);
 
                             return (
                                 <div
                                     key={team._id}
                                     className="bg-gradient-to-r from-gray-50/90 to-gray-100/90 dark:from-gray-900/40 dark:to-gray-800/40 rounded-xl p-6 border border-indigo-100 dark:border-indigo-800/50 transition-all hover:shadow-md cursor-pointer"
-                                    onClick={() => navigate(`/manage-event/${eventId}/team/${team._id}/attendance`)}// /manage-event/:eventId/team/:teamId/attendance
+                                    onClick={() => navigate(`/manage-event/${eventId}/team/${team._id}/attendance`)}
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
@@ -360,24 +336,25 @@ const EventParticipants = () => {
                                                     })}
                                                 />
                                             </div>
-                                            <div>
+                                            <div className="flex items-center">
                                                 <h3 className="text-lg font-semibold text-indigo-900 dark:text-indigo-200">{team.teamName}</h3>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400">{team.members?.length || 0} members</p>
+                                                {team.comment && (
+                                                    <button
+                                                        onClick={(e) => handleCommentClick(team.comment, e)}
+                                                        className="ml-4 inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 border border-indigo-600/50"
+                                                    >
+                                                        <MessageCircle size={14} className="mr-1" />
+                                                        <span className="text-xs font-medium">Feedback</span>
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
-                                        {team.comment && (
-                                            <button
-                                                onClick={(e) => handleCommentClick(team.comment, e)}
-                                                className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-2 border-amber-600"
-                                            >
-                                                <MessageCircle size={16} className="mr-1 animate-pulse" />
-                                                <span className="text-sm font-bold tracking-wider">FEEDBACK</span>
-                                            </button>
-                                        )}
+                                        <div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{team.members?.length || 0} members</p>
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                                         {team.members.map((member, idx) => {
-                                            const memberAttendance = teamAttendance.find(a => a.studentId === (member._id || member));
                                             const isLeader = team.leader._id === (member._id || member);
 
                                             return (
@@ -399,27 +376,14 @@ const EventParticipants = () => {
                                                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {member.fullName || 'Unknown Member'}
                                                             </div>
-                                                            {(member.comment || memberAttendance?.comments) && (
+                                                            {(member.comment) && (
                                                                 <button
-                                                                    onClick={(e) => handleCommentClick(member.comment || memberAttendance.comments, e)}
+                                                                    onClick={(e) => handleCommentClick(member.comment, e)}
                                                                     className="ml-2 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all bg-indigo-100 dark:bg-indigo-900/30 p-1 rounded-full"
                                                                     title="View comment"
                                                                 >
                                                                     <MessageCircle size={12} className="animate-pulse" />
                                                                 </button>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex items-center space-x-2 mt-1">
-                                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                            ${memberAttendance?.status === 'present'
-                                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
-                                                                {memberAttendance?.status === 'present' ? 'Present' : 'Absent'}
-                                                            </span>
-                                                            {memberAttendance?.pointsGiven > 0 && (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                                                    {memberAttendance.pointsGiven} pts
-                                                                </span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -432,7 +396,7 @@ const EventParticipants = () => {
                         })}
                     </div>
                 </div>
-                </div>
+            </div>
 
             {/* Modal for Adding Team */}
             {isModalOpen && (

@@ -220,29 +220,16 @@ const teamSchema = new mongoose.Schema({
         required: false,
         default: ""
     },
+    teamPoints: {
+        type: Number,
+        default: 0,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
     }
 });
 
-// Middleware to validate team members against event's maxMember
-teamSchema.pre('save', async function (next) {
-    if (this.members && this.members.length > 0) {
-        try {
-            // Get the associated event
-            const event = await mongoose.model('Event').findById(this.eventId);
-            if (event && this.members.length > event.maxMember) {
-                throw new Error(`Team members cannot exceed ${event.maxMember} as specified in the event`);
-            }
-            next();
-        } catch (error) {
-            next(error);
-        }
-    } else {
-        next();
-    }
-});
 
 const TeamModel = mongoose.model('Team', teamSchema);
 const ClubModel = mongoose.model("Club", clubSchema);
@@ -255,3 +242,4 @@ module.exports = {
     EventModel,
     AttendanceModel,
 };
+
