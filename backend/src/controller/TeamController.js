@@ -158,12 +158,32 @@ exports.createTeamByCoordinator = async (req, res) => {
     }
 };
                 
+exports.updateTeamPoints = async (req, res) => {
+    try {
+        const { teamId } = req.params;
+        const { teamPoints } = req.body;
+        if (teamPoints < 0) {
+            return res.status(400).json({ message: "Team points cannot be negative", isError: true });
+        }
+        const team = await TeamModel.findById(teamId);
+        if (!team) {
+            return res.status(404).json({ message: "Team not found", isError: true });
+        }
+        team.teamPoints = teamPoints;
+        await team.save();
+        res.status(200).json({ message: "Team points updated successfully", team, isError: false });
+    } catch (error) {
+        console.error("Error updating team points:", error.message);
+        res.status(500).json({ message: "Internal Server Error", isError: true });
+    }
+};
+
 
 // Update team details
 exports.updateTeam = async (req, res) => {
     try {
         const { teamId } = req.params;
-        const { teamName, members, teamPoints} = req.body;
+        const { teamName, members} = req.body;
 
         const team = await TeamModel.findById(teamId);
         if (!team) {
@@ -171,10 +191,6 @@ exports.updateTeam = async (req, res) => {
         }
 
         if (teamName) team.teamName = teamName;
-        if (typeof teamPoints === "number") {
-            team.teamPoints = teamPoints; // ensures >= 0
-            await team.save();
-        }
 
 
         if (members) {

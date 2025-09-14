@@ -41,5 +41,6 @@ router.post('/eventTeam/leave', jwtMiddleware.verifyToken, teamController.leaveT
 router.get('/eventTeam/getAttendance/:teamId', jwtMiddleware.verifyToken, teamController.getAttendance);
 router.post('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.markAttendance);
 router.put('/eventTeam/:teamId/attendance', jwtMiddleware.verifyToken, teamController.updateAttendance);
+router.put('/eventTeam/:teamId/points', jwtMiddleware.verifyToken, teamController.updateTeamPoints);
 
 module.exports = router;
