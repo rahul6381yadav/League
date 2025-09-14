@@ -133,13 +133,8 @@ const TeamAttendanceMarking = () => {
                 const attendanceRecords = await Promise.all(memberAttendancePromises);
                 setTeamAttendance(attendanceRecords);
 
-                // Set initial group points to average of existing points
-                const totalPoints = attendanceRecords.reduce((sum, record) => sum + record.pointsGiven, 0);
-                if (attendanceRecords.length > 0) {
-                    setGroupPoints(Math.round(totalPoints / attendanceRecords.length));
-                } else {
-                    setGroupPoints(0);
-                }
+                const totalPoints = Math.max(...attendanceRecords.map(record => record.pointsGiven), 0);
+                setGroupPoints(Math.round(totalPoints));
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -173,8 +168,10 @@ const TeamAttendanceMarking = () => {
 
     // Handle group points change
     const handleGroupPointsChange = (value) => {
-        const newGroupPoints = Math.max(0, parseInt(value) || 0);
-        setGroupPoints(newGroupPoints);
+        const newGroupPoints = value === '' ? 0 : Math.max(0, parseInt(value) || 0); // Handle empty input as 0
+        if (newGroupPoints !== groupPoints) {
+            setGroupPoints(newGroupPoints); // Update state only if the value has changed
+        }
 
         // Apply to all present members
         const updatedAttendance = teamAttendance.map(record => ({
@@ -200,6 +197,11 @@ const TeamAttendanceMarking = () => {
         }));
 
         setTeamAttendance(updatedAttendance);
+
+        // Explicitly update group points to 0 if marking all as absent
+        if (status === 'absent') {
+            setGroupPoints(0);
+        }
     };
 
     // Save attendance
@@ -207,13 +209,15 @@ const TeamAttendanceMarking = () => {
         try {
             setSaving(true);
             setUpdateStatus('Saving attendance records...');
-
             // First, update the team comment
             await axios.put(
                 `${backendUrl}/api/v1/eventTeam/${teamId}`,
-                { comment: teamComment },
+                {
+                    teamPoints: groupPoints,
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+        
 
             // Then update attendance for each member
             const attendance = teamAttendance.map(record => ({
@@ -222,12 +226,12 @@ const TeamAttendanceMarking = () => {
                 pointsGiven: record.pointsGiven,
                 comment: record.comment
             }));
-
             await axios.put(
                 `${backendUrl}/api/v1/eventTeam/${teamId}/attendance`,
                 {
                     attendance,
-                    teamComment
+                    teamComment,
+                    teamPoints: groupPoints
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -665,19 +669,6 @@ const TeamAttendanceMarking = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="mt-3">
-                                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                                        Comment
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={member.comment}
-                                        onChange={(e) => handleCommentChange(index, e.target.value)}
-                                        placeholder="Optional comment"
-                                        className="block w-full py-2 px-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700/50 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
-                                    />
                                 </div>
 
                                 {/* Add member removal button to each member card */}

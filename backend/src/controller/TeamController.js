@@ -51,6 +51,8 @@ exports.createTeam = async (req, res) => {
             eventId,
             leader: leaderId,
             members: [leaderId],
+            teamPoints: 0,
+            comment: "",
             shareId, // Explicitly set the shareId
         });
 
@@ -125,6 +127,8 @@ exports.createTeamByCoordinator = async (req, res) => {
             eventId,
             leader: leaderId,
             members: [leaderId],
+            teamPoints: 0,
+            comment: "",
             shareId, // Explicitly set the shareId
         });
         const savedTeam = await team.save();
@@ -159,7 +163,7 @@ exports.createTeamByCoordinator = async (req, res) => {
 exports.updateTeam = async (req, res) => {
     try {
         const { teamId } = req.params;
-        const { teamName, members } = req.body;
+        const { teamName, members, teamPoints} = req.body;
 
         const team = await TeamModel.findById(teamId);
         if (!team) {
@@ -167,6 +171,12 @@ exports.updateTeam = async (req, res) => {
         }
 
         if (teamName) team.teamName = teamName;
+        if (typeof teamPoints === "number") {
+            team.teamPoints = teamPoints; // ensures >= 0
+            console.log("good rahul", teamPoints)
+            await team.save();
+        }
+
 
         if (members) {
             const newMembers = members.filter(
@@ -381,7 +391,7 @@ exports.getAttendance = async (req, res) => {
 exports.markAttendance = async (req, res) => {
     try {
         const { teamId } = req.params;
-        const { attendance, teamComment } = req.body; // Array of { memberId, status, pointsGiven, comment }
+        const { attendance, teamComment,teamPoints} = req.body; // Array of { memberId, status, pointsGiven, comment }
         const userId = req.user.id;
 
         // First find the team
@@ -411,6 +421,12 @@ exports.markAttendance = async (req, res) => {
             team.comment = teamComment;
             await team.save();
         }
+        // Update team points if provided
+        if (typeof teamPoints === "number") {
+            team.teamPoints = teamPoints; // ensures >= 0
+            console.log("good rahul",teamPoints)
+            await team.save();
+        }
 
         const attendanceRecords = [];
         for (const { memberId, status, pointsGiven, comment } of attendance) {
@@ -422,6 +438,7 @@ exports.markAttendance = async (req, res) => {
             attendanceRecords.push(record);
 
             if (status === "present" && pointsGiven > 0) {
+                await team.save();
                 const user = await User.findById(memberId);
                 if (user) {
                     user.TotalPoints = (user.TotalPoints || 0) + pointsGiven;
@@ -429,6 +446,7 @@ exports.markAttendance = async (req, res) => {
                 }
             }
         }
+        
 
         res.status(200).json({ message: "Attendance marked successfully", attendanceRecords, isError: false });
     } catch (error) {
